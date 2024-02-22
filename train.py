@@ -269,7 +269,7 @@ def train(session, load_epoch, lr, epochs):
                 ŷ = gen(x)
 
                 simple_loss = l1_criterion(y, ŷ) * 10
-                wave_loss = big_pyramid_loss(y, ŷ) * 10
+                wave_loss = big_pyramid_loss(y, ŷ) * 100
                 loss = wave_loss + simple_loss
 
                 loss.backward()
@@ -311,7 +311,7 @@ def train(session, load_epoch, lr, epochs):
                         ŷ = gen(x)
 
                         simple_test_loss = l1_criterion(y, ŷ) * 10
-                        wave_test_loss = big_pyramid_loss(y, ŷ) * 10
+                        wave_test_loss = big_pyramid_loss(y, ŷ) * 100
 
                         test_loss = wave_test_loss + simple_test_loss
 
