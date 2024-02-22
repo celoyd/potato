@@ -295,11 +295,11 @@ def train(session, load_epoch, lr, epochs):
                 with torch.no_grad():
                     if True:
                         torch.save(
-                            gen.state_dict(), f"weights/{session}-gen-{load_epoch}.pt"
+                            gen.state_dict(), f"weights/{session}-gen-{epoch}.pt"
                         )
                         torch.save(
                             opt.state_dict(),
-                            f"weights/{session}-opt-{load_epoch}.pt",
+                            f"weights/{session}-opt-{epoch}.pt",
                         )
 
                     for x, y in testloader:
