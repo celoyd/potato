@@ -6,6 +6,9 @@ from torch.nn import functional as F
 from torch.utils.data import DataLoader, Dataset
 from torchvision.transforms import GaussianBlur
 
+import torch._dynamo
+torch._dynamo.config.suppress_errors = True
+
 import numpy as np
 
 import ptwt
@@ -220,7 +223,8 @@ logical_batch_size = 64
 loader_params = {
     "batch_size": physical_batch_size,
     "shuffle": True,
-    "num_workers": 6,
+    # "num_workers": 6,
+    "num_workers": 0,
     "pin_memory": True,
 }
 
@@ -252,6 +256,7 @@ def train(session, load_epoch, lr, epochs):
     te = 0
 
     gen = Ripple().to(device)
+    gen.compile()
 
     opt = torch.optim.AdamW(gen.parameters(), lr)
 
