@@ -298,7 +298,7 @@ def train(session, load_epoch, lr, epochs):
                             gen.state_dict(), f"weights/{session}-gen-{load_epoch}.pt"
                         )
                         torch.save(
-                            gen_optimizer.state_dict(),
+                            opt.state_dict(),
                             f"weights/{session}-opt-{load_epoch}.pt",
                         )
 
