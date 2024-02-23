@@ -35,9 +35,9 @@ def save_image(path, image, norm=True):
     image = torch.squeeze(image, dim=0).cpu().detach().numpy()
 
     image = colour.XYZ_to_sRGB(colour.Oklab_to_XYZ(image.swapaxes(0, 2))).swapaxes(2, 0)
-    image = (np.clip(image * 10_000 * (65_553/10_000), 0, 65535)).astype(np.uint16)
-    print(np.mean(image))
 
+    image = np.clip(image*65_535, 0, 65_535).astype(np.uint16)
+    
     with rio.open(
         path,
         "w",
@@ -58,7 +58,6 @@ y = torch.load(argv[2], map_location="cpu")
 x = torch.unsqueeze(y, dim=0)
 
 x = x.float() / 10_000
-print(torch.mean(x))
 
 model = Ripple()
 
@@ -67,7 +66,5 @@ model.load_state_dict(torch.load(argv[1], map_location="cpu"))
 model.eval()
 with torch.no_grad():
     img = model(x)
-
-print(torch.mean(img))
 
 save_image(argv[3], img)
