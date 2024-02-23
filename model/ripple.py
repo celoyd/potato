@@ -20,8 +20,6 @@ unshuf2 = PixelUnshuffle(4).cuda()
 c = Mish()
 
 n = 96
-# m = int(n * 1.5)
-
 
 def exists(x):
     return x is not None
@@ -71,7 +69,7 @@ class WaveUpDWT(nn.Module):
             "b (c f) h w -> b c f h w", f=3, c=out_count
         )
 
-        self.remap1 = nn.Conv2d(in_count, out_count * 4, 3, padding=1)
+        self.remap1 = nn.Conv2d(in_count, out_count * 4, 3, padding=1, padding_mode='reflect')
         self.nl = c
 
     def forward(self, x):
@@ -176,9 +174,9 @@ class Ya(nn.Module):
 
         self.norm = nn.GroupNorm(4, out_depth)
 
-        self.A = WSConv2d(in_depth, out_depth, 3, groups=4, padding=1)
+        self.A = WSConv2d(in_depth, out_depth, 3, groups=4, padding=1, padding_mode='reflect')
         self.B = nn.Conv2d(out_depth, out_depth, 1, padding=0)
-        self.C = WSConv2d(out_depth, out_depth, 3, groups=4, padding=1)
+        self.C = WSConv2d(out_depth, out_depth, 3, groups=4, padding=1, padding_mode='reflect')
         self.D = nn.Conv2d(out_depth, out_depth, 1, padding=0)
 
     def forward(self, x):
@@ -235,11 +233,12 @@ class Ripple(nn.Module):
         self.t2 = Ya(n, n)
         self.t3 = Ya(n, n)
         self.qbu = WaveUpDWT(n, n // 2)
-        # self.joiner = Join(n)
+
         self.hb = Ya(n, n // 2)
         self.hbu = WaveUpDWT(n // 2, 3)
 
     def forward(self, x):
+        x = x - 0.15
         pan = shuf2(x[:, :16])
         mul = x[:, 16:]
 
