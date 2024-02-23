@@ -27,20 +27,15 @@ from model.ripple import shuf2, unshuf2
 
 mul_to_xyz_matrix = torch.tensor(
     [
-        # [8.35506176e01, 8.42404221e01, 2.83735942e01],
-        [9.89656530e00, 1.32771282e00, 5.34559899e01],
-        [5.82503300e00, 1.21648105e01, 4.37653106e01],
-        [2.71886417e01, 5.54033277e01, 1.21026961e00],
-        [4.03660822e01, 2.38240160e01, 1.46172385e-03],
-        [1.37345382e01, 5.58704421e00, 8.61980334e-05],
-        [1.08168179e-01, 4.14433960e-02, 3.48605595e-05],
-        [1.23758936e-03, 6.31345126e-04, 2.19601225e-04],
-        [8.64065915e-05, 1.01887547e-04, 7.72758674e-05],
+        [9.0677e-02, 0.0000e00, 4.0220e-01],
+        [1.1873e-01, 1.5157e-01, 7.5022e-01],
+        [2.0263e-01, 5.8714e-01, 0.0000e00],
+        [5.0440e-01, 2.9138e-01, 1.7287e-04],
+        [8.7978e-02, 2.7045e-02, 7.2419e-07],
+        [0.0000e00, 3.2608e-04, 0.0000e00],
+        [1.0887e-04, 1.7025e-04, 0.0000e00],
+        [8.0838e-05, 5.0579e-05, 0.0000e00],
     ]
-)
-
-mul_to_xyz_reweighted = mul_to_xyz_matrix * torch.tensor(
-    [[0.5364], [0.5098], [0.5101], [0.5243], [0.5283], [0.5288], [0.5225], [0.4860]]
 )
 
 
@@ -73,11 +68,11 @@ def xyz_to_lab(xyz):
 
 
 def mul_to_xyz(mul):
-    return (mul @ mul_to_xyz_matrix) / 100.0
+    return mul @ mul_to_xyz_matrix
 
 
 def mul_to_lab(mul):
-    xyz = torch.einsum("rhw, rx -> xhw", mul, mul_to_xyz_reweighted) / 100
+    xyz = torch.einsum("rhw, rx -> xhw", mul, mul_to_xyz_matrix)
     lms = torch.einsum("xhw, mx -> mhw", xyz, xyz_to_oklab_m1)
     lms = safe_pow(lms, 1 / 3)
     oklab = torch.einsum("mhw, lm -> lhw", lms, xyz_to_oklab_m2)
@@ -92,11 +87,11 @@ l1_criterion = nn.L1Loss(reduction="mean")
 dtcwt = DTCWTForward(J=3, biort="near_sym_b", qshift="qshift_b").cuda()
 
 
-def big_pyramid_loss(y, ŷ, wt="db8", chroma_weight=4, highres_weight=2):
+def big_pyramid_loss(y, ŷ, wt="db8", chroma_weight=8, highres_weight=2):
     sum = torch.tensor(0.0, device=y.device)
 
-    y[:, 1:] *= chroma_weight
-    ŷ[:, 1:] *= chroma_weight
+    # y[:, 1:] *= chroma_weight
+    # ŷ[:, 1:] *= chroma_weight
 
     yl, yh = dtcwt(y)
     ŷl, ŷh = dtcwt(ŷ)
@@ -167,7 +162,9 @@ class Chipper(Dataset):
         y = y.float() / 10_000
 
         pan = cheap_half(shuf2(y[:16]))
+        # pan = shuf2(y[:16])
         mul = cheap_half(y[16:])
+        # mul = y[16:]
 
         rots = int(torch.rand((1,)) * 4)
 
@@ -210,7 +207,7 @@ logical_batch_size = 64
 loader_params = {
     "batch_size": physical_batch_size,
     "shuffle": True,
-    "num_workers": 6,
+    "num_workers": 0,
     "pin_memory": True,
 }
 
@@ -234,11 +231,11 @@ testloader = DataLoader(Test, **loader_params)
 @click.command()
 @click.option("--session", default="space_heater", help="Name of training session")
 @click.option("--load-epoch", default=0, help="Completed epoch to start from.")
-@click.option("--lr", default=2e-4, help="Learning rate.")
+@click.option("--lr", default=5e-4, help="Learning rate.")
 @click.option("--epochs", default=320, help="Epochs to train for.")
 def train(session, load_epoch, lr, epochs):
 
-    device = torch.device("cuda:0") # FIXME
+    device = torch.device("cuda:0")  # FIXME
     te = 0
 
     gen = Ripple().cuda()
@@ -248,8 +245,11 @@ def train(session, load_epoch, lr, epochs):
     weight_path = f"weights/{session}-gen-{load_epoch}.pt"
     opt_path = f"weights/{session}-opt-{load_epoch}.pt"
 
-    gen.load_state_dict(torch.load(weight_path))
-    opt.load_state_dict(torch.load(opt_path))
+    try:
+        gen.load_state_dict(torch.load(weight_path))
+        opt.load_state_dict(torch.load(opt_path))
+    except:
+        pass
 
     batch_counter = 0
 
@@ -268,7 +268,7 @@ def train(session, load_epoch, lr, epochs):
                 gen.train()
                 ŷ = gen(x)
 
-                simple_loss = l1_criterion(y, ŷ) * 10
+                simple_loss = l2_criterion(y, ŷ) * 100
                 wave_loss = big_pyramid_loss(y, ŷ) * 100
                 loss = wave_loss + simple_loss
 
@@ -310,7 +310,7 @@ def train(session, load_epoch, lr, epochs):
                         gen.eval()
                         ŷ = gen(x)
 
-                        simple_test_loss = l1_criterion(y, ŷ) * 10
+                        simple_test_loss = l2_criterion(y, ŷ) * 100
                         wave_test_loss = big_pyramid_loss(y, ŷ) * 100
 
                         test_loss = wave_test_loss + simple_test_loss
