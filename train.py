@@ -188,8 +188,9 @@ class Chipper(Dataset):
         mul_down = mul_down * m_noise(mul_down.shape, scale=1 / 500) + a_noise(
             mul_down.shape, scale=1 / 1_000
         )
-        pan_down = pan_down * m_noise(pan_down.shape, scale=1 / 2_500) + a_noise(
-            pan_down.shape, scale=1 / 10_000
+
+        pan_down = pan_down * m_noise(pan_down.shape, scale=1 / 1_000) + a_noise(
+            pan_down.shape, scale=1 / 2_500
         )
 
         x = torch.squeeze(torch.cat([pan_down, mul_down], dim=1))
