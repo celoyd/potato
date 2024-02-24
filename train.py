@@ -170,9 +170,7 @@ class Chipper(Dataset):
         y = y.float() / 10_000
 
         pan = cheap_half(shuf2(y[:16]))
-        # pan = shuf2(y[:16])
         mul = cheap_half(y[16:])
-        # mul = y[16:]
 
         rots = int(torch.rand((1,)) * 4)
 
@@ -181,22 +179,11 @@ class Chipper(Dataset):
 
 
         pan_down = cheap_half(cheap_half(pan)).unsqueeze(0)
-        # pan_down = F.interpolate(
-        #     torch.unsqueeze(pan, dim=0),
-        #     scale_factor=(1 / 4, 1 / 4),
-        #     mode="area",
-        # )
         pan_down = unshuf2(pan_down)
 
         mul_down = cheap_half(cheap_half(mul)).unsqueeze(0)
-
         mul_down = self.blur(mul_down)
 
-        # mul_down = F.interpolate(
-        #     torch.unsqueeze(mul, dim=0),
-        #     scale_factor=(1 / 4, 1 / 4),
-        #     mode="area"
-        # )
 
         mul_down = mul_down * m_noise(mul_down.shape, scale=1 / 500) + a_noise(
             mul_down.shape, scale=1 / 1_000
