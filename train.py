@@ -133,25 +133,33 @@ class Chipper(Dataset):
     def __init__(self, length: int, offset: int = 0):
         self.length = length
         self.offset = offset
-        self.modes = ("nearest", "bilinear", "bicubic")
 
-        self.gcs = ((5, 1.6), (5, 0.8), (5, 0.4), (5, 0.2), (5, 0.1))  ###
-        self.gaussians = [GaussianBlur(a, b) for a, b in self.gcs]  ###
+        self.id_kernel = torch.tensor([[[[0, 0, 0], [0, 1, 0], [0, 0, 0]]]]).float()
 
-    def blur(self, x):
-        std, mean = torch.std_mean(x)
+    def a_noisy_kernel(self, std=0.1):
+        noise = a_noise(self.id_kernel.shape, std)
+        noisy = self.id_kernel + noise
+        noisy /= noisy.sum()
+        noisy = noisy.expand(8, -1, -1, -1)
+        return noisy
 
-        g = torch.randint(0, len(self.gaussians), (1,))
+    def eight_noisy_kernels(self, std=0.1):
+        identities = self.id_kernel.expand(8, -1, -1, -1)
+        noise = a_noise(identities.shape, std)
+        noisy = identities + noise
+        sums = noisy.sum(dim=(-1, -2))
+        noisy /= sums.view(8, 1, 1, 1)
+        return noisy
 
-        weight = torch.clamp(torch.normal(0, 0.25, (1,)), -0.5, 0.5)
+    def blur(self, x, all_std=0.1, each_std=0.1):
+        all_k = self.a_noisy_kernel(all_std)
+        x = F.conv2d(x, all_k, groups=8, padding="same")
 
-        blurred = self.gaussians[g](x)  # x.unsqueeze(0)).squeeze(0)
+        each_k = self.eight_noisy_kernels(each_std)
+        x = F.conv2d(x, each_k, groups=8, padding="same")
 
-        blurred = (x + blurred * weight) / (1 + weight)
-        blurred = (blurred - blurred.mean()) / blurred.std()
-        blurred = (blurred * std) + mean
+        return x
 
-        return blurred
 
     def __len__(self) -> int:
         return self.length
@@ -180,11 +188,10 @@ class Chipper(Dataset):
         )
         pan_down = unshuf2(pan_down)
 
-        mode = self.modes[index % len(self.modes)]
         mul_down = F.interpolate(
             torch.unsqueeze(mul, dim=0),
             scale_factor=(1 / 4, 1 / 4),
-            mode=mode,  # area
+            mode="area"
         )
 
         mul_down = mul_down * m_noise(mul_down.shape, scale=1 / 500) + a_noise(
