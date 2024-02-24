@@ -179,20 +179,24 @@ class Chipper(Dataset):
         pan = torch.rot90(pan, dims=(-1, -2), k=rots)
         mul = torch.rot90(mul, dims=(-1, -2), k=rots)
 
-        mul = self.blur(mul)
 
-        pan_down = F.interpolate(
-            torch.unsqueeze(pan, dim=0),
-            scale_factor=(1 / 4, 1 / 4),
-            mode="area",
-        )
+        pan_down = cheap_half(cheap_half(pan)).unsqueeze(0)
+        # pan_down = F.interpolate(
+        #     torch.unsqueeze(pan, dim=0),
+        #     scale_factor=(1 / 4, 1 / 4),
+        #     mode="area",
+        # )
         pan_down = unshuf2(pan_down)
 
-        mul_down = F.interpolate(
-            torch.unsqueeze(mul, dim=0),
-            scale_factor=(1 / 4, 1 / 4),
-            mode="area"
-        )
+        mul_down = cheap_half(cheap_half(mul)).unsqueeze(0)
+
+        mul_down = self.blur(mul_down)
+
+        # mul_down = F.interpolate(
+        #     torch.unsqueeze(mul, dim=0),
+        #     scale_factor=(1 / 4, 1 / 4),
+        #     mode="area"
+        # )
 
         mul_down = mul_down * m_noise(mul_down.shape, scale=1 / 500) + a_noise(
             mul_down.shape, scale=1 / 1_000
