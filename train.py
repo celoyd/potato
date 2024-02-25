@@ -37,12 +37,16 @@ def saturation_loss(y, ŷ):
     ŷsat = torch.sqrt(torch.square(ŷ[:, 0]) + torch.square(ŷ[:, 1]))
     return torch.mean(torch.abs(ysat - ŷsat))
 
-# def oklab_Δ_Euclidean(y, ŷ):
-#     diff = y - ŷ
-#     diff = torch.square(diff)
-#     diff = torch.sum()
 
-def oklab_ΔEOK(y, ŷ):
+def ΔEuOK(y, ŷ):
+    return torch.sqrt(
+        (torch.square(y[:, 0]) - torch.square(y[:, 0]))
+        + (torch.square(y[:, 1]) - torch.square(y[:, 1]))
+        + (torch.square(y[:, 2]) - torch.square(y[:, 2]))
+    ).mean()
+
+
+def ΔEOK(y, ŷ):
     # https://github.com/svgeesus/svgeesus.github.io/blob/master/Color/OKLab-notes.md#color-difference-metric
     ΔL = y[:, 0] - ŷ[:, 0]
     C1 = torch.sqrt(torch.square(y[:, 1]) + torch.square(y[:, 2]))
@@ -53,24 +57,21 @@ def oklab_ΔEOK(y, ŷ):
     ΔH = torch.sqrt(torch.square(Δa) + torch.square(Δb) + torch.square(ΔC))
     return torch.sqrt(torch.square(ΔL) + torch.square(ΔC) + torch.square(ΔH)).mean()
 
-def big_pyramid_loss(y, ŷ, wt="db8", chroma_weight=8, highres_weight=2):
+
+def big_pyramid_loss(y, ŷ, wt="db8"):
     sum = torch.tensor(0.0, device=y.device)
 
-    # y[:, 1:] *= chroma_weight
-    # ŷ[:, 1:] *= chroma_weight
-
-    yl, yh = dtcwt(y)
-    ŷl, ŷh = dtcwt(ŷ)
-
-    sum = torch.sum(torch.abs(yl - ŷl))
+    _, yh = dtcwt(y)
+    _, ŷh = dtcwt(ŷ)
 
     for lev in range(len(yh)):
-        sum += torch.sum(torch.abs(yh[lev] - ŷh[lev])) * highres_weight
+        sum += torch.sum(torch.abs(yh[lev] - ŷh[lev]))
 
     return sum / torch.prod(torch.tensor(y.shape))
 
 
 ### The chip loading part
+
 
 class ChipReader(Dataset):
     def __init__(self, chip_dir, length, offset=0):
@@ -113,6 +114,7 @@ testloader = DataLoader(Test, **loader_params)
 
 ### The training part
 
+
 @click.command()
 @click.option("--session", default="space_heater", help="Name of training session")
 @click.option("--load-epoch", default=0, help="Completed epoch to start from.")
@@ -153,11 +155,9 @@ def train(session, load_epoch, lr, epochs):
                 gen.train()
                 ŷ = gen(x)
 
-                #simple_loss = l2_criterion(y, ŷ) * 500
-                ok_loss = oklab_ΔEOK(y, ŷ) * 100
-                wave_loss = big_pyramid_loss(y, ŷ) * 100
-                sat_loss = saturation_loss(y, ŷ) * 50
-                loss = wave_loss + sat_loss + ok_loss # simple_loss
+                ok_loss = ΔEOK(y, ŷ) * 100
+                wave_loss = big_pyramid_loss(y, ŷ) * 250
+                loss = wave_loss + ok_loss
 
                 loss.backward()
                 losses.append(float(loss.item()))
@@ -197,11 +197,10 @@ def train(session, load_epoch, lr, epochs):
                         gen.eval()
                         ŷ = gen(x)
 
-                        ok_test_loss = oklab_ΔEOK(y, ŷ) * 100
-                        #simple_test_loss = l2_criterion(y, ŷ) * 500
-                        wave_test_loss = big_pyramid_loss(y, ŷ) * 100
-                        sat_test_loss = saturation_loss(y, ŷ) * 50
-                        test_loss = wave_test_loss + sat_test_loss + ok_test_loss # simple_test_loss
+                        ok_test_loss = ΔEOK(y, ŷ) * 100
+                        wave_test_loss = big_pyramid_loss(y, ŷ) * 250
+                        test_loss = wave_test_loss + ok_test_loss
+                        
 
                         testlosses.append(float(test_loss.item()))
 
@@ -209,6 +208,7 @@ def train(session, load_epoch, lr, epochs):
                 log.flush()
 
             te += 1
+
 
 log = SummaryWriter()
 
