@@ -32,6 +32,27 @@ l1_criterion = nn.L1Loss(reduction="mean")
 dtcwt = DTCWTForward(J=3, biort="near_sym_b", qshift="qshift_b").cuda()
 
 
+def saturation_loss(y, ŷ):
+    ysat = torch.sqrt(torch.square(y[:, 0]) + torch.square(y[:, 1]))
+    ŷsat = torch.sqrt(torch.square(ŷ[:, 0]) + torch.square(ŷ[:, 1]))
+    return torch.mean(torch.abs(ysat - ŷsat))
+
+# def oklab_Δ_Euclidean(y, ŷ):
+#     diff = y - ŷ
+#     diff = torch.square(diff)
+#     diff = torch.sum()
+
+def oklab_ΔEOK(y, ŷ):
+    # https://github.com/svgeesus/svgeesus.github.io/blob/master/Color/OKLab-notes.md#color-difference-metric
+    ΔL = y[:, 0] - ŷ[:, 0]
+    C1 = torch.sqrt(torch.square(y[:, 1]) + torch.square(y[:, 2]))
+    C2 = torch.sqrt(torch.square(ŷ[:, 1]) + torch.square(ŷ[:, 2]))
+    ΔC = C1 - C2
+    Δa = y[:, 1] - ŷ[:, 1]
+    Δb = y[:, 2] - ŷ[:, 2]
+    ΔH = torch.sqrt(torch.square(Δa) + torch.square(Δb) + torch.square(ΔC))
+    return torch.sqrt(torch.square(ΔL) + torch.square(ΔC) + torch.square(ΔH)).mean()
+
 def big_pyramid_loss(y, ŷ, wt="db8", chroma_weight=8, highres_weight=2):
     sum = torch.tensor(0.0, device=y.device)
 
@@ -71,11 +92,11 @@ logical_batch_size = 32
 loader_params = {
     "batch_size": physical_batch_size,
     "shuffle": True,
-    "num_workers": 0,
+    "num_workers": 4,
     "pin_memory": True,
 }
 
-trainlen = 2 * 1024
+trainlen = 3 * 1024
 testlen = 64
 
 Train = ChipReader(
@@ -132,9 +153,11 @@ def train(session, load_epoch, lr, epochs):
                 gen.train()
                 ŷ = gen(x)
 
-                simple_loss = l2_criterion(y, ŷ) * 100
+                #simple_loss = l2_criterion(y, ŷ) * 500
+                ok_loss = oklab_ΔEOK(y, ŷ) * 100
                 wave_loss = big_pyramid_loss(y, ŷ) * 100
-                loss = wave_loss + simple_loss
+                sat_loss = saturation_loss(y, ŷ) * 50
+                loss = wave_loss + sat_loss + ok_loss # simple_loss
 
                 loss.backward()
                 losses.append(float(loss.item()))
@@ -174,10 +197,11 @@ def train(session, load_epoch, lr, epochs):
                         gen.eval()
                         ŷ = gen(x)
 
-                        simple_test_loss = l2_criterion(y, ŷ) * 100
+                        ok_test_loss = oklab_ΔEOK(y, ŷ) * 100
+                        #simple_test_loss = l2_criterion(y, ŷ) * 500
                         wave_test_loss = big_pyramid_loss(y, ŷ) * 100
-
-                        test_loss = wave_test_loss + simple_test_loss
+                        sat_test_loss = saturation_loss(y, ŷ) * 50
+                        test_loss = wave_test_loss + sat_test_loss + ok_test_loss # simple_test_loss
 
                         testlosses.append(float(test_loss.item()))
 
@@ -185,8 +209,6 @@ def train(session, load_epoch, lr, epochs):
                 log.flush()
 
             te += 1
-
-torch.backends.cudnn.benchmark = True
 
 log = SummaryWriter()
 
