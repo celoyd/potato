@@ -38,16 +38,26 @@ def saturation_loss(y, ŷ):
     return torch.mean(torch.abs(ysat - ŷsat))
 
 
-def ΔEuOK(y, ŷ):
+def ΔEuOK(y, ŷ, a_weight=1.0, b_weight=1.0):
+    """
+    Ordinary 3D distance in the oklab space.
+
+    Oklab theoretically has a JND (just-noticeable difference) of 0.02.
+    As a loss function, this means that if each pixel is _individually_
+    just noticeably wrong before any scaling or tonemapping, the loss
+    function could be scaled up by 50× to return 1.
+    """
+
     return torch.sqrt(
-        (torch.square(y[:, 0]) - torch.square(y[:, 0]))
-        + (torch.square(y[:, 1]) - torch.square(y[:, 1]))
-        + (torch.square(y[:, 2]) - torch.square(y[:, 2]))
+        torch.square(y[:, 0] - y[:, 0])
+        + torch.square((y[:, 1] - y[:, 1]) * a_weight)
+        + torch.square((y[:, 2] - y[:, 2]) * b_weight)
     ).mean()
 
 
-def ΔEOK(y, ŷ):
+def ΔEOK(y, ŷ, c_weight=1.0, h_weight=1.0):
     # https://github.com/svgeesus/svgeesus.github.io/blob/master/Color/OKLab-notes.md#color-difference-metric
+    # For oklab notes please see ΔEuOK.
     ΔL = y[:, 0] - ŷ[:, 0]
     C1 = torch.sqrt(torch.square(y[:, 1]) + torch.square(y[:, 2]))
     C2 = torch.sqrt(torch.square(ŷ[:, 1]) + torch.square(ŷ[:, 2]))
@@ -55,7 +65,9 @@ def ΔEOK(y, ŷ):
     Δa = y[:, 1] - ŷ[:, 1]
     Δb = y[:, 2] - ŷ[:, 2]
     ΔH = torch.sqrt(torch.square(Δa) + torch.square(Δb) + torch.square(ΔC))
-    return torch.sqrt(torch.square(ΔL) + torch.square(ΔC) + torch.square(ΔH)).mean()
+    return torch.sqrt(
+        torch.square(ΔL) + torch.square(ΔC * c_weight) + torch.square(ΔH * h_weight)
+    ).mean()
 
 
 def big_pyramid_loss(y, ŷ, wt="db8"):
@@ -156,7 +168,7 @@ def train(session, load_epoch, lr, epochs):
                 ŷ = gen(x)
 
                 ok_loss = ΔEOK(y, ŷ) * 100
-                wave_loss = big_pyramid_loss(y, ŷ) * 250
+                wave_loss = big_pyramid_loss(y, ŷ) * 100
                 loss = wave_loss + ok_loss
 
                 loss.backward()
@@ -198,9 +210,8 @@ def train(session, load_epoch, lr, epochs):
                         ŷ = gen(x)
 
                         ok_test_loss = ΔEOK(y, ŷ) * 100
-                        wave_test_loss = big_pyramid_loss(y, ŷ) * 250
+                        wave_test_loss = big_pyramid_loss(y, ŷ) * 100
                         test_loss = wave_test_loss + ok_test_loss
-                        
 
                         testlosses.append(float(test_loss.item()))
 
