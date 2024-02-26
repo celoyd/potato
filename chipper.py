@@ -5,8 +5,8 @@ from pathlib import Path
 
 import sys
 
-# from sys import stdout, stdout
-# import numpy as np
+from ripple.color import BandsToOklab
+from ripple.util import tile, pile
 
 import rasterio as rio
 import torch
@@ -24,91 +24,12 @@ from pyproj import Transformer
 phi = (1 + 5**0.5) / 2
 
 
-# PixelShuffle operations by other names:
-def pile(x, factor):
-    return rearrange(
-        x, "... c (h f0) (w f1) -> ... (c f0 f1) h w", f0=factor, f1=factor
-    )
-
-
-def tile(x, factor):
-    return rearrange(
-        x, "... (c f0 f1) h w -> ... c (h f0) (w f1)", f0=factor, f1=factor
-    )
-
-
-def cheap_half(x):
-    # Fast 2× downsample
-    return (
-        x[..., 0::2, 0::2]
-        + x[..., 0::2, 1::2]
-        + x[..., 1::2, 0::2]
-        + x[..., 1::2, 1::2]
-    ) / 4.0
-
-
-# Todo: factor this color stuff into its own mini-library
-
-mul_to_xyz_matrix = torch.tensor(
-    [
-        [9.0677e-02, 0.0000e00, 4.0220e-01],
-        [1.1873e-01, 1.5157e-01, 7.5022e-01],
-        [2.0263e-01, 5.8714e-01, 0.0000e00],
-        [5.0440e-01, 2.9138e-01, 1.7287e-04],
-        [8.7978e-02, 2.7045e-02, 7.2419e-07],
-        [0.0000e00, 3.2608e-04, 0.0000e00],
-        [1.0887e-04, 1.7025e-04, 0.0000e00],
-        [8.0838e-05, 5.0579e-05, 0.0000e00],
-    ]
-)
-
-
-xyz_to_oklab_m1 = torch.tensor(
-    [
-        [0.8189330101, 0.3618667424, -0.1288597137],
-        [0.0329845436, 0.9293118715, 0.0361456387],
-        [0.0482003018, 0.2643662691, 0.6338517070],
-    ]
-)
-
-xyz_to_oklab_m2 = torch.tensor(
-    [
-        [0.2104542553, 0.7936177850, -0.0040720468],
-        [1.9779984951, -2.4285922050, 0.4505937099],
-        [0.0259040371, 0.7827717662, -0.8086757660],
-    ]
-)
-
-
 class OldSatellite(Exception):
     pass
 
 
 class TooManyNulls(Exception):
     pass
-
-
-def safe_pow(n, exp):
-    return n.sign() * n.abs().pow(exp)
-
-
-def xyz_to_lab(xyz):
-    lms = xyz_to_oklab_m1 @ xyz
-    lamasa = safe_pow(lms, 1 / 3)
-    Lab = xyz_to_oklab_m2 @ lamasa
-    return Lab
-
-
-def mul_to_xyz(mul):
-    return mul @ mul_to_xyz_matrix
-
-
-def mul_to_lab(mul):
-    xyz = torch.einsum("rhw, rx -> xhw", mul, mul_to_xyz_matrix)
-    lms = torch.einsum("xhw, mx -> mhw", xyz, xyz_to_oklab_m1)
-    lms = safe_pow(lms, 1 / 3)
-    oklab = torch.einsum("mhw, lm -> lhw", lms, xyz_to_oklab_m2)
-    return oklab
 
 
 class R2:
@@ -396,7 +317,9 @@ def link_chips(srcs, dst):
         all_paths += list(src.glob("*.pt"))
 
     total = len(all_paths)
-    logging.info(f"Preparing to link {total} files from {tuple(str(s) for s in srcs)} to {dst}.")
+    logging.info(
+        f"Preparing to link {total} files from {tuple(str(s) for s in srcs)} to {dst}."
+    )
 
     for p in range(total):
         if p > 0 and p % 1000 == 0:
@@ -411,9 +334,7 @@ def link_chips(srcs, dst):
         try:
             pathlib.os.symlink(pt, link)
         except FileExistsError:
-            logging.critical(
-                f"{link} already exists. Will not delete or overwrite."
-            )
+            logging.critical(f"{link} already exists. Will not delete or overwrite.")
             sys.exit()
 
         all_paths = all_paths[:n] + all_paths[n + 1 :]
