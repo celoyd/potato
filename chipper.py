@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 
 from ripple.color import BandsToOklab
-from ripple.util import tile, pile
+from ripple.util import tile, pile, cheap_half
 
 import rasterio as rio
 import torch
@@ -132,6 +132,8 @@ class Chipper(Dataset):
 
         self.id_kernel = torch.tensor([[[[0, 0, 0], [0, 1, 0], [0, 0, 0]]]]).float()
 
+        self.oklab = BandsToOklab()
+
         for ard_root in ard_roots:
             for metadata in ard_root.glob("acquisition_collections/*.json"):
                 with open(metadata) as md:
@@ -164,15 +166,6 @@ class Chipper(Dataset):
     def a_noise(self, shape, scale):
         # Additive noise centers on 0
         return torch.normal(0.0, scale, shape)
-
-    def cheap_half(self, x):
-        # Fast 2× downsample
-        return (
-            x[..., 0::2, 0::2]
-            + x[..., 0::2, 1::2]
-            + x[..., 1::2, 0::2]
-            + x[..., 1::2, 1::2]
-        ) / 4.0
 
     def a_noisy_kernel(self, std=0.1):
         noise = self.a_noise(self.id_kernel.shape, std)
@@ -226,7 +219,7 @@ class Chipper(Dataset):
 
         x = torch.squeeze(torch.cat([pan_down, mul_down], dim=1))
 
-        y = mul_to_lab(mul)
+        y = self.oklab(mul)
 
         return x, y
 
