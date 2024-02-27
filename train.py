@@ -18,8 +18,8 @@ from einops import rearrange
 import click
 from tqdm import tqdm
 
-from model.ripple import Ripple
-from model.ripple import shuf2, unshuf2
+from ripple.model import Ripple
+from ripple.util import tile, pile
 
 from pathlib import Path
 
@@ -49,9 +49,9 @@ def ΔEuOK(y, ŷ, a_weight=1.0, b_weight=1.0):
     """
 
     return torch.sqrt(
-        torch.square(y[:, 0] - y[:, 0])
-        + torch.square((y[:, 1] - y[:, 1]) * a_weight)
-        + torch.square((y[:, 2] - y[:, 2]) * b_weight)
+        torch.square(y[:, 0] - ŷ[:, 0])
+        + torch.square(y[:, 1] - ŷ[:, 1]) * a_weight
+        + torch.square(y[:, 2] - ŷ[:, 2]) * b_weight
     ).mean()
 
 
@@ -113,12 +113,13 @@ trainlen = 3 * 1024
 testlen = 64
 
 Train = ChipReader(
-    "chips2",
+    #"/media/ch/salp/lc4/pools/sudan/",
+    "chips5",
     trainlen,
     0,
 )
 
-Test = ChipReader("chips2", testlen, trainlen)
+Test = ChipReader("/media/ch/salp/lc5/pools/sudan/", testlen, trainlen)
 
 trainloader = DataLoader(Train, **loader_params)
 testloader = DataLoader(Test, **loader_params)
@@ -167,8 +168,8 @@ def train(session, load_epoch, lr, epochs):
                 gen.train()
                 ŷ = gen(x)
 
-                ok_loss = ΔEOK(y, ŷ) * 100
-                wave_loss = big_pyramid_loss(y, ŷ) * 100
+                ok_loss = ΔEuOK(y, ŷ) * 100
+                wave_loss = big_pyramid_loss(y, ŷ) * 250
                 loss = wave_loss + ok_loss
 
                 loss.backward()
@@ -209,7 +210,7 @@ def train(session, load_epoch, lr, epochs):
                         gen.eval()
                         ŷ = gen(x)
 
-                        ok_test_loss = ΔEOK(y, ŷ) * 100
+                        ok_test_loss = ΔEOK(y, ŷ, c_weight=4, h_weight=4) * 100
                         wave_test_loss = big_pyramid_loss(y, ŷ) * 100
                         test_loss = wave_test_loss + ok_test_loss
 
