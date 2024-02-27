@@ -31,16 +31,12 @@ def default(val, d):
 class WaveDownDWT(nn.Module):
     def __init__(self, in_count, out_count):
         super().__init__()
-        self.dtx = DWTForward(J=1, wave="db1", mode="zero")
+        self.dtx = DWTForward(J=1, wave='db1', mode='zero')
         self.treelevel_to_channels = Rearrange("b c f h w -> b (f c) h w")
 
-        self.remap1 = nn.Conv2d(
-            4 * in_count, (4 * in_count + out_count) // 2, 1, padding=0
-        )
+        self.remap1 = nn.Conv2d(4*in_count, (4*in_count + out_count)//2, 1)
         self.nl = c
-        self.remap2 = nn.Conv2d(
-            (4 * in_count + out_count) // 2, out_count, 1, padding=0
-        )
+        self.remap2 = nn.Conv2d((4*in_count + out_count)//2, out_count, 1)
 
     def forward(self, x):
 
@@ -61,84 +57,25 @@ class WaveUpDWT(nn.Module):
         super().__init__()
 
         self.out_count = out_count
-        self.utx = DWTInverse(wave="db1", mode="zero")
+        self.utx = DWTInverse(wave='db1', mode='zero')
         self.channels_to_treelevel = Rearrange(
-            "b (f c) h w -> b c f h w", f=3, c=out_count
+            "b (c f) h w -> b c f h w", f=3, c=out_count
         )
 
-        self.remap1 = nn.Conv2d(in_count, (in_count + 4 * out_count) // 2, 1)
+        self.remap1 = nn.Conv2d(in_count, out_count * 4, 3, padding=1, padding_mode="reflect")
+
         self.nl = c
-        self.remap2 = nn.Conv2d((in_count + 4 * out_count) // 2, out_count * 4, 1)
 
     def forward(self, x):
-        x = self.remap1(x)
         x = self.nl(x)
-        x = self.remap2(x)
+        x = self.remap1(x)
 
-        Yl = x[:, : self.out_count]
-        Yh = x[:, self.out_count :]
-        Yh = self.channels_to_treelevel(Yh)
+        Yl = x[:, :self.out_count] * 4
+        Yh = self.channels_to_treelevel(x[:, self.out_count:])
+
         x = self.utx((Yl, [Yh]))
 
         return x
-
-
-"""
-class WaveUpDTCWT(nn.Module):
-    def __init__(self, in_count, out_count):
-        super().__init__()
-
-        self.out_count = out_count
-        self.utx = DTCWTInverse(biort='near_sym_b', qshift='qshift_b')
-
-        self.soft = nn.Upsample(scale_factor=2, mode='bicubic')
-
-        self.channels_to_treelevel = Rearrange(
-            "b (f c p) h w -> b c f h w p", f=6, c=out_count, p=2
-        )
-
-        self.remap1 = nn.Conv2d(in_count, (in_count + out_count * 13)//2, 1, padding=0)
-        self.nl = c
-        self.remap2 = nn.Conv2d((in_count + out_count * 13)//2, out_count * 13, 1, padding=0)
-
-    def forward(self, x):
-        x = self.remap1(x)
-        x = self.nl(x)
-        x = self.remap2(x)
-
-        Yl = self.soft(x[:, :self.out_count])
-        
-        Yh = x[:, self.out_count:]
-        
-        Yh = self.channels_to_treelevel(Yh)
-        x = self.utx((Yl, [Yh]))
-
-        return x
-
-class WaveDownDTCWT(nn.Module):
-    def __init__(self, in_count, out_count):
-        super().__init__()
-        self.dtx = DTCWTForward(J=1, biort="near_sym_b", qshift="qshift_b")
-        self.treelevel_to_channels = Rearrange("b c f h w p -> b (f c p) h w")
-        # self.pad = nn.ZeroPad2d(1)
-
-        self.remap1 = nn.Conv2d(in_count * 16, (in_count * 16 + out_count)//2, 1, padding=0)
-        self.nl = c
-        self.remap2 = nn.Conv2d((in_count * 16 + out_count)//2, out_count, 1, padding=0)
-
-    def forward(self, x):
-        lr, hr = self.dtx(x)
-        lr = unshuf(lr)
-        hr = self.treelevel_to_channels(hr[0])
-        x = torch.cat([lr, hr], dim=1)
-        # x = self.pad(x)
-
-        # print(f"{lr.shape = }, {hr.shape = }, {x.shape = }")
-        x = self.remap1(x)
-        x = self.nl(x)
-        x = self.remap2(x)
-        return x #.to(dev)
-"""
 
 
 class WSConv2d(nn.Conv2d):
@@ -223,13 +160,12 @@ class Ripple(nn.Module):
 
         self.oklab = BandsToOklab()
 
-        self.pan_to_half = WaveDownDWT(1, 8)
-        self.half1 = Ya(8, 16)
+        self.pan_to_half = WaveDownDWT(1, 16)
+        self.half1 = Ya(16, n//2)
 
-        self.half_to_quarter = WaveDownDWT(16, 64)
+        self.half_to_quarter = WaveDownDWT(n//2, n)
 
-        # quarter is 64, mul is 8, oklab is 3, so all together 75
-        self.quarter_front_join = Join(75, n)
+        self.quarter_front_join = Join(n + 8 + 3, n)
 
         self.quarter_front = Ya(n, n)
         self.quarter_mid = Ya(n, n)
@@ -237,22 +173,21 @@ class Ripple(nn.Module):
 
         self.quarter_end_join = Join(n + 3, n)
 
-        self.quarter_to_half = WaveUpDWT(n, n // 2)
-
-        self.half2 = Ya(16 + n//2, n // 4)
-        self.the_end = WaveUpDWT(n // 4, 3)
+        self.quarter_to_half = WaveUpDWT(n, n//2)
+        self.half2 = Ya(n, n//2)
+        self.the_end = WaveUpDWT(n//2, 3)
 
     def forward(self, x):
         oklab = self.oklab(x[:, 16:])
 
-        x = torch.pow(torch.clamp(x, 1e-9, None), 1 / 3) - 0.5
+        x = torch.pow(torch.clamp(x, 1e-9, None), 1 / 3)
         mul = x[:, 16:]
         pan = tile(x[:, :16], 4)
 
-        x = self.pan_to_half(pan)
-        half = self.half1(x)
+        half1 = self.pan_to_half(pan)
+        half1 = self.half1(half1)
 
-        quarter = self.half_to_quarter(half)
+        quarter = self.half_to_quarter(half1)
         quarter = self.quarter_front_join(concat(quarter, mul, oklab))
 
         quarter = self.quarter_front(quarter)
@@ -261,9 +196,9 @@ class Ripple(nn.Module):
 
         quarter = self.quarter_end_join(concat(quarter, oklab))
 
-        half = concat(half, self.quarter_to_half(quarter))
-        half = self.half2(half)
+        half2 = concat(half1, self.quarter_to_half(quarter))
+        half2 = self.half2(half2)
 
-        the_end = self.the_end(half)
+        the_end = self.the_end(half2)
 
         return the_end
