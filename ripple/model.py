@@ -1,11 +1,8 @@
 import torch
 from torch import nn
 import torch.nn.functional as fn
-from torch.nn import (
-    PixelShuffle,
-    PixelUnshuffle,
-    Mish,
-)
+from torch.nn import Mish
+
 from einops import rearrange, reduce
 from inspect import isfunction
 from functools import partial
@@ -13,13 +10,13 @@ from einops.layers.torch import Rearrange
 
 from pytorch_wavelets import DTCWTForward, DTCWTInverse, DWTInverse, DWTForward
 
-# Todo: move these into model
-shuf2 = PixelShuffle(4).cuda()
-unshuf2 = PixelUnshuffle(4).cuda()
+from ripple.util import pile, tile
+from ripple.color import BandsToOklab
 
 c = Mish()
 
 n = 96
+
 
 def exists(x):
     return x is not None
@@ -66,19 +63,21 @@ class WaveUpDWT(nn.Module):
         self.out_count = out_count
         self.utx = DWTInverse(wave="db1", mode="zero")
         self.channels_to_treelevel = Rearrange(
-            "b (c f) h w -> b c f h w", f=3, c=out_count
+            "b (f c) h w -> b c f h w", f=3, c=out_count
         )
 
-        self.remap1 = nn.Conv2d(in_count, out_count * 4, 3, padding=1, padding_mode='reflect')
+        self.remap1 = nn.Conv2d(in_count, (in_count + 4 * out_count) // 2, 1)
         self.nl = c
+        self.remap2 = nn.Conv2d((in_count + 4 * out_count) // 2, out_count * 4, 1)
 
     def forward(self, x):
-        x = self.nl(x)
         x = self.remap1(x)
+        x = self.nl(x)
+        x = self.remap2(x)
 
-        Yl = x[:, : self.out_count] * 4
-        Yh = self.channels_to_treelevel(x[:, self.out_count :])
-
+        Yl = x[:, : self.out_count]
+        Yh = x[:, self.out_count :]
+        Yh = self.channels_to_treelevel(Yh)
         x = self.utx((Yl, [Yh]))
 
         return x
@@ -174,9 +173,13 @@ class Ya(nn.Module):
 
         self.norm = nn.GroupNorm(4, out_depth)
 
-        self.A = WSConv2d(in_depth, out_depth, 3, groups=4, padding=1, padding_mode='reflect')
+        self.A = WSConv2d(
+            in_depth, out_depth, 3, groups=4, padding=1, padding_mode="reflect"
+        )
         self.B = nn.Conv2d(out_depth, out_depth, 1, padding=0)
-        self.C = WSConv2d(out_depth, out_depth, 3, groups=4, padding=1, padding_mode='reflect')
+        self.C = WSConv2d(
+            out_depth, out_depth, 3, groups=4, padding=1, padding_mode="reflect"
+        )
         self.D = nn.Conv2d(out_depth, out_depth, 1, padding=0)
 
     def forward(self, x):
@@ -201,64 +204,66 @@ class Ya(nn.Module):
 
 
 class Join(nn.Module):
-    def __init__(self, out_depth):
+    # Lightweight non-normalized merging
+    def __init__(self, in_depth, out_depth):
         super().__init__()
-        self.out_depth = out_depth
+        self.mixer = nn.Conv2d(in_depth, out_depth, 1)
 
-    def forward(self, a, b):
-        c = torch.zeros((a.shape[0], self.out_depth, a.shape[2], a.shape[3])).to(
-            a.device
-        )
-        c[:, : a.shape[1]] = a
-        c = torch.flip(c, dims=(1,))
-        c[:, : b.shape[1]] = b
-        return c
+    def forward(self, x):
+        return self.mixer(x)
 
 
-def concat(a, b):
-    return torch.cat([a, b], dim=1)
+def concat(*a):
+    return torch.cat([*a], dim=1)
 
 
 class Ripple(nn.Module):
-    def __init__(self, t_length=16):
-        super(Ripple, self).__init__()
+    def __init__(self):
+        super().__init__()
 
-        self.join = Join(n)
+        self.oklab = BandsToOklab()
 
-        self.hpd = WaveDownDWT(1, 16)
-        self.hp = Ya(16, n // 2)
-        self.qpd = WaveDownDWT(n // 2, n)
-        self.qb = Ya(n, n)
-        self.t = Ya(n, n)
-        self.t2 = Ya(n, n)
-        self.t3 = Ya(n, n)
-        self.qbu = WaveUpDWT(n, n // 2)
+        self.pan_to_half = WaveDownDWT(1, 8)
+        self.half1 = Ya(8, 16)
 
-        self.hb = Ya(n, n // 2)
-        self.hbu = WaveUpDWT(n // 2, 3)
+        self.half_to_quarter = WaveDownDWT(16, 64)
+
+        # quarter is 64, mul is 8, oklab is 3, so all together 75
+        self.quarter_front_join = Join(75, n)
+
+        self.quarter_front = Ya(n, n)
+        self.quarter_mid = Ya(n, n)
+        self.quarter_end = Ya(n, n)
+
+        self.quarter_end_join = Join(n + 3, n)
+
+        self.quarter_to_half = WaveUpDWT(n, n // 2)
+
+        self.half2 = Ya(16 + n//2, n // 4)
+        self.the_end = WaveUpDWT(n // 4, 3)
 
     def forward(self, x):
-        x = x - 0.15
-        pan = shuf2(x[:, :16])
+        oklab = self.oklab(x[:, 16:])
+
+        x = torch.pow(torch.clamp(x, 1e-9, None), 1 / 3) - 0.5
         mul = x[:, 16:]
+        pan = tile(x[:, :16], 4)
 
-        x = self.hpd(pan)
-        hp = self.hp(x)
-        qpd = self.qpd(hp)
+        x = self.pan_to_half(pan)
+        half = self.half1(x)
 
-        qpd[:, :8] = qpd[:, :8] + mul
+        quarter = self.half_to_quarter(half)
+        quarter = self.quarter_front_join(concat(quarter, mul, oklab))
 
-        qb = self.qb(qpd)
-        x = self.t(qb)
-        x = self.t2(x)
-        x = self.t3(x) + qpd
+        quarter = self.quarter_front(quarter)
+        quarter = self.quarter_mid(quarter)
+        quarter = self.quarter_end(quarter)
 
-        x = self.qbu(x)
+        quarter = self.quarter_end_join(concat(quarter, oklab))
 
-        x = concat(x, hp)
+        half = concat(half, self.quarter_to_half(quarter))
+        half = self.half2(half)
 
-        hb = self.hb(x)
-        hb[:, : n // 2] = hb[:, : n // 2] + hp
-        hbu = self.hbu(hb)
+        the_end = self.the_end(half)
 
-        return hbu
+        return the_end
