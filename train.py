@@ -23,13 +23,16 @@ from ripple.util import tile, pile
 
 from pathlib import Path
 
+from GetDevice import getDevice
+
+device = getDevice()
 
 ### The loss part
 
 l2_criterion = nn.MSELoss(reduction="mean")
 l1_criterion = nn.L1Loss(reduction="mean")
 
-dtcwt = DTCWTForward(J=3, biort="near_sym_b", qshift="qshift_b").cuda()
+dtcwt = DTCWTForward(J=3, biort="near_sym_b", qshift="qshift_b").to(device)
 
 
 def saturation_loss(y, ŷ):
@@ -105,21 +108,25 @@ logical_batch_size = 32
 loader_params = {
     "batch_size": physical_batch_size,
     "shuffle": True,
-    "num_workers": 4,
+    "num_workers": 0 if str(device) == 'mps' else 4,
     "pin_memory": True,
 }
 
-trainlen = 3 * 1024
-testlen = 64
+# trainlen = 3 * 1024
+# testlen = 64
+trainlen = 10
+testlen = 10
 
 Train = ChipReader(
     #"/media/ch/salp/lc4/pools/sudan/",
-    "chips5",
+    # "chips5",
+    "chips",
     trainlen,
     0,
 )
 
-Test = ChipReader("/media/ch/salp/lc5/pools/sudan/", testlen, trainlen)
+# Test = ChipReader("/media/ch/salp/lc5/pools/sudan/", testlen, trainlen)
+Test = ChipReader("chips/", testlen, trainlen)
 
 trainloader = DataLoader(Train, **loader_params)
 testloader = DataLoader(Test, **loader_params)
@@ -135,10 +142,9 @@ testloader = DataLoader(Test, **loader_params)
 @click.option("--epochs", default=320, help="Epochs to train for.")
 def train(session, load_epoch, lr, epochs):
 
-    device = torch.device("cuda:0")  # FIXME
     te = 0
 
-    gen = Ripple().cuda()
+    gen = Ripple().to(device)
 
     opt = torch.optim.AdamW(gen.parameters(), lr)
 
