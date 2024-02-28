@@ -318,9 +318,8 @@ def link_chips(srcs, dst):
         if p > 0 and p % 1000 == 0:
             logging.info(f"Completed {p} links.")
 
-        n = int((p * phi)) % len(
-            all_paths
-        )  # arguably random would be better but I feel fancy
+        n = int(p * len(all_paths) * phi) % len(all_paths)
+
         pt = Path(all_paths[n])
         link = Path(dst / f"{p}.pt")
 
