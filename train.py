@@ -121,8 +121,8 @@ def train(
     workers,
 ):
 
-    physical_batch_size = 8 # parameterize
-    logical_batch_size = 32 # parameterize
+    physical_batch_size = 8  # parameterize
+    logical_batch_size = 32  # parameterize
 
     loader_params = {
         "batch_size": physical_batch_size,
@@ -223,7 +223,9 @@ def train(
 
                         testlosses.append(float(test_loss.item()))
 
-                log.add_scalars("loss", {"test": np.mean(np.array(testlosses))}, epoch_counter)
+                log.add_scalars(
+                    "loss", {"test": np.mean(np.array(testlosses))}, epoch_counter
+                )
                 log.flush()
 
             epoch_counter += 1
