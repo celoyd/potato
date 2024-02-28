@@ -38,7 +38,7 @@ def save_image(path, image, norm=True):
             dst.write(image[chan], chan + 1)
 
 
-y = torch.load(argv[2], map_location="cpu")[0]
+y = torch.load(argv[2], map_location="cpu")
 
 x = torch.unsqueeze(y, dim=0)
 
