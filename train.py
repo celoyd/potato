@@ -175,7 +175,7 @@ def train(
                 gen.train()
                 ŷ = gen(x)
 
-                ok_loss = ΔEOK(y, ŷ, c_weight=2.5, h_weight=2.5) * 25
+                ok_loss = ΔEuOK(y, ŷ, a_weight=2, b_weight=2) * 50
                 wave_loss = big_pyramid_loss(y, ŷ) * 250
                 loss = wave_loss + ok_loss
 
