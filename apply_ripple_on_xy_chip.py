@@ -49,6 +49,7 @@ model.load_state_dict(torch.load(argv[1], map_location="cpu"))
 
 model.eval()
 with torch.no_grad():
+    #_, _, img = model(x)
     img = model(x)
 
 diff = (y - img)
