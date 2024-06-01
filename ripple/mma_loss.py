@@ -25,6 +25,7 @@ SOFTWARE.
 '''
 
 import torch
+from torch.nn import functional as F
 
 def get_mma_loss(weight):
 
