@@ -48,10 +48,12 @@ class ChipReader(Dataset):
         x, y = torch.load(self.src / f"{index}.pt")
         return x, y
 
+def oklab_saturation(x):
+    return torch.sqrt(x[:, 1] * x[:, 1] + x[:, 2] * x[:, 2])
 
 def sat_diff(y, ŷ):
-    y_sat = torch.sqrt(y[:, 1] * y[:, 1] + y[:, 2] * y[:, 2])
-    ŷ_sat = torch.sqrt(ŷ[:, 1] * ŷ[:, 1] + ŷ[:, 2] * ŷ[:, 2])
+    y_sat = oklab_saturation(y)
+    ŷ_sat = oklab_saturation(ŷ)
     return torch.mean(torch.abs(y_sat - ŷ_sat))
 
 
@@ -151,6 +153,11 @@ def rfft_texture_loss(y, ŷ):
 
     return diff
 
+def rfft_saturation_loss(y, ŷ):
+    y_sat = oklab_saturation(y)
+    ŷ_sat = oklab_saturation(ŷ)
+    return rfft_texture_loss(y_sat, ŷ_sat)
+
 
 def sampling_equivariant_loss(gen, x, y):
     j_pan = tile(x[:, :16], factor=4)
@@ -221,6 +228,8 @@ def output_losses(y, qŷ, hŷ, d, ŷ):
 
     t_loss = rfft_texture_loss(y, ŷ) * 2.0
 
+    s_loss = rfft_saturation_loss(y, ŷ) * 5.0
+
     ok_loss = ΔEuOK(y, ŷ) * 1.0
 
     hy = cheap_half(y)
@@ -234,7 +243,7 @@ def output_losses(y, qŷ, hŷ, d, ŷ):
     #     + proportional_loss(1 - y[:, 0], 1 - ŷ[:, 0])
     # ) * 5e-5
 
-    return d_loss + t_loss + ok_loss + h_loss + q_loss #+ extremes_loss
+    return d_loss + t_loss + ok_loss + h_loss + q_loss + s_loss #+ extremes_loss
 
 
 ### The training part
@@ -319,7 +328,7 @@ def train(
                 y = y.to(device, non_blocking=True)
 
                 x[:, 16:] = motion_warp(
-                    x[:, 16:], 1 / 128
+                    x[:, 16:], 1 / 96
                 )  # change to a function of shape
 
                 # x[:, 16:] += torch.normal(0, 0.002, x[:, 16:].shape, device=x.device)
@@ -327,8 +336,8 @@ def train(
                 # x[:, :16] += torch.normal(0, 0.002, x[:, :16].shape, device=x.device)
                 # x[:, :16] *= torch.normal(1, 0.001, x[:, :16].shape, device=x.device)
 
-                # x[:, 16:] += torch.normal(0, 0.005, x[:, 16:].shape, device=x.device)
-                # x[:, 16:] *= torch.normal(1, 0.01, x[:, 16:].shape, device=x.device)
+                x[:, 16:] += torch.normal(0, 0.005, x[:, 16:].shape, device=x.device)
+                x[:, 16:] *= torch.normal(1, 0.01, x[:, 16:].shape, device=x.device)
 
                 # x[:, :16] += torch.normal(0, 0.005, x[:, :16].shape, device=x.device)
                 # x[:, :16] *= torch.normal(1, 0.001, x[:, :16].shape, device=x.device)
@@ -350,7 +359,7 @@ def train(
                 for name, m in gen.named_modules():
                     if hasattr(m, "mma_norm"):
                         mma_loss += get_mma_loss(m.weight)
-                mma_loss *= 0.025
+                mma_loss *= 0.005
 
                 sampeq = sampling_equivariant_loss(gen, x, y) * 50
 
