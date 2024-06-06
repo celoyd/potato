@@ -13,7 +13,8 @@ from ripple.color import BandsToOklab
 
 from torch.nn.utils.parametrizations import weight_norm
 
-c = Mish()
+# c = Mish()
+c = LeakyReLU(negative_slope=1/16)
 
 n = 48
 
