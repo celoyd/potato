@@ -8,7 +8,7 @@ from inspect import isfunction
 from functools import partial
 from einops.layers.torch import Rearrange
 
-from ripple.util import pile, tile, cheap_half, cheap_db1_dwt, cheap_multilayer_db1_dwt
+from ripple.util import pile, tile, cheap_half
 from ripple.color import BandsToOklab
 
 from torch.nn.utils.parametrizations import weight_norm
