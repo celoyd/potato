@@ -4,10 +4,10 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 from torch.utils.data import DataLoader, Dataset
-from torchvision.transforms import GaussianBlur
 
-from torchvision.transforms.functional import affine
-from torchvision.transforms import InterpolationMode
+# from torchvision.transforms import GaussianBlur
+# from torchvision.transforms.functional import affine
+# from torchvision.transforms import InterpolationMode
 
 import numpy as np
 
@@ -19,9 +19,9 @@ import click
 from tqdm import tqdm
 
 from ripple.model import Ripple, concat
-from ripple.util import tile, pile, cheap_half, cheap_multilayer_db1_dwt
+from ripple.util import tile, pile, cheap_half #, cheap_multilayer_db1_dwt
 from ripple.color import BandsToOklab
-from ripple.augmentations import motion_warp
+from ripple.augmentations import motion_warp, halo # HaloMaker
 from ripple.mma_loss import get_mma_loss
 
 from pathlib import Path
@@ -169,7 +169,7 @@ def sampling_equivariant_loss(gen, x, y):
     j_pan = jittery_quarter(j_pan, pan_jitter)
     j_mul = jittery_quarter(j_mul, mul_jitter)
 
-    _, _, _, jittery = gen(concat(pile(j_pan, factor=4), j_mul))
+    _, _, jittery = gen(concat(pile(j_pan, factor=4), j_mul))
 
     regular = cheap_half(cheap_half(y))
 
@@ -180,29 +180,29 @@ def sampling_equivariant_loss(gen, x, y):
     return torch.mean(torch.abs(regular - jittery))
 
 
-def edgenoise_equivariant_loss(gen, x, y):
+# def edgenoise_equivariant_loss(gen, x, y):
 
-    quarter_area = nn.Upsample(scale_factor=1 / 4, mode="area")
-    quarter_bicu = nn.Upsample(scale_factor=1 / 4, mode="bicubic")
+#     quarter_area = nn.Upsample(scale_factor=1 / 4, mode="area")
+#     quarter_bicu = nn.Upsample(scale_factor=1 / 4, mode="bicubic")
 
-    pan = tile(x[:, :16], factor=4)
-    mul = x[:, 16:]
+#     pan = tile(x[:, :16], factor=4)
+#     mul = x[:, 16:]
 
-    area_mul = quarter_area(mul)
-    bicu_mul = quarter_bicu(mul)
-    diff_mul = torch.mean(torch.abs(area_mul - bicu_mul), dim=-3) ** 2
-    diff_mul = diff_mul.unsqueeze(1)
-    del bicu_mul
+#     area_mul = quarter_area(mul)
+#     bicu_mul = quarter_bicu(mul)
+#     diff_mul = torch.mean(torch.abs(area_mul - bicu_mul), dim=-3) ** 2
+#     diff_mul = diff_mul.unsqueeze(1)
+#     del bicu_mul
 
-    noise = torch.normal(1, 0.1, area_mul.shape, device=y.device)
+#     noise = torch.normal(1, 0.1, area_mul.shape, device=y.device)
 
-    noised_mul = area_mul * noise * diff_mul
+#     noised_mul = area_mul * noise * diff_mul
 
-    _, _, _, ŷ = gen(concat(pile(quarter_area(pan), factor=4), noised_mul))
+#     _, _, _, ŷ = gen(concat(pile(quarter_area(pan), factor=4), noised_mul))
 
-    y = quarter_area(y)
+#     y = quarter_area(y)
 
-    return torch.mean(torch.abs(y - ŷ))
+#     return torch.mean(torch.abs(y - ŷ))
 
     # sr, mr = torch.std_mean(regular, dim=[-1, -2], keepdim=True)
     # regular = (regular - mr) / sr
@@ -222,9 +222,9 @@ def jittery_quarter(x, n):
     return area + diff * n.view(-1, 1, 1, 1)
 
 
-def output_losses(y, qŷ, hŷ, d, ŷ):
+def output_losses(y, qŷ, hŷ, ŷ):
 
-    d_loss = torch.mean(torch.abs(d)) * 0.0
+    # d_loss = torch.mean(torch.abs(d)) * 0.0
 
     t_loss = rfft_texture_loss(y, ŷ) * 2.0
 
@@ -243,7 +243,7 @@ def output_losses(y, qŷ, hŷ, d, ŷ):
     #     + proportional_loss(1 - y[:, 0], 1 - ŷ[:, 0])
     # ) * 5e-5
 
-    return d_loss + t_loss + ok_loss + h_loss + q_loss + s_loss #+ extremes_loss
+    return t_loss + ok_loss + h_loss + q_loss + s_loss #+ extremes_loss
 
 
 ### The training part
@@ -297,7 +297,7 @@ def train(
 
     epoch_counter = 0
 
-    gen = Ripple().to(device)
+    gen = Ripple(48).to(device)
 
     try:
         torch.compile(gen)
@@ -321,49 +321,52 @@ def train(
         losses = []
 
         with tqdm(trainloader, unit="b", mininterval=2) as progress:
+            torch.autograd.set_detect_anomaly(True)
+            # pan_halo = HaloMaker(1)
+            # mul_halo = HaloMaker(8)
+
             for x, y in progress:
                 progress.set_description(f"Ep {epoch_counter}")
 
                 x = x.to(device, non_blocking=True)
                 y = y.to(device, non_blocking=True)
 
-                x[:, 16:] = motion_warp(
-                    x[:, 16:], 1 / 96
-                )  # change to a function of shape
-
-                # x[:, 16:] += torch.normal(0, 0.002, x[:, 16:].shape, device=x.device)
-                # x[:, 16:] *= torch.normal(1, 0.001, x[:, 16:].shape, device=x.device)
-                # x[:, :16] += torch.normal(0, 0.002, x[:, :16].shape, device=x.device)
-                # x[:, :16] *= torch.normal(1, 0.001, x[:, :16].shape, device=x.device)
-
-                x[:, 16:] += torch.normal(0, 0.005, x[:, 16:].shape, device=x.device)
+                x[:, 16:] += torch.normal(0, 0.0025, x[:, 16:].shape, device=x.device)
                 x[:, 16:] *= torch.normal(1, 0.01, x[:, 16:].shape, device=x.device)
+                x[:, :16] += torch.normal(0, 0.0005, x[:, :16].shape, device=x.device)
+                x[:, :16] *= torch.normal(1, 0.001, x[:, :16].shape, device=x.device)
 
-                # x[:, :16] += torch.normal(0, 0.005, x[:, :16].shape, device=x.device)
-                # x[:, :16] *= torch.normal(1, 0.001, x[:, :16].shape, device=x.device)
+                # pan = tile(x[:, :16], 4)
+                x[:, :16] = pile(halo(
+                    tile(x[:, :16], 4), mean=0.25, std=0.1
+                ), 4)
+                # x[:, :16] = pile(pan, 4)
 
+                # x[:, 16:] = mul_halo(
+                #     x[:, 16:], mean=0.75, std=0.5
+                # )
 
-                qŷ, hŷ, d, ŷ = gen(x)
-                main_losses = output_losses(y, qŷ, hŷ, d, ŷ) 
-
-                # e_loss = edgenoise_equivariant_loss(gen, x, y) * 5
-
-                damaged = jittery_quarter(
-                    x, torch.normal(1.0, 1.0, (x.shape[0],), device=x.device)
+                x[:, 16:] = motion_warp(
+                    x[:, 16:], 15.0
                 )
 
-                qŷ, hŷ, d, ŷ = gen(damaged)
-                damaged_losses = output_losses(cheap_half(cheap_half(y)), qŷ, hŷ, d, ŷ)
+                x[:, 16:] = halo(
+                    x[:, 16:], mean=0.75, std=0.5
+                )
+
+                qŷ, hŷ, ŷ = gen(x)
+                main_losses = output_losses(y, qŷ, hŷ, ŷ) 
 
                 mma_loss = 0.0
                 for name, m in gen.named_modules():
-                    if hasattr(m, "mma_norm"):
+                    if isinstance(m, nn.Conv2d):
                         mma_loss += get_mma_loss(m.weight)
-                mma_loss *= 0.005
+                # for name, m in gen.named_modules():
+                #     if hasattr(m, "mma_norm"):
+                #         mma_loss += get_mma_loss(m.weight)
+                mma_loss *= 0.01
 
-                sampeq = sampling_equivariant_loss(gen, x, y) * 50
-
-                loss = main_losses + damaged_losses + mma_loss + sampeq #+ e_loss
+                loss = main_losses + mma_loss
 
                 loss.backward()
                 losses.append(float(loss.item()))
@@ -406,10 +409,10 @@ def train(
                         y = y.to(device, non_blocking=True)
 
                         gen.eval()
-                        _, _, _, ŷ = gen(x)
+                        _, _, ŷ = gen(x)
                         # ŷ = gen(x)
 
-                        ok_test_loss = ΔEuOK(y, ŷ) * 100
+                        ok_test_loss = ΔEuOK(y, ŷ) * 10
                         # wave_test_loss = big_pyramid_loss(y, ŷ) * 100
                         test_loss = ok_test_loss  # wave_test_loss
 
