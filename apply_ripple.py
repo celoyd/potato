@@ -228,16 +228,13 @@ x = torch.unsqueeze(y, dim=0)
 # x[:, 18, 0::2, 150] = 0.0
 # x[:, 18, 1::2, 151] = 1.0
 
-# x[:, 17, 0::2, 152] = 0.0
-# x[:, 17, 1::2, 153] = 1.0
-
 model = Ripple()
 
 model.load_state_dict(torch.load(argv[1], map_location="cpu"))
 
 model.eval()
 with torch.no_grad():
-    _, _, _, img = model(x)
+    _, _, img = model(x)
     # _, img, _ = model(x)
     # img, _, _ = model(x)
 
