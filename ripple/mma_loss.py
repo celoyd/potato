@@ -28,15 +28,38 @@ import torch
 from torch.nn import functional as F
 
 def get_mma_loss(weight):
+    '''
+    MMA regularization in PyTorch
+    :param weight: parameter of a layer in model, out_features *　in_features
+    :return: mma loss
+    '''
 
+    # for convolutional layers, flatten
     if weight.dim() > 2:
         weight = weight.view(weight.size(0), -1)
 
+    # computing cosine similarity: dot product of normalized weight vectors
     weight_ = F.normalize(weight, p=2, dim=1)
     cosine = torch.matmul(weight_, weight_.t())
 
-    cosine = cosine - 2.0 * torch.diag(torch.diag(cosine))
+    # make sure that the diagnonal elements cannot be selected
+    cosine = cosine - 2. * torch.diag(torch.diag(cosine))
 
-    loss = torch.pi - torch.acos(cosine.max(dim=1)[0].clamp(-0.99999, 0.99999)).mean()
+    # maxmize the minimum angle
+    loss = -torch.acos(cosine.max(dim=1)[0].clamp(-0.99999, 0.99999)).mean()
 
     return loss
+
+# def get_mma_loss(weight):
+
+#     if weight.dim() > 2:
+#         weight = weight.view(weight.size(0), -1)
+
+#     weight_ = F.normalize(weight, p=2, dim=1)
+#     cosine = torch.matmul(weight_, weight_.t())
+
+#     cosine = cosine - 2.0 * torch.diag(torch.diag(cosine))
+
+#     loss = torch.pi - torch.acos(cosine.max(dim=1)[0].clamp(-0.99999, 0.99999)).mean()
+
+#     return loss
