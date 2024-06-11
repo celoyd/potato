@@ -137,7 +137,7 @@ for i, w in dst.block_windows():
     # pack = pack.cuda() ###
 
     if not skip_chunk:
-        _, _, _, sharp = model(pack)
+        _, _, sharp = model(pack)
         sharp = sharp.detach().numpy()
         sharp = np.array(sharp, order="C")[0]
         sharp = sharp[:, : pan_pixels_shape[1], : pan_pixels_shape[2]]
