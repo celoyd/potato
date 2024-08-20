@@ -76,12 +76,15 @@ class Tile(Dataset):
         ):
             raise OldSatellite
 
-        self.pan = rio.open(self.root_dir / f"{self.cid}-pan.tif")
-        self.mul = rio.open(self.root_dir / f"{self.cid}-ms.tif")
+        self.pan_path = self.root_dir / f"{self.cid}-pan.tif"
+        self.mul_path = self.root_dir / f"{self.cid}-ms.tif"
 
-        self.mul_side = self.mul.profile["width"]
+        with rio.open(self.mul_path) as mul:
+            self.mul_side = mul.profile["width"]
+            self.mul_transform = mul.profile["transform"]
+            self.mul_crs = mul.profile["crs"]
 
-        self.to_latlon = Transformer.from_crs(self.mul.crs, 4326)
+        self.to_latlon = Transformer.from_crs(self.mul_crs, 4326)
         # print(self.to_latlon)
 
     def coords(self, mul_window):
@@ -89,29 +92,30 @@ class Tile(Dataset):
             mul_window.col_off + mul_window.width / 2,
             mul_window.row_off + mul_window.height / 2,
         )
-        xy = rio.transform.xy(self.mul.transform, cols=center[0], rows=center[1])
+        xy = rio.transform.xy(self.mul_transform, cols=center[0], rows=center[1])
         lalo = self.to_latlon.transform(*xy)  # center[1], center[0])
         return {"lat": round(lalo[0], 5), "lon": round(lalo[1], 5)}
 
     def read(self, side, proportion):
-        max_valid = self.mul_side - side
+        with rio.open(self.pan_path) as pan, rio.open(self.mul_path) as mul:
+            max_valid = self.mul_side - side
 
-        left, top = (int(z * max_valid) % max_valid for z in proportion)
+            left, top = (int(z * max_valid) % max_valid for z in proportion)
 
-        mul_dims = (left, top, side, side)
-        mul_window = rio.windows.Window(*mul_dims)
-        pan_window = rio.windows.Window(*(4 * z for z in mul_dims))
+            mul_dims = (left, top, side, side)
+            mul_window = rio.windows.Window(*mul_dims)
+            pan_window = rio.windows.Window(*(4 * z for z in mul_dims))
 
-        mul = torch.tensor(self.mul.read(window=mul_window).astype("float32"))
-        pan = torch.tensor(self.pan.read(window=pan_window).astype("float32"))
+            mul = torch.tensor(mul.read(window=mul_window).astype("float32"))
+            pan = torch.tensor(pan.read(window=pan_window).astype("float32"))
 
-        pan = pile(pan, factor=4)
+            pan = pile(pan, factor=4)
 
-        pack = torch.cat((pan, mul), 0)
-        path = self.mul.name
-        coords = self.coords(mul_window)
+            pack = torch.cat((pan, mul), 0)
+            path = self.mul_path #self.mul.name
+            coords = self.coords(mul_window)
 
-        return pack, path, coords
+            return pack, path, coords
 
 
 class Chipper(Dataset):
@@ -139,19 +143,19 @@ class Chipper(Dataset):
                 with open(metadata) as md:
                     md = json.load(md)
 
-                inner_json_path = [x["href"] for x in md["links"] if x["rel"] == "item"]
-                inner_json_path = inner_json_path[0]
+                inner_json_paths = [x["href"] for x in md["links"] if x["rel"] == "item"]
+                for inner_json_path in inner_json_paths:
+                #inner_json_path = inner_json_path[0] # xxx
+                    chip_dir = (metadata.parent / Path(inner_json_path)).parent.absolute()
+                    chip_cid = Path(inner_json_path).stem
 
-                chip_dir = (metadata.parent / Path(inner_json_path)).parent.absolute()
-                chip_cid = Path(inner_json_path).stem
-
-                try:
-                    chip = Tile(chip_dir, chip_cid)
-                    self.chips.append(chip)
-                except OldSatellite:
-                    logging.warning(
-                        f"Skipping CID {chip_cid}: satellite is not WV-2 or -3"
-                    )
+                    try:
+                        chip = Tile(chip_dir, chip_cid)
+                        self.chips.append(chip)
+                    except OldSatellite:
+                        logging.warning(
+                            f"Skipping CID {chip_cid}: satellite is not WV-2 or -3"
+                        )
 
     def validish(self, tensor):
         minimum = 0.75
@@ -182,7 +186,8 @@ class Chipper(Dataset):
         noisy /= sums.view(8, 1, 1, 1)
         return noisy
 
-    def worsen(self, x, all_std=0.05, each_std=0.1):
+    #def worsen(self, x, all_std=0.05, each_std=0.1):
+    def worsen(self, x, all_std=0.005, each_std=0.01):
         all_k = self.a_noisy_kernel(all_std)
         x = F.conv2d(x, all_k, groups=8, padding="same")
 
@@ -207,15 +212,16 @@ class Chipper(Dataset):
         pan_down = pile(pan_down, 4)
 
         mul_down = cheap_half(cheap_half(mul)).unsqueeze(0)
-        mul_down = self.worsen(mul_down)
 
-        mul_down = mul_down * self.m_noise(
-            mul_down.shape, scale=1 / 250
-        ) + self.a_noise(mul_down.shape, scale=1 / 1_000)
+        # mul_down = self.worsen(mul_down)
 
-        pan_down = pan_down * self.m_noise(
-            pan_down.shape, scale=1 / 1_000
-        ) + self.a_noise(pan_down.shape, scale=1 / 2_000)
+        # mul_down = mul_down * self.m_noise(
+        #     mul_down.shape, scale=1 / 250
+        # ) + self.a_noise(mul_down.shape, scale=1 / 1_000)
+
+        # pan_down = pan_down * self.m_noise(
+        #     pan_down.shape, scale=1 / 1_000
+        # ) + self.a_noise(pan_down.shape, scale=1 / 2_000)
 
         x = torch.squeeze(torch.cat([pan_down, mul_down], dim=1))
 
@@ -286,7 +292,7 @@ def make_chips(ard_dir, chip_dir, count, starting_from):
     while completed < count:
         try:
             x, y, path, coords = chipper[n]
-            dst = chip_dir / f"{completed}.pt"
+            dst = chip_dir / f"{starting_from + completed}.pt"
             torch.save((x, y), dst)
             logging.info(f"{dst} at {coords} from {path}")
             completed += 1
