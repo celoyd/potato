@@ -4,11 +4,11 @@
 
 | 🔰 | Suitable for non-experts |
 | ⚙️ | Technical details |
-| 🤔 | Theories and interpretations |
+| 🤔 | Theories, interpretations, and opinions |
 
 0. Example. 🔰 _The main README of the project._
 1. Credits and acknowledgments. 🔰
-2. Technical quickstart. ⚙️ _If you just want to see the code work._
+2. Quickstart. ⚙️ _If you just want to see the code work, without worrying about what it’s doing._
 3. Ripple’s main features. _Specifics on the unusual features of this project compared to other pansharpening approaches._
    1. No per-sample normalization. ⚙️
    2. All-band color conversion. ⚙️
