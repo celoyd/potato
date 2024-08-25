@@ -1,0 +1,201 @@
+# Ripple’s main features
+
+This is the documentation for the techniques that are distinctive to Ripple. Welcome to the fun part, if this is your idea of fun.
+
+## Contents
+
+1. Preface: beyond aspatial images
+2. Main features
+  1. No per-sample normalization
+  2. All-band color conversion
+  3. Band misalignment and psf injection
+3. Appendix: minor techniques
+
+# Preface: beyond aspatial images
+
+An unlucky person could pursue an interest in image processing–oriented deep learning for years without ever being asked to question the idea that the universe of interesting photographs is basically those that can be scraped from the surface web. These images are typically side views of unknown places, lossily compressed, in some approximation of sRGB color space, up to a few megapixels; their processing pipelines can only be guessed at, but probably start with Bayer arrays. They are what [Fleischmann and Arribas-Bel](https://www.sciencedirect.com/science/article/pii/S0198971524000760) call _aspatial images_.
+
+I am fond of many aspatial images and I hope to create and appreciate thousands more of them. They are technically interesting enough to fill dozens of lifetimes of research. But as numerous and important as they are, their part of the space of all images is small. Thinking about the kind of high-end satellite imagery that we’re interested in here with the same ideas as we use on phone snapshots, and only those ideas, will lead to many pitfalls and snares.
+
+All of the techniques that follow can be understood as ways of taking advantage of this higher dimensionality and its consequences – or, if you prefer, as corrections to practices that treat advanced spatial images like ordinary aspatial images.
+
+# No per-sample normalization
+
+_Taking advantage of physically meaningful inputs._
+
+Our inputs are absolutely calibrated, meaning that a given data value (a digital number, or DN) has a defined mapping to a real-world value (a physical number, or PN). The DN inputs actually used for Ripple, from the Maxar Open Data program, are `uint16` values that can be divided by 10,000 to give a PN in reflectance, in the range 0..1. The division is the DN to PN conversion.
+
+A neural network will generally work best when inputs’ histograms resemble a standard normal distribution. Therefore, a common practice when working with “normal” images, which are auto-exposed and auto-whitebalanced, is to sample-normalize them by subtracting out each image’s mean and dividing out its standard deviation. This can be thought of as enforcing an after-the-fact standard exposure and whitebalance.
+
+Our images in reflectance, however, clearly have information in their absolute values. A very dark red thing, for example, is likely an entirely different material than a very light pink thing, and that information should condition pansharpening. Therefore, Ripple does no adaptive normalization: there is a global cube root operation to unskew the histograms, but no conditional scaling. (I do not claim that cube root, especially without an additive term, is near optimal. It’s in Ripple primarily to underscore that _global_ normalization is not a problem, and secondarily to match the scaling in oklab.)
+
+The space of calibration-preserving normalizations is well worth exploring, and I commend it to the attention of the interested researcher. It may be, for example, that it is sensible to sample-normalize _if_ you pass the normalization coefficients into the network. Ripple’s present setup is neither principled nor carefully tuned, but it serves to make the floor-setting argument that a small network with techniques at least this simple can achieve reasonable quality.
+
+
+# All-band color conversion
+
+_Taking advantage of multispectral inputs._
+
+When creating an image from a sensor with red, green, and blue bands, a simple strategy is to copy their values (scaled in a sensible way) into the red, green, and blue channels of an RGB color space. This approach rarely fails badly, but it’s suboptimal for any realistic pair of band and channel sets.
+
+To get better color reproduction, we can start by thinking of a multispectral sensor’s output as the argument of a spectral power distribution estimator. (A spectral power distribution can be thought of as the readout of an ideal hyperspectral sensor with infinitesimal bands.) In more intuitive terms: the WorldView-2/3 sensors have bands for deep blue, yellow, and the red edge, so we should use them.
+
+In principle we could go from band powers to XYZ color space (an abstract space used as a linking step for conversions), then to sRGB color space for display. In practice, Ripple uses [oklab](https://bottosson.github.io/posts/oklab/) because its approximate perceptual uniformity works well with simple loss functions, and it’s easy enough to convert to sRGB for final output later.
+
+The Ripple network is a function from all bands’ reflectance values to the oklab color space. The conversion is learned; the “manual” work happens at data generation time. That process in overview is:
+
+1. Generate many spectral power distributions, covering edge cases such as pure darkness.
+2. For each SPD:
+    1. Find the CIE XYZ color it induces.
+    2. Find the band responses it induces.
+    3. Create a color-matching pair consisting of band responses and XYZ colors.
+3. Over all color-matching pairs, fit a matrix that converts band responses to XYZ.
+4. For each data sample (i.e., multispectral image chip):
+    1. Create an oklab image of the sample by applying the band→XYZ matrix, then the standard XYZ→oklab conversion.
+    2. Create a training pair for the pansharpening model consisting of the band responses and the oklab image.
+
+(Alert readers may notice slippage between the concepts of modeled reflectance and band power. This is handled by virtually illuminating reflectance values by D65.)
+
+The color conversion is, I believe, a weak link in this project’s [image chain](https://academic.oup.com/book/54786). For example, instead of using only synthetic and mostly randomly generated SPDs, it would be better to include mixtures from a spectral library to ensure that the conversion is optimized for realistic SPDs. Also, the process models bands as monospectral in places; they should always be modeled as their documented response curves. And with some careful work, the conversion matrix could be created analytically, without needing optimization. (Then again, a nonlinear band→SPD→XYZ function _that includes the pan band_ might be an interesting avanue.) There are doubtless other shortcomings that I haven’t thought of. Nevertheless, warts and all, the color preprocessing appears to be an improvement on the naïve approach – and, as far as I have seen, not present in the literature, though I welcome correction.
+
+To make a comparison of color conversion methods, we can run the demo script (using an image of Cianjur, West Java):
+
+```sh
+$ python docs/color_conversion_demo.py https://maxar-opendata.s3.amazonaws.com/events/Indonesia-Earthquake22/ard/48/300020121333/2022-01-04/10300100CB626A00-ms.tif naïve_color.tiff fancy_color.tiff
+```
+
+The images are too large to look at in full detail here, so we crop into the area around the [Cisarua Leather factory](https://cisarualeather.com/). Here it is with the bands-as-channels approach:
+
+TK
+_Keep in mind that no pansharpening is happening in either example image – this shows color conversion of multispectral bands only._
+
+And with Ripple’s all-band conversion:
+
+TK
+
+These are both lower-contrast than we’d generally want to see on a map. That’s acceptable (even desirable) at this stage in processing, but not ideal for comparison. There’s also a difference in color – the naïve version leaning red/purple, the fancy version leaning yellow/green – that’s interesting but outside our focus here. So for clarity, we’ll give them the same adaptive contrast stretch. Now adjusted, this is the bands-as-channels image:
+
+TK
+
+And the all-band image:
+
+TK
+
+There are subtle differences, but the big one is the violet v. blue roof color. The violet one, which I’m calling naïve, is the industry standard color conversion. Please fact check me: for example, refer to any of the usual mapping services at latitude -6.843, longitude 107.1. A convenient way to see many examples is with the timeline tool in the desktop version of Google Earth. I counted about 35 images in its history stack, credited to both Airbus and Maxar, and they range from about halfway between these two examples to distinctly _more_ violet than my naïve version.
+
+To see the roof’s actual color, we can use [in-situ drone videos](https://www.youtube.com/watch?v=MLdckjstF3I#t=3m10s) or [Google’s own Street View product](https://maps.app.goo.gl/2Aqgzw1esr6JjH7k6). It is blue. The violet rendering is an artifact of shortcut color conversion.
+
+The all-band method also incrementally improves the rendering of other surfaces, including red clay tile roofs, yellow objects in general, and many types of vegetation. However, the difference tends to be most obvious on deep blue materials, which standard imagery consistently makes overly purple far beyond Cianjur. All these are more or less foreseeable consequences of using the conventionally neglected information in the coastal blue, yellow, and red edge bands.
+
+
+## Other advantages of all-band pansharpening
+
+What we’ve seen above is not actually pansharpening – the example images were only from the multispectral bands, and are not sharpened by the panchromatic band. In principle, we could use the sRGB image made from all bands as input to a pansharpener that expects RGB channels-as-bands, and it would likely improve the output. However, there are reasons to think of pansharpening itself as a function of all available bands. Here we will very briefly consider two of them: noise and landcover classification.
+
+_Noise._ There is very little noise in this imagery. What remains, however, is remarkably difficult to characterize and mitigate. (For example, band misalignment is the topic of the whole next section.) If the bands were independent samples of the same underlying reality, we would have the square root law of denoising, and twice as many bands would give us a signal with only ~0.707 as much noise. Actually, the bands are neither independent (some kinds of noise correlate) nor sampling the same thing (by definition, they see different parts of the spectrum). Nevertheless, intuitively speaking, it’s reasonable to expect a well-trained model to cope better with – for example – an outlier signal in 1 band out of 8 than in 1 band out of 3.
+
+_Classification._ Pansharpening should be conditioned on surface composition. As a simple example, imagine a big block of green next to a big block of brown, with some high-frequency detail but no clear boundary in the pan band. If the green surface has the spectral signature of artificial turf and the brown surface that of brick, the optimal pansharpening is probably a sharp edge. But if it’s live grass adjoining bare soil, the optimal pansharpening is probably an irregular gradient modulated by the small details in the pan band. (We might also imagine swirling v. bushy texture on something that could be algae or trees, or ripples v. regular corrugations on a surface that’s either a roof or a pond.)
+
+To turn this point around, pansharpening is not merely the guided upsampling of abstract shapes. What’s in the pictures matters. It’s easier to tell what’s in the pictures with all the bands.
+
+
+
+# Point spread functions and band misalignment
+
+_Accounting for sensor-type–specific artifacts._
+
+Imagine an ideal multispectral digital sensor’s output. Each pixel represents a perfect integration of incident light, binned into multispectral bands, over a given square of the image plane, without gaps. The data we’re working with comes remarkably close to this ideal. (Especially when compared to raw photos from cameras with Bayer arrays.) But it is, of course, not perfect.
+
+## Point spread functions
+
+The data we’re considering tends to be slightly oversharp, meaning the point spread function has small negative lobes, and we see [ringing artifacts](https://en.wikipedia.org/wiki/Ringing_artifacts) around very high contrast edges. This is the source of the “dark halo” effect in the LGTEUN image in the first example. The severity of the effect varies, for guessable but undocumented reasons. In Ripple it’s addressed by injecting sampling jitter, which is easiest to describe as part of:
+
+## Band misalignment
+
+_Terminological note: this is also known as, for example, band-to-band mis-registration (or BBMR)._
+
+<details><summary>The causes of band misalignment (not necessary to understand the proposed solution)</summary>
+
+The imagery we’re interested in here was collected by multispectral [pushbroom sensors](https://natural-resources.canada.ca/maps-tools-and-publications/satellite-imagery-elevation-data-and-air-photos/tutorial-fundamentals-remote-sensing/satellites-and-sensors/multispectral-scanning/9337) that use multiple sub-arrays of bands. In practice, using typical WorldView-2 operation as an example, this means that the satellite sees any given across-track strip of surface under it three ways: first with half the multispectral bands, then about 0.15 seconds later and from 3 mrad to the south with the panchromatic band, then the same increment later with the rest of the multispectral bands. Low-level processing merges these into a _nearly_ self-consistent image that we can _usually_ imagine shows a single moment from a single angle. But here we are concerned with the ways in which it falls short. We will think about motion offset, then height offset.
+
+Motion offset follows immediately from the sensor’s relation of angle to time. Because different bands see the same point in space at slightly different points in time, the colors of anything in motion are seen in different places. This effect is often noticeable on cars on highways. We see a (red, green, blue) car at t = 0 seconds, x = 0 meters; then a panchromatic car at t = 0.15 s, x = perhaps 3 m; then a (red edge, yellow, coastal blue) car at t = 0.3 s, 6 m.
+
+To understand height offset, let’s look at the merging process. Setting aside various details, we can find the latitude and longitude of each pixel in each band by working backwards from the satellite’s position, the pixel’s angle, and an elevation map of Earth. Conceptually, we are projecting the image from a virtual satellite back at a blank 3D model of Earth and seeing where each pixel falls. Then we warp the image to a standard projection by smoothly pushing and pulling each pixel from where it sits in the raw image to where its coordinates sit in the projection. But all this can only be as good as the 3D model is – and 3D models are rarely great. For much of the world (away from lidar surveys and the like), the best available data is still [SRTM](https://www.usgs.gov/centers/eros/science/usgs-eros-archive-digital-elevation-shuttle-radar-topography-mission-srtm-1), which is out of date and has a horizontal resolution of only about 30 m.
+
+One proof of this is that satellite imagery of relatively new airports frequently shows bumpy and curvy runways, when we know that runways are almost always very linear. This is because they’re projected onto a model of whatever lumpy land was there before the leveling.
+
+TK
+
+There’s an even more fundamental problem: we don’t exactly want a 3D model of terrain, and yet the other choices are no better. The issue with _terrain_ is that the Earth’s surface is not really what we’re mostly seeing in visible-light images of land. Mostly we’re seeing grass, trees, and buildings. If the angle between WorldView-2’s first and last bands is 6e-3 radians, and the bands are aligned at the ground surface, then a tall building of 200 meters has an offset at its top equivalent to 6e-3 × 2e2 = 1.2 meters. This amounts to a very short-baseline stereo pair being treated as a single image. But as with any stereo pair, for views of complex 3D subjects there is no nontrivial way of fusing the images.
+
+So why not use a _surface_ (or “canopy”) model instead of a _terrain_ model? That is, if it’s a problem for the visible surfaces of things to be above the ground we’re modeling, why not model of the visible surfaces? Two reasons. First, the available data is even worse. No one has the exact shape of every building and tree in the world in up-to-date form. Second, the modeling is very difficult. Canopies have more discontinuities at the 0.1 to 10 m scale than ground surfaces do. (This is why we can’t simply align by cross-correlation.) Imagine trying to project an image of a radio tower onto a 3D model of it. Just the wind making it sway a little would be enough to pull everything out of alignment. And what would we use to fill data in band group A that was only seen by band group B?
+
+Clouds are another example. They are often high above the ground,<sup>[citation needed]</sup> and they are notoriously transient. There is almost certainly no better source of truth for what a given cloud looked like at a given moment than the image we have. If we imagine trying to correctly place the cloud above the longtiude and latitude where it actually was (filling the now-exposed Earth surface pixels with what?), that’s only a more extreme version of trying to reconcile the three slightly different images of a tall building. Or consider the artist James Bridle’s [rainbow planes](https://www.youtube.com/watch?app=desktop&v=eD8r9LjcwAc) – planes present most of the challenges of clouds plus high speed.
+
+</details>
+
+TK
+
+To see band misalignment from both height and motion, let’s look at an image of tall buildings in Karachi beside a highway: [The Bahria Icon Tower](https://en.wikipedia.org/wiki/Bahria_Icon_Tower). (I’ll be upsampling and brightening these images arbitrarily for clarity of visualization.)
+
+In the panchromatic band:
+
+In the R, G, and B bands:
+
+In the deep blue, yellow, and red edge bands, mapped to RGB:
+
+<details><summary>Animation cycling at ~3 Hz (possible epilepsy trigger and definite annoyance)</summary>
+
+TK
+</details>
+
+Alternating between the red and yellow bands every 0.3 seconds, roughly their actual difference in time – note the plausible speed of the cars:
+
+With the all-band color conversion described above:
+
+Zoomed in on the area of most height offset:
+
+The building tops are about 300 m high. 6e-3 (radians of parallax) × 3e2 (meters of height) = 1.8 meters of offset, and the bands have a resolution of about 2.2 m in this image, so we should be seeing about 80% of a pixel of offset at the top. That looks about right.
+
+TK transition
+
+One strategy for band misalignment is to ignore it. This is the approach taken by most pansharpening research. Because of the scale problem discussed above, many networks have never seen full-size band misalignment in their input, but have been implicitly trained to turn half-size misalignment into full-size misalignment. Where the goal is to explore some limited aspect of pansharpening, this may be justified, but it will not work for real-world applications.
+
+Another strategy, used by classical methods like those seen in Maxar’s own pansharpening and on Google Earth – as far as I can interpret them without documentation – is to (1) use only the RGB bands, since they’re aligned with each other (presumably by design), thereby cutting the problem roughly in half, and (2) functionally low-pass them. By “functionally” I mean that it’s not necessarily an explicit intention to deal with misalignment, but it helps. In Google Earth we generally see a “rainbow” only _behind_ moving objects in WorldView-2/3 imagery and only _ahead_ in Pléiades Neo imagery. (Pléiades Neo is impressively resistant to band misalignment in general, but it does appear around planes in flight, for example. ) This strategy is precluded by the use of all-band color conversion.
+
+<!-- https://pubs.usgs.gov/of/2021/1030/p/ofr20211030p.pdf -->
+
+The strategy used in Ripple is to inject band misalignments into the source side of the training pairs. In other words, we try to teach the model to undo band misalignment. Here’s how that works, to a moderate level of detail. Given an image chip of size 8×h×w, for example:
+
+TK
+
+We create a 2×h×w offset field of low-frequency noise that’s zero at the edges (in order to avoid trying to move pixels across them). One of its “channels” can be visualized like this:
+
+TK
+
+Then we warp the image by the offsets (i.e., using the bands as x and y motion vectors) – the front band sub-array offset positively and the back bands negatively. (The polarity doesn’t matter since it’s a 0-centered random field. We’d like the model to be able to correct misalignment in any orientation anyway.) In other words, the field is used to set the direction and amount of band group splitting. The image now looks like this:
+
+TK
+
+We also inject sampling noise by doing this twice with different warp interpolation methods. For example, the previous image showed warping with a bilinear kernel, but if we extrapolate from that toward the same inputs warped with a bicubic kernel, then keep going further, we get this “hyper-bicubic” version:
+
+So we sample the space of {inter,extra}polation around these methods. This jitters the point spread function. Ideally, we would use a more sophisticated space of psfs, and observe other niceties such as applying them to the whole image instead of rolling them off with the offset. In practice, this method thus far appears adaptable and robust.
+
+In all of this, the panchromatic band’s data is untouched. The goal is for the model to learn to use it as the reference.
+
+In my opinion, band misalignment alone is one of the most compelling reasons to apply deep learning to pansharpening. It’s a nonlinear problem of a kind that would be difficult – not entirely intractable, but certainly painful – to attack with explicit methods.
+
+## Appendix: Minor techniques
+
+_A few notes on minor techniques that might help others._
+
+**Oklab.** The oklab color space is approximately perceptually uniform, so Ripple uses a color loss term that is simply Euclidean distance within it. This is a more correct version of the mean absolute error of (implicitly sRGB) color values that many image processing models use. It’s still not a perfect ΔE – oklab has its quirks – but it’s very close for small differences.
+
+TK?:
+
+- Shuffling
+- Maxar Open Data
+- Oklab
+- Double downsampling
+- Bias for things other than sharpness?
+- 
