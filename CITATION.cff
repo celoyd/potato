@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "Please cite this software in academic work that draws on it or its documentation"
+authors:
+- family-names: "Loyd"
+  given-names: "Charlie"
+  orcid: https://orcid.org/0000-0002-7517-959X
+title: "Ripple"
+version: 1.0.0
+date-released: 2024-09-03
+url: "https://github.com/celoyd/pansharpening"
