@@ -2,6 +2,7 @@
 
 ## Contents
 
+| ---- | ---- |
 | 🔰 | Suitable for non-experts |
 | ⚙️ | Technical details |
 | 🤔 | Theories, interpretations, and opinions |
