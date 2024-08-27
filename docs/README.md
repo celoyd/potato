@@ -2,6 +2,7 @@
 
 ## Contents
 
+| Symbol | Meaning |
 | ---- | ---- |
 | 🔰 | Suitable for non-experts |
 | ⚙️ | Technical details |
