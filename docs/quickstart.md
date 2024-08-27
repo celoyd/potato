@@ -171,24 +171,20 @@ aws s3 sync s3://maxar-opendata/events/ ards/
 
 A _chip_ is jargon for a small image, typically a sample pulled out of a larger image.
 
-Please see the band misalignment section to understand the details of what’s happening in the chipping process in terms of actual pixels.
+The chipping process copies chips out of collections of images, resamples them into training pairs, and injects sampling artifacts into the input samples. see the band misalignment section – or the code, of course – for more details. Overall, the input argument to the chipper is an ARD (a set of images) and the output is chips stored as individual .pt files.
 
-Ripple is trained on 128×128 panchromatic chips and corresponding 8×32×32 multispectral chips to produce 3×128×128 oklab color chips. The pan band goes through a space-to-depth transform so that it’s _physically_ 16×32×32 and is concatenated with the multispectral data to make a 24×32×32 package.
+<!-- Ripple is trained on 128×128 panchromatic chips and corresponding 8×32×32 multispectral chips to produce 3×128×128 oklab color chips. The pan band goes through a space-to-depth transform so that it’s _physically_ 16×32×32 and is concatenated with the multispectral data to make a 24×32×32 package. -->
 
 TK
-
-## Training
-
-The chipper tool takes an ARD path as an argument, and can optionally use a 
-
-## Tips and tricks
-
-### Storage load balancing
-
-link-chips
 
 ### CID allow-lists
 
 You may want to limit which CIDs (catalog IDs, or individual images) you use to make training data. For example, as described in the documentation on band misalignment, I prefer to train on cloud-free CIDs with little surface water. To support this, I spent a day early this summer subjectively evaluating every image in the Maxar Open Data Program on axes of cloudiness, surface water coverage, and complexity of landcover. These are weighted into an overall quality index, and I selected only the top-scoring CIDs.
 
 Do this with the `--allow-list` option, which expects a path with one CID per line.
+
+### Linking (storage load balancing)
+
+
+## Training
+

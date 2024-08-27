@@ -15,9 +15,11 @@ This is the documentation for the techniques that are distinctive to Ripple. Wel
 
 An unlucky person could pursue an interest in image processing–oriented deep learning for years without ever being asked to question the idea that the universe of interesting photographs is basically those that can be scraped from the surface web. These images are typically side views of unknown places, lossily compressed, in some approximation of sRGB color space, up to a few megapixels; their processing pipelines can only be guessed at, but probably start with Bayer arrays. They are what [Fleischmann and Arribas-Bel](https://www.sciencedirect.com/science/article/pii/S0198971524000760) call _aspatial images_.
 
-I am fond of many aspatial images and I hope to create and appreciate thousands more of them. They are technically interesting enough to fill dozens of lifetimes of research. But as numerous and important as they are, their part of the space of all images is small. Thinking about the kind of high-end satellite imagery that we’re interested in here with the same ideas as we use on phone snapshots, and only those ideas, will lead to many pitfalls and snares.
+I am fond of many aspatial images and I hope to create and appreciate thousands more of them. They are technically interesting enough to fill dozens of lifetimes of research. But as numerous and important as they are, their part of the space of all images is small. Thinking about the kind of high-end satellite imagery that we’re interested in here with the same ideas as we use on phone snapshots, and only those ideas, will lead to pitfalls and snares.
 
-All of the techniques that follow can be understood as ways of taking advantage of this higher dimensionality and its consequences – or, if you prefer, as corrections to practices that treat advanced spatial images like ordinary aspatial images.
+The data used 
+
+The techniques that follow can be understood as corrections to practices that treat advanced spatial images like ordinary aspatial images.
 
 # No per-sample normalization
 
