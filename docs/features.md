@@ -155,13 +155,39 @@ With the all-band color conversion described above:
 
 Zoomed in on the area of most height offset:
 
+TK
+
 The building tops are about 300 m high. 6e-3 (radians of parallax) × 3e2 (meters of height) = 1.8 meters of offset, and the bands have a resolution of about 2.2 m in this image, so we should be seeing about 80% of a pixel of offset at the top. That looks about right.
 
 TK transition
 
 One strategy for band misalignment is to ignore it. This is the approach taken by most pansharpening research. Because of the scale problem discussed above, many networks have never seen full-size band misalignment in their input, but have been implicitly trained to turn half-size misalignment into full-size misalignment. Where the goal is to explore some limited aspect of pansharpening, this may be justified, but it will not work for real-world applications.
 
-Another strategy, used by classical methods like those seen in Maxar’s own pansharpening and on Google Earth – as far as I can interpret them without documentation – is to (1) use only the RGB bands, since they’re aligned with each other (presumably by design), thereby cutting the problem roughly in half, and (2) functionally low-pass them. By “functionally” I mean that it’s not necessarily an explicit intention to deal with misalignment, but it helps. In Google Earth we generally see a “rainbow” only _behind_ moving objects in WorldView-2/3 imagery and only _ahead_ in Pléiades Neo imagery. (Pléiades Neo is impressively resistant to band misalignment in general, but it does appear around planes in flight, for example. ) This strategy is precluded by the use of all-band color conversion.
+<details id="Wald"><summary>Notes on Wald’s protocol and associated scale problems (for the pansharpening superfans)</summary>
+
+_Here, resolution and sampling are in terms of 1D length, not 2D area: for example, resampling a 10×10 grid to a 5×5 grid would be 2× downsampling. Also, for simplicity, we assume that the pan:multispectral resolution ratio is 4:1; this holds for the data used in this project (WorldView-2/3), and most comparable data (e.g., Pléiades Neo), but not for all pansharpenable imagery (e.g., SkySat, Landsat 8/9)._
+
+Consider the problem of notation for pansharpening: we want to express ideas like “the multispectral bands 2× upsampled as conditioned on the panchromatic band 2× downsampled” in clear and compact forms. This has apparently never been done in a really elegant way, and, in the spirit of [XKCD 927](https://xkcd.com/927/), will be inelegant here too. We will use symbols on the pattern _B↕_, where _B_ is P, meaning the original pan band; M, the original multispectral bands, or V, visible imagery; and ↕ is a sequence of ↑ and ↓, representing up- and down-sampling. For example, pansharpening is in some places defined as M↑↑ (multispectral bands at the resolution of the pan band) but in other places, including Ripple, it’s V↑↑. The notation does not try to show all useful facts, for example where upsampling is conditioned on other information. The thing to remember is that P and M↑↑ have the same resolution.
+
+A problem upstream of many other problems in pansharpening research (on imagery of the kind considered here) is the lack of full-scale training data. The ideal dataset would be hyperspectral, to match band responses, and with a ground sample distance finer than about 15 cm, to inject sampling artifacts – and it would be plentiful and cover a wide range of landcovers. This is simply not available. A widespread workaround is called Wald’s protocol ([Wald et al. 1997](https://www.asprs.org/wp-content/uploads/pers/1997journal/jun/1997_jun_691-699.pdf), despite that paper citing earlier work). It downsamples full-resolution data into P↓↓ and M↓↓, so that the function being modeled is (P↓↓, M↓↓) → M. This approximates (P, M) → M↑↑.
+
+It’s not a perfect approximation because M↓↓ does not look exactly like M, and pansharpening should depend on scale. Some examples of possible scale-dependence in a deep learning–based pansharpener:
+
+- We should expect a model seeing a patch of green surrounded by bare soil to decide whether it is a relatively soft-edged patch of grass or a relatively sharp-edged tree canopy in part by having an assumption about the typical size (in pixels) of a tree.
+
+- Almost all objects that the model will see in training that are moving quickly will be cars. Objects in motion must be treated specially. There are some other artifacts that might appear similar to motion artifacts, and the model is likely to use information on whether the feature is car-like to help resolve ambiguity. But cars have a very distinct size range.
+
+- Band misalignment, an error measurable in length, is necessarily scale-dependent. Suppose that the standard deviation of band misalignment is 0.1 pixel in M. It will then be 0.025 px in M↓↓. Therefore, training on (P↓↓, M↓↓) → M is training to quadruple misalignment artifacts with scale. Inferring on (P, M) → M↑↑ will then presumably result in final imagery with a standard deviation of band misalignment of 0.4 px. (A similar argument is available for point spread functions.) In short, feeding the model source data that has had artifacts reduced by downsampling, but target data with significant artifacts, is a recipe for artifact magnification.
+
+The first of these examples would hold even for pansharpening ideally sampled data of real scenes, the third would hold even for real images of completely artificial test patterns, and the second concerns both real features and real sensors.
+
+The argument here is not against Wald’s protocol, but for careful contemplation of its consequences. Wald et al. 1997, is a precious contribution to the painfully sparse theorization of pansharpening; it is arguably still the single most broadly useful text in the field.
+
+Without a dense literature of theory to propose competing explanations of what we’re trying to do, how we’re doing it, and what the results _mean_ beyond a few standard metrics, pansharpening as an applied technique and pansharpening as a research topic have diverged into two half-fields. The dysfunction is not absolute, but it is serious; probably about half the people taking pansharpening seriously are authors on [a single paper](https://ieeexplore.ieee.org/document/9844267). Mostly, on the research side we find deep learning techniques that proceed from the assumptions of aspatial imagery and fail badly on real data. On the applied side, equally partial in its grasp on what’s actually important and interesting in pansharpening, we have:
+
+</details>
+
+Another strategy, used by classical methods like those seen in Maxar’s own pansharpening and on Google Earth – as far as I can interpret them without documentation – is to (1) use only the RGB bands, since they’re aligned with each other (presumably by design), thereby cutting the problem roughly in half, and (2) functionally low-pass them. By “functionally” I mean that it’s not necessarily an explicit intention to deal with misalignment, but it helps. In Google Earth we generally see a “rainbow” only _behind_ moving objects in WorldView-2/3 imagery, and only _ahead_ in Pléiades Neo imagery. (The Neo design seems resistant to band misalignment; it’s likely it has a compact sensor subarray layout, or perhaps an optically elaborate correction system, compared to WorldView-2/3. Artifacts do appear around planes in flight.) This strategy is precluded by the use of all-band color conversion.
 
 <!-- https://pubs.usgs.gov/of/2021/1030/p/ofr20211030p.pdf -->
 
@@ -190,6 +216,9 @@ In my opinion, band misalignment alone is one of the most compelling reasons to 
 _A few notes on minor techniques that might help others._
 
 **Oklab.** The oklab color space is approximately perceptually uniform, so Ripple uses a color loss term that is simply Euclidean distance within it. This is a more correct version of the mean absolute error of (implicitly sRGB) color values that many image processing models use. It’s still not a perfect ΔE – oklab has its quirks – but it’s very close for small differences.
+
+**WorldView-2 and WorldView-3 approximate equivalence.** Many pansharpening systems that seem quite cavalier about strict correctness nevertheless treat WV-{2,3} as independent systems that need separate models. However, open documentation – [_Radiometric Use of WorldView-2_](https://dg-cms-uploads-production.s3.amazonaws.com/uploads/document/file/104/Radiometric_Use_of_WorldView-2_Imagery.pdf) and [_Radiometric Use of WorldView-3_](https://dg-cms-uploads-production.s3.amazonaws.com/uploads/document/file/207/Radiometric_Use_of_WorldView-3_v2.pdf) – shows them as functionally identical in virtually all ways relevant to pansharpening. The difference between them is unlikely to be the dominant term in any plausible error budget. (As a backstop argument, if they _do_ have materially important systematic differences, we would expect a good model to pick up on them and be bimodal.)
+
 
 TK?:
 
