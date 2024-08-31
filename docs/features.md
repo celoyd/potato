@@ -125,7 +125,9 @@ The imagery we’re interested in here is collected by [pushbroom sensors](https
 
 In the optical system of the satellite, light from a single line of Earth’s surface is diffracted into a spectrum, reasonably similar to the one cast by an ordinary prism. It can be imagined as looking like this, where the white line moving across the center of the scene on the right is being diffracted – split by wavelength – into the spectrum on the left:
 
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/y7KLyO2zXi4?si=Agu42iHOsz5HVfw7" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+[<img src="https://i.ytimg.com/vi/y7KLyO2zXi4/maxresdefault.jpg" width="50%">](https://www.youtube.com/watch?v=y7KLyO2zXi4)
+
+<!-- <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/y7KLyO2zXi4?si=Agu42iHOsz5HVfw7" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> -->
 
 _Simplified visualization of a line of an image being projected to a spectrum. Play fullscreen for greatest clarity, and see main text for notes. Source data: © Maxar, CC BY-NC._
 
