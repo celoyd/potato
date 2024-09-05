@@ -115,7 +115,7 @@ The data we’re considering tends to be slightly oversharp, meaning the point s
 
 Band misalignment is also called, for example, band-to-band mis-registration (BBMR).
 
-<details><summary>Lengthy, optional sidebar on the causes of band misalignment</summary>
+<details><summary>Lengthy (2,500 word), optional sidebar on the causes of band misalignment</summary>
 
 _The following contains both severe simplifications and heavy technical detail. It also makes assumptions about proprietary aspects of satellites’ designs. I welcome corrections that are sourced to reliable public information._
 
@@ -297,7 +297,7 @@ We use a third strategy in Ripple. This is in part a constraint of using all-ban
 
 TK
 
-We create a 2×_h_×_w_ offset field of low-frequency noise that’s zero at the edges (in order to avoid trying to move pixels across them). One of its “channels” can be visualized like this:
+We create a 2×h×w offset field of low-frequency noise that’s zero at the edges (to avoid trying to move pixels across them). One of its “channels” can be visualized like this:
 
 TK
 
@@ -319,14 +319,12 @@ _A few notes on minor techniques that might help others._
 
 **Oklab.** The oklab color space is approximately perceptually uniform, so Ripple uses a color loss term that is simply Euclidean distance within it. This is a more correct version of the mean absolute error of (implicitly sRGB) color values that many image processing models use. It’s still not a perfect ΔE – oklab has its quirks – but it’s very close for small differences.
 
-**WorldView-2 and WorldView-3 approximate equivalence.** Many pansharpening systems that seem quite cavalier about strict correctness nevertheless treat WV-{2,3} as independent systems that need separate models. However, open documentation – [_Radiometric Use of WorldView-2_](https://dg-cms-uploads-production.s3.amazonaws.com/uploads/document/file/104/Radiometric_Use_of_WorldView-2_Imagery.pdf) and [_Radiometric Use of WorldView-3_](https://dg-cms-uploads-production.s3.amazonaws.com/uploads/document/file/207/Radiometric_Use_of_WorldView-3_v2.pdf) – shows them as functionally identical in virtually all ways relevant to pansharpening. The difference between them is unlikely to be the dominant term in any plausible error budget. (As a backstop argument, if they _do_ have materially important systematic differences, we would expect a good model to pick up on them and be bimodal.)
+**Using the Maxar Open Data Repository.** This is, so far as I know, the largest assembly of highest-resolution satellite data that has ever been openly available. Its landcover distribution is not exactly what a researcher might request, but it’s close. Training on it rather than on a few scenes is an enormous advantage. Naturally it entails certain legal and moral responsibilities, but for those of us interested in the problem in itself, it’s an amazing resource. (Those with a practical need for pansharpening have their own data to use, I assume.)
 
+**Double downsampling.** Ripple trains on, in the notation from the Wald sidebar, (P↓↓↓↓, M↓↓↓↓) → V↓↓. This is a dependence on lots of training data. It means the model sees data that is even more removed from the inference (real) scale than it would with singlefold Wald, which is a serious disadvantage. I believe the model materially suffers from a lack of examples of, for example, large non-water blue objects. On the other hand, it makes for much cleaner target data.
 
-TK?:
+**Avoiding clouds.** To avoid showing the model target imagery with offsets as large as those seen on clouds, even double-downsampled, I filtered inputs to only completely clear ones. (And one of Nairobi with a bit of cloud – [104001008E063C00](https://radiantearth.github.io/stac-browser/#/external/maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kenya-Flooding-May24/ard/acquisition_collections/104001008E063C00_collection.json?.language=en) – because it was too beautiful.)
 
-- Shuffling
-- Maxar Open Data
-- Oklab
-- Double downsampling
-- Bias for things other than sharpness?
-- 
+**Mixing WorldView-2 and WorldView-3 data.** Many pansharpening systems that seem quite unrigorous in their approaches nevertheless treat WV-{2,3} as independent systems that need separate models. However, open documentation – [_Radiometric Use of WorldView-2_](https://dg-cms-uploads-production.s3.amazonaws.com/uploads/document/file/104/Radiometric_Use_of_WorldView-2_Imagery.pdf) and [_Radiometric Use of WorldView-3_](https://dg-cms-uploads-production.s3.amazonaws.com/uploads/document/file/207/Radiometric_Use_of_WorldView-3_v2.pdf) – shows them as functionally identical in virtually all ways relevant to pansharpening. The difference between them is unlikely to be one of the largest parts of any plausible error budget. (As a backstop argument, if they _do_ have noticeable differences, we would expect a good model to notice them and be bimodal.)
+
+**No sharpness bias.** People developing pansharpening techniques like to show that their work produces sharp outputs. But a slightly undersharp image and a slightly oversharp image are about equally useful; it’s easy to turn one into the other with very little loss. Problems arise when they are _very_ under- or over-sharp, which start to destroy amounts of information that will actually matter to users. The correct aim point is to produce images as sharp as the world is. Users who prefer slight oversharpness, for example, can apply an unsharp mask or similar. There is certainly more to this from a signal processing perspective, but I don’t think it changes the practical analysis.
