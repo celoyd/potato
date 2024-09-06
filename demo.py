@@ -32,7 +32,8 @@ qgis nairobi.tiff 104001008E063C00-visual.tif
 
 TODO:
 - Handle nodata better.
-- Add option to use device (*PU).
+- Add CLI option to use device (*PU).
+- Batch blocks.
 - Relax ARD assumptions.
 - Multiprocessing?
 - Tonemapping?
@@ -47,13 +48,15 @@ from sys import argv
 import torch
 import colour
 import numpy as np
+from tqdm import tqdm
 
-from skimage import io
+from skimage import io # todo: imageio
 
 block = 1024
 apron = 32
 big_block = block + 2 * apron
-
+# device = 'cpu'
+device = 'cuda:0'
 
 def buffer_window(w, margin):
     return windows.Window(
@@ -72,8 +75,8 @@ def quarter_window(w):
     return windows.Window(w.col_off // 4, w.row_off // 4, w.width // 4, w.height // 4)
 
 
-model = Ripple()
-model.load_state_dict(torch.load(argv[3], map_location="cpu"))
+model = Ripple().to(device)
+model.load_state_dict(torch.load(argv[3], map_location=device))
 model.eval()
 
 ctr = 0
@@ -92,86 +95,92 @@ profile.update(
         "tiled": True,
         "blockxsize": 1024,
         "blockysize": 1024,
-        "compress": "LZW",
+        "compress": "zstd",
+        "predictor": 2,
         "interleave": "pixel"
     }
 )
 
-print(profile)
+# print(profile)
 
 dst = rasterio.open(argv[4], "w", **profile)
 
-for i, w in dst.block_windows():
-    print()
-    print(i)
-    buffered_window = buffer_window(w, apron)
-    reading_window = clip_window(buffered_window, pan)
+print("Let’s pansharpen ^_^")
 
-    print(f"{w = }")
-    print(f"{buffered_window = }")
-    print(f"{reading_window = }")
+with tqdm(list(dst.block_windows()), unit="block") as progress:
+    for i, w in progress:
+                # progress.set_postfix(
+                #     avg=f"{float(np.mean(losses)):.3f}",
+                # )
 
-    pan_pixels = pan.read(window=reading_window)
-    mul_pixels = mul.read(window=quarter_window(reading_window))
+        buffered_window = buffer_window(w, apron)
+        reading_window = clip_window(buffered_window, pan)
 
-    skip_chunk = False
-    if np.all(pan_pixels == 0) and np.all(mul_pixels == 0):
-        print("Skipping all-zero chunk.")
-        skip_chunk = True
+        # print(f"{w = }")
+        # print(f"{buffered_window = }")
+        # print(f"{reading_window = }")
 
-    pan_pixels_shape = pan_pixels.shape
-    print(f"{pan_pixels_shape = }")
-    mul_pixels_shape = mul_pixels.shape
+        pan_pixels = pan.read(window=reading_window)
+        mul_pixels = mul.read(window=quarter_window(reading_window))
 
-    original_mul_pixels = torch.tensor(mul_pixels.astype("float32") / 10_000)
-    original_pan_pixels = torch.tensor(pan_pixels.astype("float32") / 10_000)
+        skip_chunk = False
+        if np.all(pan_pixels == 0) and np.all(mul_pixels == 0):
+            # print("Skipping all-zero chunk.")
+            skip_chunk = True
 
-    pan_pixels = torch.zeros((1, big_block, big_block))
-    pan_pixels[:, : pan_pixels_shape[1], : pan_pixels_shape[2]] = original_pan_pixels
+        pan_pixels_shape = pan_pixels.shape
+        # print(f"{pan_pixels_shape = }")
 
-    mul_pixels = torch.zeros((8, big_block // 4, big_block // 4))
-    mul_pixels[:, : mul_pixels_shape[1], : mul_pixels_shape[2]] = original_mul_pixels
+        mul_pixels_shape = mul_pixels.shape
 
-    pack = torch.concat([pile(pan_pixels, factor=4), mul_pixels], dim=0).unsqueeze(0)
+        original_mul_pixels = torch.tensor(mul_pixels.astype("float32") / 10_000)
+        original_pan_pixels = torch.tensor(pan_pixels.astype("float32") / 10_000)
 
-    # pack = pack.cuda() ###
+        pan_pixels = torch.zeros((1, big_block, big_block))
+        pan_pixels[:, : pan_pixels_shape[1], : pan_pixels_shape[2]] = original_pan_pixels
 
-    if not skip_chunk:
-        _, _, sharp = model(pack)
-        sharp = sharp.detach().numpy()
-        sharp = np.array(sharp, order="C")[0]
-        sharp = sharp[:, : pan_pixels_shape[1], : pan_pixels_shape[2]]
-    else:
-        sharp = np.zeros((pan_pixels.shape[-3]*3, pan_pixels.shape[-2], pan_pixels.shape[-1]))
+        mul_pixels = torch.zeros((8, big_block // 4, big_block // 4))
+        mul_pixels[:, : mul_pixels_shape[1], : mul_pixels_shape[2]] = original_mul_pixels
 
-    print(f"{sharp.shape = }")
+        pack = torch.concat([pile(pan_pixels, factor=4), mul_pixels], dim=0).unsqueeze(0)
 
-    left_start = w.col_off - reading_window.col_off
-    top_start = w.row_off - reading_window.row_off
-    right_end = w.width + left_start
-    bottom_end = w.height + top_start
+        pack = pack.to(device) #cuda() ###
 
-    print(f"{left_start = }")
-    print(f"{top_start = }")
-    print(f"{right_end = }")
-    print(f"{bottom_end = }")
+        if not skip_chunk:
+            _, _, sharp = model(pack)
+            sharp = sharp.detach().cpu().numpy()
+            sharp = np.array(sharp, order="C")[0]
+            sharp = sharp[:, : pan_pixels_shape[1], : pan_pixels_shape[2]]
+        else:
+            sharp = np.zeros((pan_pixels.shape[-3]*3, pan_pixels.shape[-2], pan_pixels.shape[-1]))
 
-    print(f"{sharp.shape = }")
-    sharp = sharp[:, top_start:bottom_end, left_start:right_end]
-    print(f"{sharp.shape = }")
+        # print(f"{sharp.shape = }")
 
-    print(sharp.mean(), sharp.std())
+        left_start = w.col_off - reading_window.col_off
+        top_start = w.row_off - reading_window.row_off
+        right_end = w.width + left_start
+        bottom_end = w.height + top_start
 
-    sharp = np.moveaxis(sharp, 0, 2)
-    sharp = colour.XYZ_to_sRGB(colour.Oklab_to_XYZ(sharp))
-    sharp = np.moveaxis(sharp, 2, 0)
+        # print(f"{left_start = }")
+        # print(f"{top_start = }")
+        # print(f"{right_end = }")
+        # print(f"{bottom_end = }")
+        # print(f"{sharp.shape = }")
 
-    sharp = np.clip(sharp * 65_535, 0, 65_535).astype(np.uint16)
+        sharp = sharp[:, top_start:bottom_end, left_start:right_end]
 
-    print(f"{sharp.shape = }")
+        # print(f"{sharp.shape = }")
+        # print(sharp.mean(), sharp.std())
 
-    print(sharp.mean(), sharp.std())
+        sharp = np.moveaxis(sharp, 0, 2)
+        sharp = colour.XYZ_to_sRGB(colour.Oklab_to_XYZ(sharp))
+        sharp = np.moveaxis(sharp, 2, 0)
 
-    dst.write(sharp, window=w)
+        sharp = np.clip(sharp * 65_535, 0, 65_535).astype(np.uint16)
 
-    ctr += 1
+        # print(f"{sharp.shape = }")
+        # print(sharp.mean(), sharp.std())
+
+        dst.write(sharp, window=w)
+
+        ctr += 1
