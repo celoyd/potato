@@ -15,7 +15,7 @@ The following works on a recent Ubuntu system. Readers who prefer some other way
 
 [Install pip](https://pip.pypa.io/en/stable/installation/) and create a new virtual environment. This code is tested with python 3.12.
 
-```sh
+```console
 
 # create a new virtual environment
 $ virtualenv ~/ripple -p python3.12
@@ -48,13 +48,13 @@ A sidebar if you’re thinking of other inputs: Ripple expects data that looks l
 
 We use a {} expansion to make this slightly more legible with the long and very similar URIs:
 
-```sh
+```console
 $ curl -O "https://maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahramanmaras-turkey-earthquake-23/ard/37/031133102033/2022-07-20/10300100D6740900-{pan,ms}.tif"
 ```
 
 We now have the two TIFF files:
 
-```sh
+```console
 $ du -h 10300100D6740900-*
 102M  10300100D6740900-ms.tif
 199M  10300100D6740900-pan.tif
@@ -64,13 +64,13 @@ $ du -h 10300100D6740900-*
 
 Let’s go for it:
 
-```sh
+```console
 $ python demo.py --device=cuda 10300100D6740900-{pan,ms}.tif weights/space_heater-gen-99.pt 10300100D6740900-ps.tiff 
 ```
 
 You should see either some kind of reasonably helpful error or a progress bar. On my 1070 (a GPU about 5 years old), it takes exactly a minute. We now have a big output file:
 
-```sh
+```console
 $ du -h 10300100D6740900-ps.tiff
 484M  10300100D6740900-ps.tiff
 ```
@@ -79,7 +79,7 @@ This is a reasonably ordinary RGB TIFF – other than its substantial size of ne
 
 It is a geotiff, meaning it’s in a defined projection, which can make some cautious tools complain that it has unknown tags. This should be harmless. For example, if we use the [ImageMagick](https://imagemagick.org/index.php) tool `convert` to crop out a section, we get warnings:
 
-```sh
+```console
 $ convert 10300100D6740900-ps.tiff -crop 512x512+8200+9150 Yeşilvadi.png
 convert-im6.q16: Unknown field with tag 33550 (0x830e) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/905.
 convert-im6.q16: Unknown field with tag 33922 (0x8482) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/905.
@@ -93,7 +93,7 @@ TK Yeşilvadi crop
 
 If we add some contrast with `convert`, like this:
 
-```sh
+```console
 $ convert 10300100D6740900-ps.tiff -crop 512x512+8200+9150 -sigmoidal-contrast 20x50% Yeşilvadi-pretty.png
 ```
 
@@ -109,7 +109,7 @@ Let’s do some spatial things for the readers who want to see how fun that can 
 
 First we’ll draw a box around the corner of Yeşilvadi Park that’s visible in the image on [geojson.io](https://geojson.io). Copy and paste the JSON (in the sidebar on the right) into a file named `box.json`, or use mine:
 
-```sh
+```console
 cat << EOF > box.json
 {
   "type": "FeatureCollection",
@@ -133,7 +133,7 @@ EOF
 
 I now regret using this region for an example because it’s near the curve where longitude = latitude, so we see an implausible number of 37s, but that’s how it goes sometimes. We have to check the resolution of Ripple’s output (which is also the resolution of the original pan image), because Maxar’s pansharpening gets upsampled for the ARD format, so we’ll want to downsample it for comparison. We can do that like so:
 
-```sh
+```console
 $ gdalinfo 10300100D6740900-ps.tiff
 ```
 
@@ -141,7 +141,7 @@ There’s a lot of output but the line we want is `Pixel Size = (0.5492659222497
 
 Now we need the bit of knowledge about Maxar’s ARD format that the official pansharpened image will have the same name as the `-pan.tif` and `-ms.tif` but with `-visual.tif`. With this, we can use `gdalwarp` to punch out the shape of our box around the corner of Yeşilvadi Park. The tooling knows how to use the network, so we can give it an HTTPS URI instead of a filename, but we’ll need to tell it the resolution to resample to, and what resampling method to use (we’ll go with [Lanczos](https://en.wikipedia.org/wiki/Lanczos_resampling), for sharpness – it’s debatable whether that’s the best choice but this is just a demo). This looks like:
 
-```sh
+```console
 $ gdalwarp -cutline box.json -crop_to_cutline -r Lanczos -tr 0.5493 0.5493 https://maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahramanmaras-turkey-earthquake-23/ard/37/031133102033/2022-07-20/10300100D6740900-visual.tif Maxar-Yeşilvadi.tiff
 
 # same except source and destination:
@@ -169,7 +169,7 @@ Here we will use [the Maxar Open Data Program’s imagery for the Emilia-Romagna
 We’ll need two folders, each of which will hold a lot of data. I do i/o-heavy tasks like this on low-end external solid-state drives, and use symlinks to keep the paths convenient. You can skip all that and just do:
 
 
-```sh
+```console
 $ mkdir ards
 $ mkdir chips
 ```
@@ -190,7 +190,7 @@ Now we can fetch the data:
 
 TK TK
 
-```sh
+```console
 $ aws s3 sync s3://maxar-opendata/events/ ards/
 ```
 
