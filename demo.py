@@ -1,57 +1,53 @@
 '''
-demo.py: pansharpen big ARD-style images on the CPU
-python demo.py pan.tiff mul.tiff weights.pt output.tiff
+demo.py: pansharpen with potato
+Usage: python demo.py pan.tiff mul.tiff -w weights.pt output.tiff
+Also see the --help.
 
-This is demo-quality in that a lot of its choices are hardcoded
-and not carefully considered. It's also very verbose, for testing.
+This code contains many hardcoded assmptions about data format and user 
+preferences. It is truly a demo.
 
 Example workflow:
 
-# We get the pan and mul parts of a big image (downtown Nairobi):
+We get the pan and mul parts of a big image (downtown Nairobi):
 
-aws s3 cp s3://maxar-opendata/events/Kenya-Flooding-May24/ard/37/211111023311/2023-11-30/104001008E063C00-pan.tif .
+$ aws s3 cp s3://maxar-opendata/events/Kenya-Flooding-May24/ard/37/211111023311/2023-11-30/104001008E063C00-pan.tif .
+$ aws s3 cp s3://maxar-opendata/events/Kenya-Flooding-May24/ard/37/211111023311/2023-11-30/104001008E063C00-ms.tif .
 
-aws s3 cp s3://maxar-opendata/events/Kenya-Flooding-May24/ard/37/211111023311/2023-11-30/104001008E063C00-ms.tif .
+$ python demo.py 104001008E063C00-{pan,ms}.tif weights/space_heater-gen-95.pt test.tiff
 
-python demo.py 104001008E063C00-{pan,ms}.tif weights/space_heater-gen-95.pt test.tiff
+You might then want to, for example, make it a cloud-optimized geotiff:
 
-# This will run for at least several minutes!
-# You might then want to, for example, make it a cloud-optimized geotiff:
+$ pip install -U rio-cogeo
+$ rio cogeo create test.tiff nairobi.tiff
 
-pip install -U rio-cogeo
+You could then fetch the default pansharpening:
 
-rio cogeo create test.tiff nairobi.tiff
+$ aws s3 cp s3://maxar-opendata/events/Kenya-Flooding-May24/ard/37/211111023311/2023-11-30/104001008E063C00-visual.tif .
 
-# You could then fetch the default pansharpening:
+And then open both in QGIS to compare:
 
-aws s3 cp s3://maxar-opendata/events/Kenya-Flooding-May24/ard/37/211111023311/2023-11-30/104001008E063C00-visual.tif .
-
-# And then open both in QGIS to compare:
-
-qgis nairobi.tiff 104001008E063C00-visual.tif
-
-TODO:
-- Handle nodata better.
-- Add option to use device (*PU).
-- Relax ARD assumptions.
-- Multiprocessing?
-- Tonemapping?
+$ qgis nairobi.tiff 104001008E063C00-visual.tif
 
 '''
+
+from sys import argv, stderr
+import click
+
+import torch
+import numpy as np
+
+import colour
+
+from tqdm import tqdm
 
 import rasterio
 from rasterio import windows
 from ripple.model import Ripple
 from ripple.util import pile
-from sys import argv
-import torch
-import colour
-import numpy as np
 
-from skimage import io
 
-block = 1024
-apron = 32
+block = 1024 # edge of square to pansharpen at a time
+apron = 32 # extra space around each block
 big_block = block + 2 * apron
 
 
@@ -71,107 +67,88 @@ def clip_window(w, img):
 def quarter_window(w):
     return windows.Window(w.col_off // 4, w.row_off // 4, w.width // 4, w.height // 4)
 
+@click.command()
+@click.argument("panpath", nargs=1, type=click.Path(exists=True), required=True)
+@click.argument("mulpath", nargs=1, type=click.Path(exists=True), required=True)
+@click.argument("dstpath", nargs=1, type=click.Path(exists=False), required=True)
+@click.option("-w", "--weights", type=click.Path(exists=True), required=True, help="Checkpoint (weights) file")
+@click.option("-d", "--device", default="cuda", help="Torch device (e.g., cuda, cpu, mps)")
+def pansharpen(panpath, mulpath, dstpath, weights, device):
+    print(device)
+    pan_file, mul_file = (rasterio.open(path) for path in (panpath, mulpath))
 
-model = Ripple()
-model.load_state_dict(torch.load(argv[3], map_location="cpu"))
-model.eval()
+    assert mul_file.width == pan_file.width // 4
+    assert mul_file.height == pan_file.height // 4
 
-ctr = 0
+    profile = pan_file.profile
+    profile.update(
+        {
+            "count": 3,
+            "photometric": "RGB",
+            "blocksize": block,
+            "tiled": True,
+            "blockxsize": block,
+            "blockysize": block,
+            "compress": "zstd", # if you hit problems here, try "deflate"
+            "predictor": 2,
+            "interleave": "pixel",
+            "dtype": np.uint16,
+            "nodata": 0,
+        }
+    )
 
-pan, mul = (rasterio.open(path) for path in argv[1:3])
+    dst = rasterio.open(dstpath, "w", **profile)
 
-assert mul.width == pan.width // 4
-assert mul.height == pan.height // 4
+    model = Ripple().to(device)
+    model.load_state_dict(torch.load(weights, map_location=device, weights_only=True))
+    model.eval()
 
-profile = pan.profile
-profile.update(
-    {
-        "count": 3,
-        "photometric": "RGB",
-        "blocksize": 1024,
-        "tiled": True,
-        "blockxsize": 1024,
-        "blockysize": 1024,
-        "compress": "LZW",
-        "interleave": "pixel"
-    }
-)
+    with tqdm(list(dst.block_windows()), unit=" block") as progress:
+        for i, w in progress:
+            buffered_window = buffer_window(w, apron)
+            reading_window = clip_window(buffered_window, pan_file)
 
-print(profile)
+            pan_pixels = pan_file.read(window=reading_window)
+            mul_pixels = mul_file.read(window=quarter_window(reading_window))
 
-dst = rasterio.open(argv[4], "w", **profile)
 
-for i, w in dst.block_windows():
-    print()
-    print(i)
-    buffered_window = buffer_window(w, apron)
-    reading_window = clip_window(buffered_window, pan)
+            if np.all(pan_pixels == 0) and np.all(mul_pixels == 0):
+                print("skipping")
+                continue
 
-    print(f"{w = }")
-    print(f"{buffered_window = }")
-    print(f"{reading_window = }")
+            pan_pixels_shape = pan_pixels.shape
+            mul_pixels_shape = mul_pixels.shape
 
-    pan_pixels = pan.read(window=reading_window)
-    mul_pixels = mul.read(window=quarter_window(reading_window))
+            pan = torch.tensor(pan_pixels.astype("float32") / 10_000)
+            mul = torch.tensor(mul_pixels.astype("float32") / 10_000)
 
-    skip_chunk = False
-    if np.all(pan_pixels == 0) and np.all(mul_pixels == 0):
-        print("Skipping all-zero chunk.")
-        skip_chunk = True
+            pack = torch.concat(
+                [pile(pan, factor=4), mul], dim=0
+            ).unsqueeze(0)
 
-    pan_pixels_shape = pan_pixels.shape
-    print(f"{pan_pixels_shape = }")
-    mul_pixels_shape = mul_pixels.shape
+            pack = pack.to(device)
 
-    original_mul_pixels = torch.tensor(mul_pixels.astype("float32") / 10_000)
-    original_pan_pixels = torch.tensor(pan_pixels.astype("float32") / 10_000)
+            _, _, sharp = model(pack)
+            sharp = sharp.detach().cpu().numpy()[0]
 
-    pan_pixels = torch.zeros((1, big_block, big_block))
-    pan_pixels[:, : pan_pixels_shape[1], : pan_pixels_shape[2]] = original_pan_pixels
+            left_start = w.col_off - reading_window.col_off
+            top_start = w.row_off - reading_window.row_off
+            right_end = w.width + left_start
+            bottom_end = w.height + top_start
 
-    mul_pixels = torch.zeros((8, big_block // 4, big_block // 4))
-    mul_pixels[:, : mul_pixels_shape[1], : mul_pixels_shape[2]] = original_mul_pixels
+            sharp = sharp[:, top_start:bottom_end, left_start:right_end]
 
-    pack = torch.concat([pile(pan_pixels, factor=4), mul_pixels], dim=0).unsqueeze(0)
+            # trimmed_pan = pan_pixels[:, top_start:bottom_end, left_start:right_end]
+            # pan_nulls = trimmed_pan == 0
 
-    # pack = pack.cuda() ###
+            sharp = np.moveaxis(sharp, 0, 2)
+            sharp = colour.XYZ_to_sRGB(colour.Oklab_to_XYZ(sharp))
+            sharp = np.moveaxis(sharp, 2, 0)
 
-    if not skip_chunk:
-        _, _, sharp = model(pack)
-        sharp = sharp.detach().numpy()
-        sharp = np.array(sharp, order="C")[0]
-        sharp = sharp[:, : pan_pixels_shape[1], : pan_pixels_shape[2]]
-    else:
-        sharp = np.zeros((pan_pixels.shape[-3]*3, pan_pixels.shape[-2], pan_pixels.shape[-1]))
+            sharp = np.clip(sharp * 65_535, 1, 65_535).astype(np.uint16)
+            # sharp[:, pan_nulls[0]] = 0
 
-    print(f"{sharp.shape = }")
+            dst.write(sharp, window=w)
 
-    left_start = w.col_off - reading_window.col_off
-    top_start = w.row_off - reading_window.row_off
-    right_end = w.width + left_start
-    bottom_end = w.height + top_start
-
-    print(f"{left_start = }")
-    print(f"{top_start = }")
-    print(f"{right_end = }")
-    print(f"{bottom_end = }")
-
-    print(f"{sharp.shape = }")
-    sharp = sharp[:, top_start:bottom_end, left_start:right_end]
-    print(f"{sharp.shape = }")
-
-    print(sharp.mean(), sharp.std())
-
-    sharp = np.moveaxis(sharp, 0, 2)
-    sharp = colour.XYZ_to_sRGB(colour.Oklab_to_XYZ(sharp))
-    sharp = np.moveaxis(sharp, 2, 0)
-
-    sharp = np.clip(sharp * 65_535, 0, 65_535).astype(np.uint16)
-
-    print(f"{sharp.shape = }")
-
-    print(sharp.mean(), sharp.std())
-
-    dst.write(sharp, window=w)
-
-    ctr += 1
+if __name__ == "__main__":
+    pansharpen()
