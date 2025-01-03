@@ -18,10 +18,10 @@ The following works on a recent Ubuntu system. Readers who prefer some other way
 ```bash
 
 # create a new virtual environment
-virtualenv ~/ripple -p python3.12
+virtualenv ~/potato -p python3.12
 
 # enter it
-source ~/ripple/bin/activate
+source ~/potato/bin/activate
 
 # populate it
 pip install -r requirements.txt
@@ -104,7 +104,7 @@ And that’s the pansharpening demo. To familiarize yourself with the process a 
 
 ## Bonus geotiff tricks
 
-Let’s do some spatial things for the readers who want to see how fun that can be. Suppose we want to compare Ripple’s output to Maxar’s default pansharpening. We could use [QGIS](https://www.qgis.org/), [`rio`](https://rasterio.readthedocs.io/en/stable/cli.html), or other tools, but for this example let’s try `gdalwarp` (from the GDAL package).
+Let’s do some spatial things for the readers who want to see how fun that can be. Suppose we want to compare Potato’s output to Maxar’s default pansharpening. We could use [QGIS](https://www.qgis.org/), [`rio`](https://rasterio.readthedocs.io/en/stable/cli.html), or other tools, but for this example let’s try `gdalwarp` (from the GDAL package).
 
 First we’ll use [geojson.io](https://geojson.io) to draw a box around the corner of Yeşilvadi Park that’s visible in the image. Copy and paste the JSON (in the sidebar on the right) into a file named `box.json`, or use mine:
 
@@ -144,7 +144,7 @@ Now we need the bit of knowledge about Maxar’s ARD format that the official pa
 gdalwarp -cutline box.json -crop_to_cutline -r Lanczos -tr 0.5493 0.5493 https://maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahramanmaras-turkey-earthquake-23/ard/37/031133102033/2022-07-20/10300100D6740900-visual.tif Maxar-Yeşilvadi.tiff
 
 # same except source and destination:
-gdalwarp -cutline box.json -crop_to_cutline -r Lanczos -tr 0.5493 0.5493 10300100D6740900-ps.tif Ripple-Yeşilvadi.tiff
+gdalwarp -cutline box.json -crop_to_cutline -r Lanczos -tr 0.5493 0.5493 10300100D6740900-ps.tif potato-Yeşilvadi.tiff
 ```
 
 Now, although they started at different resolutions, we have pixel-aligned images. Maxar’s:
