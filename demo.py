@@ -45,11 +45,11 @@ from rasterio import windows
 from ripple.model import Ripple
 from ripple.util import pile
 
-
 block = 1024 # edge of square to pansharpen at a time
 apron = 32 # extra space around each block
 big_block = block + 2 * apron
-
+# device = 'cpu'
+device = 'cuda:0'
 
 def buffer_window(w, margin):
     return windows.Window(
