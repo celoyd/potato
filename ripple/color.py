@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 
-'''
+"""
 All matrixes other than mul_to_xyz are from Ottosson’s documentation;
 mul_to_xyz is fitted as described in docs/features.md.
 
@@ -11,7 +11,8 @@ As a convention, in einsum expressions we abbreviate:
  - oklab as l
  - (s)RGB as r
  - height and width as h and w
-'''
+"""
+
 
 class BandsToOklab(nn.Module):
     def __init__(self):
@@ -85,7 +86,7 @@ class OklabTosRGB(nn.Module):
                     [1, -0.0894841775, -1.2914855480],
                 ]
             ),
-            persistent=False
+            persistent=False,
         )
 
         self.register_buffer(
@@ -97,7 +98,7 @@ class OklabTosRGB(nn.Module):
                     [-0.0041960863, -0.7034186147, 1.7076147010],
                 ]
             ),
-            persistent=False
+            persistent=False,
         )
 
     def safe_pow(self, n, exp):

@@ -112,7 +112,7 @@ class Tile(Dataset):
             pan = pile(pan, factor=4)
 
             pack = torch.cat((pan, mul), 0)
-            path = self.mul_path #self.mul.name
+            path = self.mul_path  # self.mul.name
             coords = self.coords(mul_window)
 
             return pack, path, coords
@@ -143,10 +143,14 @@ class Chipper(Dataset):
                 with open(metadata) as md:
                     md = json.load(md)
 
-                inner_json_paths = [x["href"] for x in md["links"] if x["rel"] == "item"]
+                inner_json_paths = [
+                    x["href"] for x in md["links"] if x["rel"] == "item"
+                ]
                 for inner_json_path in inner_json_paths:
-                #inner_json_path = inner_json_path[0] # xxx
-                    chip_dir = (metadata.parent / Path(inner_json_path)).parent.absolute()
+                    # inner_json_path = inner_json_path[0] # xxx
+                    chip_dir = (
+                        metadata.parent / Path(inner_json_path)
+                    ).parent.absolute()
                     chip_cid = Path(inner_json_path).stem
 
                     try:
@@ -186,7 +190,7 @@ class Chipper(Dataset):
         noisy /= sums.view(8, 1, 1, 1)
         return noisy
 
-    #def worsen(self, x, all_std=0.05, each_std=0.1):
+    # def worsen(self, x, all_std=0.05, each_std=0.1):
     def worsen(self, x, all_std=0.005, each_std=0.01):
         all_k = self.a_noisy_kernel(all_std)
         x = F.conv2d(x, all_k, groups=8, padding="same")

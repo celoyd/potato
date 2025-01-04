@@ -6,6 +6,7 @@ from torch.nn import Mish
 from ripple.util import pile, tile, cheap_half
 from ripple.color import BandsToOklab
 
+
 def concat(*a):
     return torch.cat([*a], dim=1)
 

@@ -64,10 +64,10 @@ class WV23Misaligner(Module):
         # coordinates”, which are like u,v coordinates except they
         # go from -1 to 1. So we build a big coordinate tensor.
 
-        ramp = torch.linspace(-1, 1, self.side_length, device=self.device, requires_grad=False)
-        self.grid = torch.stack(
-            torch.meshgrid(ramp, ramp, indexing="xy"), dim=-1
+        ramp = torch.linspace(
+            -1, 1, self.side_length, device=self.device, requires_grad=False
         )
+        self.grid = torch.stack(torch.meshgrid(ramp, ramp, indexing="xy"), dim=-1)
 
         v = self.grid[..., 0]
         u = self.grid[..., 1]
@@ -79,10 +79,10 @@ class WV23Misaligner(Module):
         # print(f"{self.center_weight.shape = }")
 
         # self.small_noise = torch.empty(
-            # (2, side_length // 8, side_length // 8), device=self.device
+        # (2, side_length // 8, side_length // 8), device=self.device
         # )
         # self.noise = torch.empty(
-            # (2, side_length, side_length), device=self.device
+        # (2, side_length, side_length), device=self.device
         # )
 
         # We could save some space by juggling some of this data
@@ -111,17 +111,11 @@ class WV23Misaligner(Module):
         # From image layout to warp-field layout
         noise = noise.swapaxes(1, -1)
 
-        #joint_offset = noise * joint_amt
+        # joint_offset = noise * joint_amt
 
-        upper_offset = (
-            noise
-            * self.center_weight
-        ).swapaxes(-1, 0)
+        upper_offset = (noise * self.center_weight).swapaxes(-1, 0)
 
-        lower_offset = (
-            -1 * noise
-            * self.center_weight
-        ).swapaxes(-1, 0)
+        lower_offset = (-1 * noise * self.center_weight).swapaxes(-1, 0)
 
         res[:, self.upper_bands] = grid_sample(
             x[:, self.upper_bands],
@@ -143,13 +137,9 @@ class WV23Misaligner(Module):
 
     def check_shape(self, s):
         if s[1] != self.C:
-            raise ValueError(
-                f"Wrong band count. Expected {self.C} but got {s[1]}."
-            )
+            raise ValueError(f"Wrong band count. Expected {self.C} but got {s[1]}.")
         if s[2] != s[3]:
-            raise ValueError(
-                f"Non-square image: height {s[2]} is not width {s[3]}."
-            )
+            raise ValueError(f"Non-square image: height {s[2]} is not width {s[3]}.")
         if s[2] != self.side_length:
             raise ValueError(
                 (

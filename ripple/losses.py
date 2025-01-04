@@ -1,13 +1,16 @@
 import torch
 from torch import nn
 
+
 def oklab_saturation(x):
     return torch.sqrt(x[:, 1] * x[:, 1] + x[:, 2] * x[:, 2])
+
 
 def sat_diff(y, ŷ):
     y_sat = oklab_saturation(y)
     ŷ_sat = oklab_saturation(ŷ)
     return torch.mean(torch.abs(y_sat - ŷ_sat))
+
 
 def ΔEuOK(y, ŷ, a_weight=1.0, b_weight=1.0):
     """
@@ -46,13 +49,16 @@ def ΔEOK(y, ŷ, c_weight=1.0, h_weight=1.0):
     Δb = b1 - b2
 
     ΔH = torch.sqrt(torch.square(Δa) + torch.square(Δb) - torch.square(ΔC) + 1e-6)
-    
-    return torch.sqrt(
-        torch.square(ΔL)
-        + torch.square(ΔC * c_weight)
-        + torch.square(ΔH * h_weight)
-        + 1e-6
-    ).mean() * 50.0 # 50 is a JND – see ΔEuOK’s comment
+
+    return (
+        torch.sqrt(
+            torch.square(ΔL)
+            + torch.square(ΔC * c_weight)
+            + torch.square(ΔH * h_weight)
+            + 1e-6
+        ).mean()
+        * 50.0
+    )  # 50 is a JND – see ΔEuOK’s comment
 
 
 def proportional_loss(y, ŷ):
@@ -76,6 +82,7 @@ def rfft_loss(y, ŷ):
     fy = torch.fft.rfft(y)
     fŷ = torch.fft.rfft(ŷ)
     return torch.mean(torch.abs(fy - fŷ))
+
 
 def rfft_texture_loss(y, ŷ):
     dev = y.device

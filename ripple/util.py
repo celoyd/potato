@@ -1,6 +1,7 @@
 from einops import rearrange
 import torch
 
+
 def cheap_half(x):
     # Fast 2× downsample
     return (

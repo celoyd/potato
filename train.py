@@ -47,28 +47,20 @@ def net_loss(y, ŷ):
     s_loss = rfft_saturation_loss(y, ŷ)
     ok_loss = ΔEOK(y, ŷ)
 
-    return (
-        t_loss 
-        + ok_loss 
-        + s_loss
-    )
+    return t_loss + ok_loss + s_loss
 
 
 ### The training part
 
 
 @click.command()
-@click.option(
-    "--session", default="space_heater", help="Name of training session"
-)
+@click.option("--session", default="space_heater", help="Name of training session")
 @click.option("--load-epoch", default=0, help="Completed epoch to start from")
 @click.option("--lr", default=5e-4, help="Learning rate")
 @click.option("--epochs", default=320, help="Epochs to train for")
 @click.option("--chips", default="chips", help="Chip source")
 @click.option("--test-chips", default="chips", help="Test chip source")  # fixme
-@click.option(
-    "--epoch-length", default=4096, help="Number of chips per epoch"
-)
+@click.option("--epoch-length", default=4096, help="Number of chips per epoch")
 @click.option("--test-length", default=64, help="Number of chips to test on")
 @click.option("--workers", default=0, help="Chip-loading processes")
 @click.option("--device", default="cuda", help="Torch device to run on")
@@ -82,7 +74,7 @@ def train(
     epoch_length,
     test_length,
     workers,
-    device
+    device,
 ):
 
     physical_batch_size = 8  # parameterize
@@ -184,9 +176,7 @@ def train(
 
                     batch_counter = 0
 
-            log.add_scalars(
-                "loss", {"train": np.mean(np.array(losses))}, epoch_counter
-            )
+            log.add_scalars("loss", {"train": np.mean(np.array(losses))}, epoch_counter)
             log.flush()
 
             if epoch % 1 == 0:
