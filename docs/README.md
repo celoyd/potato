@@ -16,8 +16,4 @@
    2. All-band color conversion. ⚙️
    3. Artifact injection. ⚙️🤔
    4. Appendix: Minor techniques. ⚙️ _Tips and tricks that may be useful to others._
-4. Discussion and outlook.
-   1. Core premises. ⚙️🤔 _Some thesis statements for this project._
-   2. Pansharpening is undertheorized. 🤔 _An argument for higher-level pansharpening ideas._
-   3. Future research suggestions. ⚙️🤔 _Brief notes on promising directions._
-   4. Personal reflections. 🔰🤔 _A subjective account of my experiences with pansharpening._
+4. [Personal reflections](personal.md). 🔰🤔 _Notes on this project’s motivations._
