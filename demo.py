@@ -50,8 +50,6 @@ from ripple.color import OklabTosRGB
 block = 1024  # edge of square to pansharpen at a time
 apron = 32  # extra space around each block
 big_block = block + 2 * apron
-# device = 'cpu'
-device = "cuda:0"
 
 
 def buffer_window(w, margin):
