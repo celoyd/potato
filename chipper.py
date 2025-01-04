@@ -28,6 +28,10 @@ class OldSatellite(Exception):
     pass
 
 
+class MissingImage(Exception):
+    pass
+
+
 class TooManyNulls(Exception):
     pass
 
@@ -79,13 +83,15 @@ class Tile(Dataset):
         self.pan_path = self.root_dir / f"{self.cid}-pan.tif"
         self.mul_path = self.root_dir / f"{self.cid}-ms.tif"
 
+        if not (self.pan_path.exists() and self.mul_path.exists()):
+            raise MissingImage
+
         with rio.open(self.mul_path) as mul:
             self.mul_side = mul.profile["width"]
             self.mul_transform = mul.profile["transform"]
             self.mul_crs = mul.profile["crs"]
 
         self.to_latlon = Transformer.from_crs(self.mul_crs, 4326)
-        # print(self.to_latlon)
 
     def coords(self, mul_window):
         center = (
@@ -112,7 +118,7 @@ class Tile(Dataset):
             pan = pile(pan, factor=4)
 
             pack = torch.cat((pan, mul), 0)
-            path = self.mul_path  # self.mul.name
+            path = self.mul_path
             coords = self.coords(mul_window)
 
             return pack, path, coords
@@ -121,20 +127,20 @@ class Tile(Dataset):
 class Chipper(Dataset):
     """
     Represents a set of ARDs and makes it easy to read dispersed
-    chips out of them. Covers operations like image degradation that
-    are not specific to a file (those goes in the Tile object).
+    chips out of them. Covers operations that are not specific to
+    a file (those goe in the Tile object).
     """
 
-    def __init__(self, ard_roots, length, starting_from):
+    def __init__(self, ard_roots, length, accept_cids, starting_from):
 
         self.length = length
         self.starting_from = starting_from
 
+        self.accept_cids = accept_cids
+
         self.chips = []
 
         self.scattering = R2()
-
-        self.id_kernel = torch.tensor([[[[0, 0, 0], [0, 1, 0], [0, 0, 0]]]]).float()
 
         self.oklab = BandsToOklab()
 
@@ -147,11 +153,15 @@ class Chipper(Dataset):
                     x["href"] for x in md["links"] if x["rel"] == "item"
                 ]
                 for inner_json_path in inner_json_paths:
-                    # inner_json_path = inner_json_path[0] # xxx
                     chip_dir = (
                         metadata.parent / Path(inner_json_path)
                     ).parent.absolute()
                     chip_cid = Path(inner_json_path).stem
+                    if (accept_cids != []) and (chip_cid not in accept_cids):
+                        logging.warning(
+                            f"Skipping CID {chip_cid}: not in the accept list"
+                        )
+                        continue
 
                     try:
                         chip = Tile(chip_dir, chip_cid)
@@ -160,6 +170,14 @@ class Chipper(Dataset):
                         logging.warning(
                             f"Skipping CID {chip_cid}: satellite is not WV-2 or -3"
                         )
+                    except MissingImage:
+                        logging.warning(
+                            f"Skipping CID {chip_cid} in dir {chip_dir}: "
+                            "one of its files is missing"
+                        )
+        if len(self.chips) < 1:
+            logging.error("No (accept-listed) chips found in this ARD")
+            raise ValueError("No (accept-listed) chips found in this ARD")
 
     def validish(self, tensor):
         minimum = 0.75
@@ -167,43 +185,9 @@ class Chipper(Dataset):
         valid_count = torch.count_nonzero(tensor)
         return valid_count > (pixel_count * minimum)
 
-    def m_noise(self, shape, scale):
-        # Multiplicative noise centers on 1
-        return torch.normal(1.0, scale, shape)
-
-    def a_noise(self, shape, scale):
-        # Additive noise centers on 0
-        return torch.normal(0.0, scale, shape)
-
-    def a_noisy_kernel(self, std=0.1):
-        noise = self.a_noise(self.id_kernel.shape, std)
-        noisy = self.id_kernel + noise
-        noisy /= noisy.sum()
-        noisy = noisy.expand(8, -1, -1, -1)
-        return noisy
-
-    def eight_noisy_kernels(self, std=0.1):
-        identities = self.id_kernel.expand(8, -1, -1, -1)
-        noise = self.a_noise(identities.shape, std)
-        noisy = identities + noise
-        sums = noisy.sum(dim=(-1, -2))
-        noisy /= sums.view(8, 1, 1, 1)
-        return noisy
-
-    # def worsen(self, x, all_std=0.05, each_std=0.1):
-    def worsen(self, x, all_std=0.005, each_std=0.01):
-        all_k = self.a_noisy_kernel(all_std)
-        x = F.conv2d(x, all_k, groups=8, padding="same")
-
-        each_k = self.eight_noisy_kernels(each_std)
-        x = F.conv2d(x, each_k, groups=8, padding="same")
-
-        return x
-
     def pack_to_xy(self, pack):
         pack = pack.float() / 10_000
 
-        # pan = cheap_half(shuf2(y[:16]))
         pan = cheap_half(tile(pack[:16], 4))
         mul = cheap_half(pack[16:])
 
@@ -212,20 +196,9 @@ class Chipper(Dataset):
         mul = torch.rot90(mul, dims=(-1, -2), k=rots)
 
         pan_down = cheap_half(cheap_half(pan)).unsqueeze(0)
-        # pan_down = unshuf2(pan_down)
         pan_down = pile(pan_down, 4)
 
         mul_down = cheap_half(cheap_half(mul)).unsqueeze(0)
-
-        # mul_down = self.worsen(mul_down)
-
-        # mul_down = mul_down * self.m_noise(
-        #     mul_down.shape, scale=1 / 250
-        # ) + self.a_noise(mul_down.shape, scale=1 / 1_000)
-
-        # pan_down = pan_down * self.m_noise(
-        #     pan_down.shape, scale=1 / 1_000
-        # ) + self.a_noise(pan_down.shape, scale=1 / 2_000)
 
         x = torch.squeeze(torch.cat([pan_down, mul_down], dim=1))
 
@@ -286,9 +259,19 @@ def cli(log):
     required=True,
     type=int,
 )
+@click.option(
+    "--accept-cids",
+    "-a",
+    type=click.Path(exists=True, file_okay=True, path_type=Path),
+)
 @click.option("--starting-from", "-s", type=int, default=0)
-def make_chips(ard_dir, chip_dir, count, starting_from):
-    chipper = Chipper([ard_dir], count, starting_from)
+def make_chips(ard_dir, chip_dir, count, accept_cids, starting_from):
+    if accept_cids:
+        accept_cids = [x.strip() for x in open(accept_cids)]
+    else:
+        accept_cids = []
+
+    chipper = Chipper([ard_dir], count, accept_cids, starting_from)
     completed = 0
     failed = 0
     n = starting_from
@@ -346,33 +329,3 @@ def link_chips(srcs, dst):
 
 if __name__ == "__main__":
     cli()
-
-"""
-scattering = R2()
-
-ard, chip_count, dst_dir = argv[1:]
-ard = Path(ard)
-chip_count = int(chip_count)
-dst_dir = Path(dst_dir)
-
-dst_dir.mkdir(exist_ok=True)
-
-ch = Chipper([ard], chip_count)
-
-done = 0
-failed = 0
-
-while done < chip_count:
-    # Todo: logging
-    try:
-        pack = ch[done + failed]
-        torch.save(pack, dst_dir / f"{done}.pt")
-        done += 1
-    except TooManyNulls:
-        failed += 1
-"""
-# if failed > done * 100:  # > (length / 2) and (tried / (done+1)) > 2:
-#    raise ValueError(f"Too many bad ones in {ard}.")
-
-# python chipper.py make-chips ard chipdir --log chiplog1.log
-# python chipper.py link-chips chipdir/{foo,bar} chipdir/pool
