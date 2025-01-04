@@ -1,13 +1,17 @@
 import torch
 from torch import nn
 
-# Convention: in einsum expressions we abbreviate:
-# - XYZ as x
-# - LMS as m
-# - oklab as l
-# - sRGB as r
-# - height and width as h and w
+'''
+All matrixes other than mul_to_xyz are from Ottosson’s documentation;
+mul_to_xyz is fitted as described in docs/features.md.
 
+As a convention, in einsum expressions we abbreviate:
+ - XYZ as x
+ - LMS as m
+ - oklab as l
+ - (s)RGB as r
+ - height and width as h and w
+'''
 
 class BandsToOklab(nn.Module):
     def __init__(self):
