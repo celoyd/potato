@@ -1,4 +1,4 @@
-'''
+"""
 demo.py: pansharpen with potato
 Usage: python demo.py pan.tiff mul.tiff -w weights.pt output.tiff
 Also see the --help.
@@ -13,7 +13,7 @@ We get the pan and mul parts of a big image (downtown Nairobi):
 $ aws s3 cp s3://maxar-opendata/events/Kenya-Flooding-May24/ard/37/211111023311/2023-11-30/104001008E063C00-pan.tif .
 $ aws s3 cp s3://maxar-opendata/events/Kenya-Flooding-May24/ard/37/211111023311/2023-11-30/104001008E063C00-ms.tif .
 
-$ python demo.py 104001008E063C00-{pan,ms}.tif weights/space_heater-gen-95.pt test.tiff
+$ python demo.py -d cuda -w weights/space_heater-gen-95.pt 104001008E063C00-{pan,ms}.tif test.tiff
 
 You might then want to, for example, make it a cloud-optimized geotiff:
 
@@ -28,7 +28,7 @@ And then open both in QGIS to compare:
 
 $ qgis nairobi.tiff 104001008E063C00-visual.tif
 
-'''
+"""
 
 from sys import argv, stderr
 import click
@@ -36,20 +36,23 @@ import click
 import torch
 import numpy as np
 
-import colour
+# import colour
 
 from tqdm import tqdm
 
 import rasterio
 from rasterio import windows
+
 from ripple.model import Ripple
 from ripple.util import pile
+from ripple.color import OklabTosRGB
 
-block = 1024 # edge of square to pansharpen at a time
-apron = 32 # extra space around each block
+block = 1024  # edge of square to pansharpen at a time
+apron = 32  # extra space around each block
 big_block = block + 2 * apron
 # device = 'cpu'
-device = 'cuda:0'
+device = "cuda:0"
+
 
 def buffer_window(w, margin):
     return windows.Window(
@@ -67,12 +70,21 @@ def clip_window(w, img):
 def quarter_window(w):
     return windows.Window(w.col_off // 4, w.row_off // 4, w.width // 4, w.height // 4)
 
+
 @click.command()
 @click.argument("panpath", nargs=1, type=click.Path(exists=True), required=True)
 @click.argument("mulpath", nargs=1, type=click.Path(exists=True), required=True)
 @click.argument("dstpath", nargs=1, type=click.Path(exists=False), required=True)
-@click.option("-w", "--weights", type=click.Path(exists=True), required=True, help="Checkpoint (weights) file")
-@click.option("-d", "--device", default="cuda", help="Torch device (e.g., cuda, cpu, mps)")
+@click.option(
+    "-w",
+    "--weights",
+    type=click.Path(exists=True),
+    required=True,
+    help="Checkpoint (weights) file",
+)
+@click.option(
+    "-d", "--device", default="cuda", help="Torch device (e.g., cuda, cpu, mps)"
+)
 def pansharpen(panpath, mulpath, dstpath, weights, device):
     print(device)
     pan_file, mul_file = (rasterio.open(path) for path in (panpath, mulpath))
@@ -89,8 +101,8 @@ def pansharpen(panpath, mulpath, dstpath, weights, device):
             "tiled": True,
             "blockxsize": block,
             "blockysize": block,
-            "compress": "zstd", # if you hit problems here, try "deflate"
-            "predictor": 2,
+            "compress": None,  # "zstd"
+            # "predictor": 2,
             "interleave": "pixel",
             "dtype": np.uint16,
             "nodata": 0,
@@ -103,6 +115,8 @@ def pansharpen(panpath, mulpath, dstpath, weights, device):
     model.load_state_dict(torch.load(weights, map_location=device, weights_only=True))
     model.eval()
 
+    sRGB = OklabTosRGB().to(device)
+
     with tqdm(list(dst.block_windows()), unit=" block") as progress:
         for i, w in progress:
             buffered_window = buffer_window(w, apron)
@@ -110,7 +124,6 @@ def pansharpen(panpath, mulpath, dstpath, weights, device):
 
             pan_pixels = pan_file.read(window=reading_window)
             mul_pixels = mul_file.read(window=quarter_window(reading_window))
-
 
             if np.all(pan_pixels == 0) and np.all(mul_pixels == 0):
                 print("skipping")
@@ -122,13 +135,12 @@ def pansharpen(panpath, mulpath, dstpath, weights, device):
             pan = torch.tensor(pan_pixels.astype("float32") / 10_000)
             mul = torch.tensor(mul_pixels.astype("float32") / 10_000)
 
-            pack = torch.concat(
-                [pile(pan, factor=4), mul], dim=0
-            ).unsqueeze(0)
+            pack = torch.concat([pile(pan, factor=4), mul], dim=0).unsqueeze(0)
 
             pack = pack.to(device)
 
             _, _, sharp = model(pack)
+            sharp = sRGB.convert(sharp)
             sharp = sharp.detach().cpu().numpy()[0]
 
             left_start = w.col_off - reading_window.col_off
@@ -141,14 +153,11 @@ def pansharpen(panpath, mulpath, dstpath, weights, device):
             # trimmed_pan = pan_pixels[:, top_start:bottom_end, left_start:right_end]
             # pan_nulls = trimmed_pan == 0
 
-            sharp = np.moveaxis(sharp, 0, 2)
-            sharp = colour.XYZ_to_sRGB(colour.Oklab_to_XYZ(sharp))
-            sharp = np.moveaxis(sharp, 2, 0)
-
             sharp = np.clip(sharp * 65_535, 1, 65_535).astype(np.uint16)
             # sharp[:, pan_nulls[0]] = 0
 
             dst.write(sharp, window=w)
+
 
 if __name__ == "__main__":
     pansharpen()
