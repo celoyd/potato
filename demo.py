@@ -47,6 +47,10 @@ from ripple.model import Ripple
 from ripple.util import pile
 from ripple.color import OklabTosRGB
 
+import concurrent.futures
+import threading
+
+
 block = 1024  # edge of square to pansharpen at a time
 apron = 32  # extra space around each block
 big_block = block + 2 * apron
@@ -84,76 +88,94 @@ def quarter_window(w):
     "-d", "--device", default="cuda", help="Torch device (e.g., cuda, cpu, mps)"
 )
 def pansharpen(panpath, mulpath, dstpath, weights, device):
-    print(device)
-    pan_file, mul_file = (rasterio.open(path) for path in (panpath, mulpath))
+    with rasterio.open(panpath) as panfile, rasterio.open(mulpath) as mulfile:
 
-    assert mul_file.width == pan_file.width // 4
-    assert mul_file.height == pan_file.height // 4
+        assert mulfile.width == panfile.width // 4
+        assert mulfile.height == panfile.height // 4
 
-    profile = pan_file.profile
-    profile.update(
-        {
-            "count": 3,
-            "photometric": "RGB",
-            "blocksize": block,
-            "tiled": True,
-            "blockxsize": block,
-            "blockysize": block,
-            "compress": None,  # "zstd"
-            # "predictor": 2,
-            "interleave": "pixel",
-            "dtype": np.uint16,
-            "nodata": 0,
-        }
-    )
+        profile = panfile.profile
+        profile.update(
+            {
+                "count": 3,
+                "photometric": "RGB",
+                "blocksize": block,
+                "tiled": True,
+                "blockxsize": block,
+                "blockysize": block,
+                "compress": "zstd",
+                "predictor": 2,
+                "interleave": "pixel",
+                "dtype": np.uint16,
+                "nodata": 0,
+            }
+        )
 
-    dst = rasterio.open(dstpath, "w", **profile)
+        with rasterio.open(dstpath, "w", **profile) as dstfile:
+            model = Ripple().to(device)
+            model.load_state_dict(
+                torch.load(weights, map_location=device, weights_only=True)
+            )
+            model.eval()
 
-    model = Ripple().to(device)
-    model.load_state_dict(torch.load(weights, map_location=device, weights_only=True))
-    model.eval()
+            sRGB = OklabTosRGB().to(device)
 
-    sRGB = OklabTosRGB().to(device)
+            read_lock = threading.Lock()
+            device_lock = threading.Lock()
+            write_lock = threading.Lock()
 
-    with tqdm(list(dst.block_windows()), unit=" block") as progress:
-        for i, w in progress:
-            buffered_window = buffer_window(w, apron)
-            reading_window = clip_window(buffered_window, pan_file)
+            def process(w):
+                buffered_window = buffer_window(w, apron)
+                reading_window = clip_window(buffered_window, panfile)
 
-            pan_pixels = pan_file.read(window=reading_window)
-            mul_pixels = mul_file.read(window=quarter_window(reading_window))
+                with read_lock:
+                    pan_pixels = panfile.read(window=reading_window)
+                    mul_pixels = mulfile.read(window=quarter_window(reading_window))
 
-            if np.all(pan_pixels == 0) and np.all(mul_pixels == 0):
-                continue
+                pan_pixels_shape = pan_pixels.shape
+                mul_pixels_shape = mul_pixels.shape
 
-            pan_pixels_shape = pan_pixels.shape
-            mul_pixels_shape = mul_pixels.shape
+                if np.all(pan_pixels == 0) and np.all(mul_pixels == 0):
+                    blank = torch.ones((3, pan_pixels_shape[-2], pan_pixels_shape[-1]))
+                    dstfile.write(blank, window=w)
+                    return
 
-            pan = torch.tensor(pan_pixels.astype("float32") / 10_000)
-            mul = torch.tensor(mul_pixels.astype("float32") / 10_000)
+                pan = torch.tensor(pan_pixels.astype("float32") / 10_000)
+                mul = torch.tensor(mul_pixels.astype("float32") / 10_000)
 
-            pack = torch.concat([pile(pan, factor=4), mul], dim=0).unsqueeze(0)
+                pack = torch.concat([pile(pan, factor=4), mul], dim=0).unsqueeze(0)
 
-            pack = pack.to(device)
+                with device_lock:
+                    pack = pack.to(device)
+                    sharp = model(pack)
+                    sharp = sRGB.forward(sharp)
+                    sharp = sharp.detach().cpu().numpy()[0]
 
-            sharp = model(pack)
-            sharp = sRGB.forward(sharp)
-            sharp = sharp.detach().cpu().numpy()[0]
+                left_start = w.col_off - reading_window.col_off
+                top_start = w.row_off - reading_window.row_off
+                right_end = w.width + left_start
+                bottom_end = w.height + top_start
 
-            left_start = w.col_off - reading_window.col_off
-            top_start = w.row_off - reading_window.row_off
-            right_end = w.width + left_start
-            bottom_end = w.height + top_start
+                sharp = sharp[:, top_start:bottom_end, left_start:right_end]
 
-            sharp = sharp[:, top_start:bottom_end, left_start:right_end]
+                trimmed_pan = pan_pixels[:, top_start:bottom_end, left_start:right_end]
+                pan_nulls = trimmed_pan == 0
 
-            trimmed_pan = pan_pixels[:, top_start:bottom_end, left_start:right_end]
-            pan_nulls = trimmed_pan == 0
+                sharp = np.clip(sharp * 65_535, 1, 65_535).astype(np.uint16)
+                sharp[:, pan_nulls[0]] = 0
 
-            sharp = np.clip(sharp * 65_535, 1, 65_535).astype(np.uint16)
-            sharp[:, pan_nulls[0]] = 0
+                with write_lock:
+                    dstfile.write(sharp, window=w)
 
-            dst.write(sharp, window=w)
+            windows = [w for i, w in dstfile.block_windows()]
+            print(len(windows))
+            with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+                _ = list(
+                    tqdm(
+                        executor.map(process, windows),
+                        total=len(windows),
+                        unit=" block",
+                    )
+                )
 
 
 if __name__ == "__main__":
