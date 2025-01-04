@@ -111,7 +111,7 @@ class OklabTosRGB(nn.Module):
             1.055 * self.safe_pow(lsrgb, 1 / 2.4) - 0.055,
         )
 
-    def convert(self, lab):
+    def forward(self, lab):
         lms = torch.einsum("...lhw, ml -> ...mhw", lab, self.oklab_to_lsrgb_m1)
         lms = self.safe_pow(lms, 3)
         lrgb = torch.einsum("...mhw, rm -> ...rhw", lms, self.oklab_to_lsrgb_m2)

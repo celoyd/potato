@@ -140,7 +140,7 @@ def pansharpen(panpath, mulpath, dstpath, weights, device):
             pack = pack.to(device)
 
             _, _, sharp = model(pack)
-            sharp = sRGB.convert(sharp)
+            sharp = sRGB.forward(sharp)
             sharp = sharp.detach().cpu().numpy()[0]
 
             left_start = w.col_off - reading_window.col_off
