@@ -82,6 +82,7 @@ In my notebooks are sloppy tables, made while cooking and on BART rides, where I
 | Bayer demosaicking | Pansharpening |
 | Views from inside buildings, landscapes, and the planetary boundary layer, of things within them | Views from outside buildings, landscapes, and the planetary boundary layer, of them |
 | Camera metadata | Spacetime metadata |
+| Not part of systematic repeat observations | One point in a time series |
 | Collected reactively, to record vision: prosthesis for memory | Collected proactively, to extend vision: substitution for memory |
 | Distance and per-object projection varies wildly | Nearly orthographic perspective; everything is in the perspectival far field and usually functionally equidistant |
 | Generally unknown POV that might be recovered from known points in the image | Continuous fabric of landscape and POV that can be co-refined to make both known |
