@@ -1,7 +1,7 @@
-# Untitled Pansharpening Project 2024
+# Potato: a pansharpening model
 
-![image](https://github.com/celoyd/pansharpening/assets/459970/8ba76553-8eaa-4aa6-944f-67e686130831)
+:potato:
 
 ## License
 
-Probably CC-BY-NC but TBD.
+[CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/deed.en).
