@@ -126,7 +126,6 @@ def pansharpen(panpath, mulpath, dstpath, weights, device):
             mul_pixels = mul_file.read(window=quarter_window(reading_window))
 
             if np.all(pan_pixels == 0) and np.all(mul_pixels == 0):
-                print("skipping")
                 continue
 
             pan_pixels_shape = pan_pixels.shape
@@ -150,11 +149,11 @@ def pansharpen(panpath, mulpath, dstpath, weights, device):
 
             sharp = sharp[:, top_start:bottom_end, left_start:right_end]
 
-            # trimmed_pan = pan_pixels[:, top_start:bottom_end, left_start:right_end]
-            # pan_nulls = trimmed_pan == 0
+            trimmed_pan = pan_pixels[:, top_start:bottom_end, left_start:right_end]
+            pan_nulls = trimmed_pan == 0
 
             sharp = np.clip(sharp * 65_535, 1, 65_535).astype(np.uint16)
-            # sharp[:, pan_nulls[0]] = 0
+            sharp[:, pan_nulls[0]] = 0
 
             dst.write(sharp, window=w)
 
