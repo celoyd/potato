@@ -4,110 +4,168 @@ from torch.nn.functional import grid_sample, conv2d
 from torchvision.transforms.functional import resize
 from torchvision.transforms import InterpolationMode
 
-upper_bands = [6, 4, 2, 1]
-lower_bands = [5, 3, 0, 7]
 
+class WV23Misaligner(Module):
+    """
+        Simulate multispectral band misalignments, including motion
+        artifacts (a.k.a. rainbowing) in WorldView-2/3 data
 
-def motion_warp(x, amt):
-    if len(x.shape) == 3:
-        x = x.unsqueeze(0)
-    b, c, h, w = x.shape
-    if h != w:
-        raise ValueError("Non-square image")
+        See __init__() and forward() for technical notes.
 
-    idx = torch.linspace(-1, 1, h, device=x.device)
-    grid = torch.stack(torch.meshgrid(idx, idx.t(), indexing="xy"), dim=-1).repeat(
-        b, 1, 1, 1
-    )
+        TODOs:
+        1. This is stupendously memory-hungry right now.
+        - square -> circle offset variation
 
-    amt /= w  # (h * w)**0.5
+    think about what makes sense
+        to set at init v. at call.
+        1. Right now we err on the side of too few options and too
+           much hardcoding of parameters at non–rigorously-determined
+           constant values.
 
-    noise = torch.normal(0, amt, (b, 2, h // 8, w // 8), device=x.device) ** 2
-    noise = resize(noise, (h, w), InterpolationMode("bicubic"))
+        We want to accomplish two basic things here:
+        1. Apply some random warps (like torchvison’s ElasticTransform),
+           but rolled off toward the image sides to avoid edge effects.
+           This simulates the multispectral bands not perfectly aligning
+           with the panchromatic band. Call this joint warp.
+        2. Much the same but with two sets of bands separately – the
+           upper and lower bands, named for their placement to either
+           side of the panchromatic band on the satellite’s sensor.
+           These tend to symmetrically diverge from the pan band where
+           there is motion (e.g., cars, planes) or departure from the
+           modeled gound surface (e.g., clouds, skyscrapers, planes).
+           Call this split warp.
 
-    hdist = grid[..., 0] ** 2
-    wdist = grid[..., 1] ** 2
-    mask = torch.sqrt(hdist + wdist).unsqueeze(1)
+        (An excellent paper to build some intutions about split warp is
+        “Exploiting Satellite Focal Plane Geometry for Automatic Extraction
+        of Traffic Flow from Single Optical Satellite Imagery” by T. Krauß
+        (http://dx.doi.org/10.5194/isprsarchives-XL-1-179-2014). It’s open
+        access and has the best illustrations I’ve seen on this topic.)
 
-    mask = 1 - torch.clamp(mask, 0.0, 1.0)
+        The implementation is best understood line by line, because it
+        involves a bunch of inter-related steps, pytorch quirks,
+        optimizations, and so on. But basically we generate a weight
+        field that peaks in the center, then multiply that with
+        smoothed noise to generate an offset field for grid_sample.
+    """
 
-    offset_field = (noise * mask).moveaxis(1, -1)  # .unsqueeze(0)
+    def __init__(self, side_length, device, weight_power=2.0):
+        super().__init__()
+        self.device = device
 
-    offset_rand = torch.rand((1), device=x.device) + 0.5
+        self.C = 8
 
-    x[:, upper_bands] = grid_sample(
-        x[:, upper_bands], grid + offset_field, "bicubic", align_corners=True
-    )
-    x[:, lower_bands] = grid_sample(
-        x[:, lower_bands],
-        grid - offset_field * offset_rand,
-        "bicubic",
-        align_corners=True,
-    )
+        # Non-square input will raise in forward().
+        self.side_length = side_length
 
-    return x
+        self.upper_bands = [6, 4, 2, 1]
+        self.lower_bands = [5, 3, 0, 7]
 
+        # grid_warp expects what are sometimes called “normalized
+        # coordinates”, which are like u,v coordinates except they
+        # go from -1 to 1. So we build a big coordinate tensor.
 
-# class HaloMaker(Module):
-#     def __init__(self, depth):
-#         super().__init__()
-#         cCc = torch.tensor([1.0, 2.0, 1.0])
-#         kernel = torch.outer(cCc, cCc)
-#         kernel /= kernel.sum()
+        ramp = torch.linspace(-1, 1, self.side_length, device=self.device, requires_grad=False)
+        self.grid = torch.stack(
+            torch.meshgrid(ramp, ramp, indexing="xy"), dim=-1
+        )
 
-#         self.blur = Conv2d(
-#             depth, depth, kernel_size=3, padding=1, padding_mode="reflect", bias=False, groups=depth
-#         )
+        v = self.grid[..., 0]
+        u = self.grid[..., 1]
+        self.center_weight = (
+            ((1 - torch.sqrt(u**2 + v**2)) ** weight_power).clamp(0, 1)
+            # .unsqueeze(0)
+        )
+        self.small_noise_shape = (2, side_length // 8, side_length // 8)
+        # print(f"{self.center_weight.shape = }")
 
-#         self.blur.weight.data = kernel.view(1, 1, 3, 3).repeat(depth, 1, 1, 1)
+        # self.small_noise = torch.empty(
+            # (2, side_length // 8, side_length // 8), device=self.device
+        # )
+        # self.noise = torch.empty(
+            # (2, side_length, side_length), device=self.device
+        # )
 
-#     def forward(self, x, mean=1.0, std=1.0):
-#         self.blur = self.blur.to(x.device)
-#         if len(x.shape) < 4:
-#             x = x.unsqueeze(0)
-#         B = x.shape[0]
+        # We could save some space by juggling some of this data
+        # between fewer tensors, but it would add operations and
+        # make people trying to understand this justifiably angry.
+        # self.upper_offsets = torch.empty((side_length, side_length, 2), device=self.device)
+        # self.lower_offsets = torch.empty((side_length, side_length, 2), device=self.device)
 
-#         r = torch.normal(mean, std, (B,)).view(B, 1, 1, 1).to(x.device)
-#         x_blurry = self.blur(x)
-#         the_blur = x_blurry - x
+    def forward(self, x, amt, joint_amt):
+        self.check_shape(x.shape)
 
-#         return x + (-r * the_blur)
+        res = torch.zeros_like(x)
 
+        # N, _, H, W = x.shape
+        N = x.shape[0]
+        amt = amt / self.side_length
 
-def halo(x, mean=1.0, std=1.0):
-    if len(x.shape) < 4:
-        x = x.unsqueeze(0)
-    B = x.shape[0]
-    r = torch.normal(mean, std, (B,)).view(B, 1, 1, 1).to(x.device)
+        small_noise = torch.normal(0, amt, self.small_noise_shape, device=self.device)
 
-    cCc = torch.tensor([1.0, 2.0, 1.0], device=x.device)
-    kernel = torch.outer(cCc, cCc)
-    kernel /= kernel.sum()
+        noise = resize(
+            small_noise,
+            (self.side_length, self.side_length),
+            InterpolationMode("bicubic"),
+        )
 
-    blurred = conv2d(
-        x,
-        kernel.view(1, 1, 3, 3).repeat(x.shape[1], 1, 1, 1),
-        # bias=False,
-        # stride=(1, 1),
-        # padding="reflect",
-        padding=(1, 1),
-        dilation=1,
-        # padding_mode="reflect",
-        groups=x.shape[1],
-    )
+        # From image layout to warp-field layout
+        noise = noise.swapaxes(1, -1)
 
-    r = torch.normal(mean, std, (B,)).view(B, 1, 1, 1).to(x.device)
-    the_blur = blurred - x
+        #joint_offset = noise * joint_amt
 
-    return x + (-r * the_blur)
+        upper_offset = (
+            noise
+            * self.center_weight
+        ).swapaxes(-1, 0)
+
+        lower_offset = (
+            -1 * noise
+            * self.center_weight
+        ).swapaxes(-1, 0)
+
+        res[:, self.upper_bands] = grid_sample(
+            x[:, self.upper_bands],
+            self.grid.repeat(N, 1, 1, 1) + upper_offset,
+            "bicubic",
+            padding_mode="reflection",
+            align_corners=False,
+        )
+
+        res[:, self.lower_bands] = grid_sample(
+            x[:, self.lower_bands],
+            self.grid.repeat(N, 1, 1, 1) + lower_offset,
+            "bicubic",
+            padding_mode="reflection",
+            align_corners=False,
+        )
+
+        return res
+
+    def check_shape(self, s):
+        if s[1] != self.C:
+            raise ValueError(
+                f"Wrong band count. Expected {self.C} but got {s[1]}."
+            )
+        if s[2] != s[3]:
+            raise ValueError(
+                f"Non-square image: height {s[2]} is not width {s[3]}."
+            )
+        if s[2] != self.side_length:
+            raise ValueError(
+                (
+                    "Wrong pixel dimension. Expected side length "
+                    f"{self.side_length} but got {s[2]}."
+                )
+            )
 
 
 class HaloMaker(Module):
-    def __init__(self, depth):
+    def __init__(self, depth, device):
         super().__init__()
-        cCc = torch.tensor([1.0, 2.0, 1.0])
+        self.device = device
+        cCc = torch.tensor([1.0, 2.0, 1.0], device=self.device, requires_grad=False)
         kernel = torch.outer(cCc, cCc)
-        kernel /= kernel.sum()
+        kernel = kernel / kernel.sum()
 
         self.blur = Conv2d(
             depth,
@@ -122,13 +180,8 @@ class HaloMaker(Module):
         self.blur.weight.data = kernel.view(1, 1, 3, 3).repeat(depth, 1, 1, 1)
 
     def forward(self, x, mean=1.0, std=1.0):
-        self.blur = self.blur.to(x.device)
-        if len(x.shape) < 4:
-            x = x.unsqueeze(0)
         B = x.shape[0]
-
-        r = torch.normal(mean, std, (B,)).view(B, 1, 1, 1).to(x.device)
+        r = torch.normal(mean, std, (B,), device=self.device).view(B, 1, 1, 1)
         x_blurry = self.blur(x)
         the_blur = x_blurry - x
-
         return x + (-r * the_blur)
