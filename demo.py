@@ -43,9 +43,9 @@ from tqdm import tqdm
 import rasterio
 from rasterio import windows
 
-from ripple.model import Ripple
-from ripple.util import pile
-from ripple.color import OklabTosRGB
+from potato.model import Potato
+from potato.util import pile
+from potato.color import OklabTosRGB
 
 import concurrent.futures
 import threading
@@ -111,7 +111,7 @@ def pansharpen(panpath, mulpath, dstpath, weights, device):
         )
 
         with rasterio.open(dstpath, "w", **profile) as dstfile:
-            model = Ripple().to(device)
+            model = Potato().to(device)
             model.load_state_dict(
                 torch.load(weights, map_location=device, weights_only=True)
             )

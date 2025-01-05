@@ -5,8 +5,8 @@ from pathlib import Path
 
 import sys
 
-from ripple.color import BandsToOklab
-from ripple.util import tile, pile, cheap_half
+from potato.color import BandsToOklab
+from potato.util import tile, pile, cheap_half
 
 import rasterio as rio
 import torch
