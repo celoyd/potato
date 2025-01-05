@@ -3,8 +3,8 @@ from torch import nn
 import torch.nn.functional as fn
 from torch.nn import Mish
 
-from ripple.util import pile, tile, cheap_half
-from ripple.color import BandsToOklab
+from potato.util import pile, tile, cheap_half
+from potato.color import BandsToOklab
 
 
 def concat(*a):
@@ -74,7 +74,7 @@ class ConvChunk(nn.Module):
         return x + skip
 
 
-class Ripple(nn.Module):
+class Potato(nn.Module):
     def __init__(self, n=48):
         super().__init__()
 

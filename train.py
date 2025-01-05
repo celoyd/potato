@@ -14,11 +14,11 @@ from einops import rearrange
 import click
 from tqdm import tqdm
 
-from ripple.model import Ripple, concat
-from ripple.util import tile, pile, cheap_half
-from ripple.color import BandsToOklab
-from ripple.augmentations import HaloMaker, WV23Misaligner
-from ripple.losses import rfft_texture_loss, rfft_saturation_loss, ΔEuOK, ΔEOK
+from potato.model import Potato, concat
+from potato.util import tile, pile, cheap_half
+from potato.color import BandsToOklab
+from potato.augmentations import HaloMaker, WV23Misaligner
+from potato.losses import rfft_texture_loss, rfft_saturation_loss, ΔEuOK, ΔEOK
 
 from pathlib import Path
 
@@ -103,7 +103,7 @@ def train(
 
     epoch_counter = 0
 
-    gen = Ripple(48).to(device)
+    gen = Potato(48).to(device)
 
     try:
         torch.compile(gen)
