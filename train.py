@@ -152,7 +152,7 @@ def train(
 
                 mul = misalignment(mul, amt=1.0, joint_amt=0.5)
 
-                mul = mul_halo(mul, mean=0.5, std=0.5)
+                mul = mul_halo(mul, mean=1.0, std=0.5)
 
                 x[:, :16] = pan
                 x[:, 16:] = mul
