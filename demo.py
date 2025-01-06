@@ -36,7 +36,7 @@ import click
 import torch
 import numpy as np
 
-# import colour
+from pathlib import Path
 
 from tqdm import tqdm
 
@@ -76,7 +76,7 @@ def quarter_window(w):
 @click.command()
 @click.argument("panpath", nargs=1, type=click.Path(exists=True), required=True)
 @click.argument("mulpath", nargs=1, type=click.Path(exists=True), required=True)
-@click.argument("dstpath", nargs=1, type=click.Path(exists=False), required=True)
+@click.argument("dstpath", nargs=1, type=click.Path(exists=False))
 @click.option(
     "-w",
     "--weights",
@@ -87,7 +87,8 @@ def quarter_window(w):
 @click.option(
     "-d", "--device", default="cuda", help="Torch device (e.g., cuda, cpu, mps)"
 )
-def pansharpen(panpath, mulpath, dstpath, weights, device):
+@click.option("-o", "--overwrite", is_flag=True)
+def pansharpen(panpath, mulpath, dstpath, weights, device, overwrite):
     with rasterio.open(panpath) as panfile, rasterio.open(mulpath) as mulfile:
 
         assert mulfile.count == 8
@@ -110,6 +111,11 @@ def pansharpen(panpath, mulpath, dstpath, weights, device):
                 "nodata": 0,
             }
         )
+
+        if Path(dstpath).exists() and not overwrite:
+            raise FileExistsError(
+                f"{dstpath} already exists but you didn’t ask for --overwrite"
+            )
 
         with rasterio.open(dstpath, "w", **profile) as dstfile:
             model = Potato().to(device)
