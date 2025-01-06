@@ -1,4 +1,5 @@
 import sys
+from pathlib import Path
 
 import torch
 from torch import nn
@@ -7,12 +8,7 @@ from torch.utils.data import DataLoader, Dataset
 
 import numpy as np
 
-from tensorboardX import SummaryWriter
-
 from einops import rearrange
-
-import click
-from tqdm import tqdm
 
 from potato.model import Potato, concat
 from potato.util import tile, pile, cheap_half
@@ -20,11 +16,9 @@ from potato.color import BandsToOklab
 from potato.augmentations import HaloMaker, WV23Misaligner
 from potato.losses import rfft_texture_loss, rfft_saturation_loss, ΔEuOK, ΔEOK
 
-from pathlib import Path
-
-
-l2_criterion = nn.MSELoss(reduction="mean")
-l1_criterion = nn.L1Loss(reduction="mean")
+from tensorboardX import SummaryWriter
+import click
+from tqdm import tqdm
 
 
 class ChipReader(Dataset):
@@ -48,9 +42,6 @@ def net_loss(y, ŷ):
     ok_loss = ΔEOK(y, ŷ)
 
     return t_loss + ok_loss + s_loss
-
-
-### The training part
 
 
 @click.command()
@@ -127,7 +118,6 @@ def train(
         losses = []
 
         with tqdm(trainloader, unit="b", mininterval=2) as progress:
-            # torch.autograd.set_detect_anomaly(True)
             pan_halo = HaloMaker(1, device=device)
             mul_halo = HaloMaker(8, device=device)
             misalignment = WV23Misaligner(
