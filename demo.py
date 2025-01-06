@@ -51,6 +51,10 @@ import concurrent.futures
 import threading
 
 
+class ImageDimensionError(Exception):
+    pass
+
+
 block = 1024  # edge of square to pansharpen at a time
 apron = 32  # extra space around each block
 big_block = block + 2 * apron
@@ -91,9 +95,19 @@ def quarter_window(w):
 def pansharpen(panpath, mulpath, dstpath, weights, device, overwrite):
     with rasterio.open(panpath) as panfile, rasterio.open(mulpath) as mulfile:
 
-        assert mulfile.count == 8
-        assert mulfile.width == panfile.width // 4
-        assert mulfile.height == panfile.height // 4
+        if mulfile.count != 8:
+            raise ImageDimensionError(
+                f"Expected an 8-band multispectral image but got {mulfile.count} bands. "
+                "Check that this is a WV-2/3 image (CID should start 103 or 104)."
+            )
+        if (mulfile.width != panfile.width // 4) or (
+            mulfile.height != panfile.height // 4
+        ):
+            raise ImageDimensionError(
+                f"Expected multispectral edge length exactly 1/4 pan edge length but got "
+                f"pan w×h {panfile.width}×{panfile.height} and "
+                f"mul w×h {mulfile.width}×{mulfile.height}"
+            )
 
         profile = panfile.profile
         profile.update(
