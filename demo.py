@@ -90,6 +90,7 @@ def quarter_window(w):
 def pansharpen(panpath, mulpath, dstpath, weights, device):
     with rasterio.open(panpath) as panfile, rasterio.open(mulpath) as mulfile:
 
+        assert mulfile.count == 8
         assert mulfile.width == panfile.width // 4
         assert mulfile.height == panfile.height // 4
 
