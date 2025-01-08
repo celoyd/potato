@@ -6,10 +6,6 @@ from torch import nn
 from torch.nn import functional as F
 from torch.utils.data import DataLoader, Dataset
 
-import numpy as np
-
-from einops import rearrange
-
 from potato.model import Potato, concat
 from potato.util import tile, pile, cheap_half
 from potato.color import BandsToOklab
@@ -187,15 +183,8 @@ def train(
     device,
     agenda,
 ):
-    """
-    The logical_epoch is our place in the session, and controls the filenames
-    of checkpoints. The physical_epoch, appearing later, is the count of
-    actually completed epochs in this run of the script.
-    """
-    logical_epoch = 0
-    physical_epoch = 0
 
-    # Set up the data loaders.
+    # Set up the chip loaders.
     loader_params = {
         "batch_size": physical_batch_size,
         "shuffle": True,
@@ -235,7 +224,7 @@ def train(
         print("Could not compile.")
 
     if agenda:
-        print(f"On device: {device}.")
+        print(f"Training time! Running on {device}.")
 
         if sesh.has_starters:
             ckpt = sesh.get_paths(sesh.name, sesh.logical_epoch, should_exist=False)[0]
@@ -294,7 +283,7 @@ def train(
                 batch_counter += 1
 
                 progress.set_postfix(
-                    avg=f"{float(np.mean(loss_history)):.3f}",
+                    avg=f"{float(torch.mean(torch.tensor(loss_history))):.3f}",
                 )
 
                 if batch_counter >= (logical_batch_size / physical_batch_size):
@@ -330,7 +319,7 @@ def train(
 
             log.add_scalars(
                 "loss",
-                {"test": np.mean(np.array(test_losses))},
+                {"test": torch.mean(torch.tensor(test_losses))},
                 sesh.logical_epoch,
             )
 
