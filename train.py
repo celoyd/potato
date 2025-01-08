@@ -232,7 +232,7 @@ def train(
         print(f"Training time! Running on {device}.")
 
         if sesh.has_starters:
-            ckpt = sesh.get_paths(sesh.name, sesh.logical_epoch, should_exist=False)[0]
+            ckpt = sesh.get_paths(sesh.name, sesh.logical_epoch - 1, should_exist=False)[0]
             origin_string = f"Loaded {ckpt} and corresponding optimizer."
         else:
             origin_string = f"Starting training from scratch."
@@ -285,12 +285,11 @@ def train(
                 loss.backward()
                 loss_history.append(float(loss.item()))
 
-                batch_counter += 1
-
                 progress.set_postfix(
                     avg=f"{float(torch.mean(torch.tensor(loss_history))):.3f}",
                 )
 
+                batch_counter += 1
                 if batch_counter >= (logical_batch_size / physical_batch_size):
                     opt.step()
                     opt.zero_grad(set_to_none=True)
@@ -301,25 +300,23 @@ def train(
             )
 
             # Testing part of epoch
+            gen.eval()
             with torch.no_grad():
                 test_losses = []
-
-                gen.eval()
 
                 gen_path, opt_path = sesh.get_next_paths()
                 torch.save(gen.state_dict(), gen_path)
                 torch.save(opt.state_dict(), opt_path)
 
                 for x, y in testloader:
-                    progress.set_description(f"(Testing)")
+                    # progress.set_description(f"(Testing)")
                     x = x.to(device, non_blocking=True)
                     y = y.to(device, non_blocking=True)
 
                     ŷ = gen(x)
 
                     test_loss = net_loss(y, ŷ)
-                    test_losses.append(float(test_loss.item()))
-
+                    test_losses.append(test_loss.item())
             gen.train()
 
             log.add_scalars(
