@@ -145,7 +145,7 @@ class Session(object):
     "--chips", default="chips", type=click.Path(exists=True), help="Chip source"
 )
 @click.option(
-    "--test-chips", required=True, type=click.Path(exists=True), help="Test chip source"
+    "--test-chips", default="test-chips", type=click.Path(exists=True), help="Test chip source"
 )
 @click.option("--train-length", default=4096, help="Number of chips per epoch")
 @click.option("--test-length", default=64, help="Number of chips to test on")
@@ -177,6 +177,15 @@ def train(
     device,
     agenda,
 ):
+    """
+    Potato trainer script.
+
+    Typical usage:
+
+    $ python train.py --session yukon-silver --load-from yukon-gold/49 
+    --chips chips --test-chips /media/ch/uaru/lc7/chido24 --lr 1e-4 
+    --train-length 5120 --epochs 24 --agenda
+    """
 
     # Set up the chip loaders.
     loader_params = {
