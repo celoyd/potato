@@ -267,9 +267,7 @@ def train(
                     avg=f"{float(np.mean(loss_history)):.3f}",
                 )
 
-                if (
-                    batch_counter >= (logical_batch_size / physical_batch_size)
-                ) or physical_epoch == epochs:
+                if batch_counter >= (logical_batch_size / physical_batch_size):
                     opt.step()
                     opt.zero_grad(set_to_none=True)
                     batch_counter = 0
