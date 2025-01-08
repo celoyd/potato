@@ -17,8 +17,12 @@ from potato.augmentations import HaloMaker, WV23Misaligner
 from potato.losses import rfft_texture_loss, rfft_saturation_loss, ΔEuOK, ΔEOK
 
 from tensorboardX import SummaryWriter
+
 import click
+
 from tqdm import tqdm
+
+import datetime
 
 
 class ChipReader(Dataset):
@@ -43,7 +47,7 @@ class Session(object):
     def __init__(self, name, load_from, dir="sessions", logical_epoch=0):
         self.name = name
 
-        # self.dir is the base-base directory; we use 
+        # self.dir is the base-base directory; we use
         # self.dir / self.name to get the actual seshdir
         self.dir = Path(dir)
         self.dir.mkdir(exist_ok=True)
@@ -56,29 +60,27 @@ class Session(object):
             if latest >= 0:
                 self.starters = self.get_paths(self.name, latest, should_exist=True)
                 self.logical_epoch = latest + 1
-        else:
+        else:  # new sesh
             (self.dir / self.name).mkdir(exist_ok=False)
 
         if load_from:
             load_session, load_epoch = self.parse_load_from(load_from)
-            self.starters = self.get_paths(load_session, load_number, should_exist=True)
+            self.starters = self.get_paths(load_session, load_epoch, should_exist=True)
 
-            if load_session == self.name: # this is a continuation
-                self.logical_epoch = load.epoch + 1
+            if load_session == self.name:  # this is a continuation
+                self.logical_epoch = load_epoch + 1  # debatable
 
     def has_starters(self):
         return hasattr(self, "starters")
 
     def get_starters(self):
-        return torch.load(self.starters[0], weights_only=True), torch.load(
-            self.starters[1], weights_only=True
-        )
+        return (torch.load(w, weights_only=True) for w in self.starters)
 
     def parse_load_from(self, load_from):
         if "/" in load_from:
             try:
-                load_session, load_number = load_from.split("/")
-                load_number = int(load_number)
+                load_session, load_epoch = load_from.split("/")
+                load_epoch = int(load_epoch)
             except:
                 raise UserError(
                     "Expected --load-from to look like sesh or sesh/1 "
@@ -86,7 +88,8 @@ class Session(object):
                 )
         else:
             load_session = load_from
-            load_number = self.get_latest_epoch(load_session)
+            load_epoch = self.get_latest_epoch(load_session)
+        return load_session, load_epoch
 
     def get_latest_epoch(self, sesh):
         ckpts = list((self.dir / sesh).glob("*.pt"))
@@ -97,6 +100,7 @@ class Session(object):
         numbers = [int(p.name.split("-")[0]) for p in ckpts]
         last = sorted(numbers)[-1]
 
+        # Abusing this as a check :/
         _ = self.get_paths(sesh, last, should_exist=True)
 
         return last
@@ -161,6 +165,12 @@ def net_loss(y, ŷ):
 )
 @click.option("--workers", default=0, help="Chip-loading workers")
 @click.option("--device", default="cuda", help="Torch device to run on")
+@click.option(
+    "--agenda",
+    is_flag=True,
+    default=False,
+    help="Print session parameters before starting",
+)
 def train(
     session,
     load_from,
@@ -175,6 +185,7 @@ def train(
     checkpoints,
     workers,
     device,
+    agenda,
 ):
     """
     The logical_epoch is our place in the session, and controls the filenames
@@ -208,8 +219,6 @@ def train(
         gen_weights, opt_weights = sesh.get_starters()
         gen.load_state_dict(gen_weights)
         opt.load_state_dict(opt_weights)
-    else:
-        print("Starting training from scratch!")
 
     # Now we know what to name the log.
     log = SummaryWriter(f"logs/{sesh.name}")
@@ -225,15 +234,36 @@ def train(
     except:
         print("Could not compile.")
 
+    if agenda:
+        print(f"On device: {device}.")
+
+        if sesh.has_starters:
+            ckpt = sesh.get_paths(sesh.name, sesh.logical_epoch, should_exist=False)[0]
+            origin_string = f"Loaded {ckpt} and corresponding optimizer."
+        else:
+            origin_string = f"Starting training from scratch."
+        print(origin_string)
+        print(f"The plan is {epochs} epochs of:")
+        print(
+            f"  Batch size: {logical_batch_size}\n"
+            f"  Physical batch size: {physical_batch_size}\n"
+            f"  Learning rate: {lr}\n"
+            f"  Chip source: {chips}\n"
+            f"  Test chip source: {test_chips}\n"
+        )
+
+        print(f"The next checkpoint will go in {sesh.get_next_paths()[0]}, and so on.")
+        print(f"Training starts at " + datetime.datetime.now().isoformat() + ".\n")
+
     for physical_epoch in range(epochs):
         batch_counter = 0
 
         with tqdm(trainloader, unit="b", mininterval=2) as progress:
 
             # Training part of epoch
+            loss_history = []
 
             for x, y in progress:
-                loss_history = []
                 progress.set_description(f"Ep {sesh.logical_epoch}")
 
                 x = x.to(device, non_blocking=True)
