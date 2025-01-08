@@ -232,7 +232,7 @@ def train(
         print(f"Training time! Running on {device}.")
 
         if sesh.has_starters:
-            ckpt = sesh.get_paths(sesh.name, sesh.logical_epoch - 1, should_exist=False)[0]
+            ckpt = sesh.starters[0]
             origin_string = f"Loaded {ckpt} and corresponding optimizer."
         else:
             origin_string = f"Starting training from scratch."
