@@ -78,7 +78,7 @@ class Session(object):
                 load_session, load_epoch = load_from.split("/")
                 load_epoch = int(load_epoch)
             except:
-                raise UserError(
+                raise ValueError(
                     "Expected --load-from to look like sesh or sesh/1 "
                     f"(name[/number]) but got {load_from}."
                 )
@@ -139,7 +139,7 @@ def net_loss(y, ŷ):
 
 @click.command()
 @click.option("--session", required=True, help="Name of training session")
-@click.option("--load-from", help="Checkpoint to start off: <name>/<number>")
+@click.option("--load-from", help="Checkpoint to start off: <session>/<number>")
 @click.option("--lr", "--learning-rate", default=5e-4, help="Optimizer learning rate")
 @click.option(
     "--physical-batch-size", "--pbs", default=8, help="Number of tiles to load at once"
@@ -147,7 +147,8 @@ def net_loss(y, ŷ):
 @click.option(
     "--logical-batch-size", "--lbs", default=64, help="Backprop every this many tiles"
 )
-@click.option("--epochs", default=320, help="Epochs to train for")
+@click.option("--epochs", type=int, help="Epochs to train for")
+@click.option("--up-to-epoch", type=int, help="Stop just before this logical epoch (conflicts with --epochs)")
 @click.option(
     "--chips", default="chips", type=click.Path(exists=True), help="Chip source"
 )
@@ -174,6 +175,7 @@ def train(
     physical_batch_size,
     logical_batch_size,
     epochs,
+    up_to_epoch,
     chips,
     test_chips,
     train_length,
@@ -212,10 +214,15 @@ def train(
     # Now we know what to name the log.
     log = SummaryWriter(f"logs/{sesh.name}")
 
-    # Set up image damagers.
+    # Set up our image-damagers.
     pan_halo = HaloMaker(1, device=device)
     mul_halo = HaloMaker(8, device=device)
     misalignment = WV23Misaligner(side_length=128, device=device, weight_power=2.0)
+
+    if up_to_epoch:
+        if epochs:
+            raise ValueError("Can’t have both --epochs and --up-to-epoch.")
+        epochs = up_to_epoch - sesh.logical_epoch
 
     try:
         torch.compile(gen)
