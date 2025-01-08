@@ -34,11 +34,6 @@ class ChipReader(Dataset):
         x, y = torch.load((self.dir / f"{index}.pt").absolute(), weights_only=False)
         return x, y
 
-
-def session_setup(load_from, session):
-    return session, logical_epoch
-
-
 class Session(object):
     def __init__(self, name, load_from, dir="sessions", logical_epoch=0):
         self.name = name
