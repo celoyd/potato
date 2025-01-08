@@ -296,37 +296,38 @@ def train(
                     batch_counter = 0
 
             log.add_scalars(
-                "loss", {"train": np.mean(np.array(loss_history))}, sesh.logical_epoch
+                "loss", {"train": torch.mean(torch.tensor(loss_history))}, sesh.logical_epoch
             )
 
-            # Testing part of epoch
-            gen.eval()
-            with torch.no_grad():
-                test_losses = []
+        # Write checkpoints in case user has been waiting for them.
+        gen_path, opt_path = sesh.get_next_paths()
+        torch.save(gen.state_dict(), gen_path)
+        torch.save(opt.state_dict(), opt_path)
 
-                gen_path, opt_path = sesh.get_next_paths()
-                torch.save(gen.state_dict(), gen_path)
-                torch.save(opt.state_dict(), opt_path)
+        # Testing part of epoch
+        gen.eval()
+        with torch.no_grad():
+            test_losses = []
 
-                for x, y in testloader:
-                    # progress.set_description(f"(Testing)")
-                    x = x.to(device, non_blocking=True)
-                    y = y.to(device, non_blocking=True)
+            for x, y in testloader:
+                # progress.set_description(f"(Testing)")
+                x = x.to(device, non_blocking=True)
+                y = y.to(device, non_blocking=True)
 
-                    ŷ = gen(x)
+                ŷ = gen(x)
 
-                    test_loss = net_loss(y, ŷ)
-                    test_losses.append(test_loss.item())
-            gen.train()
+                test_loss = net_loss(y, ŷ)
+                test_losses.append(test_loss.item())
+        gen.train()
 
-            log.add_scalars(
-                "loss",
-                {"test": torch.mean(torch.tensor(test_losses))},
-                sesh.logical_epoch,
-            )
+        log.add_scalars(
+            "loss",
+            {"test": torch.mean(torch.tensor(test_losses))},
+            sesh.logical_epoch,
+        )
 
-            log.flush()
-            sesh.finish_epoch()
+        log.flush()
+        sesh.finish_epoch() # increments the logical_epoch
 
 
 if __name__ == "__main__":
