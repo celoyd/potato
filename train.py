@@ -181,10 +181,11 @@ def train(
     Potato trainer script.
 
     Typical usage:
-
-    $ python train.py --session yukon-silver --load-from yukon-gold/49 
-    --chips chips --test-chips /media/ch/uaru/lc7/chido24 --lr 1e-4 
-    --train-length 5120 --epochs 24 --agenda
+    
+    \b
+    $ python train.py --session yukon-silver --load-from yukon-gold/49 \
+--chips chips --test-chips /media/ch/uaru/lc7/chido24 --lr 1e-4 \
+--train-length 5120 --epochs 24 --agenda
     """
 
     # Set up the chip loaders.
