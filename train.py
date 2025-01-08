@@ -34,6 +34,7 @@ class ChipReader(Dataset):
         x, y = torch.load((self.dir / f"{index}.pt").absolute(), weights_only=False)
         return x, y
 
+
 class Session(object):
     def __init__(self, name, load_from, dir="sessions", logical_epoch=0):
         self.name = name
@@ -135,12 +136,19 @@ class Session(object):
     "--logical-batch-size", "--lbs", default=64, help="Backprop every this many tiles"
 )
 @click.option("--epochs", type=int, help="Epochs to train for")
-@click.option("--up-to-epoch", type=int, help="Stop just before this logical epoch (conflicts with --epochs)")
+@click.option(
+    "--up-to-epoch",
+    type=int,
+    help="Stop just before this logical epoch (conflicts with --epochs)",
+)
 @click.option(
     "--chips", default="chips", type=click.Path(exists=True), help="Chip source"
 )
 @click.option(
-    "--test-chips", default="test-chips", type=click.Path(exists=True), help="Test chip source"
+    "--test-chips",
+    default="test-chips",
+    type=click.Path(exists=True),
+    help="Test chip source",
 )
 @click.option("--train-length", default=4096, help="Number of chips per epoch")
 @click.option("--test-length", default=64, help="Number of chips to test on")
@@ -303,7 +311,9 @@ def train(
                     batch_counter = 0
 
             log.add_scalars(
-                "loss", {"train": torch.mean(torch.tensor(loss_history))}, sesh.logical_epoch
+                "loss",
+                {"train": torch.mean(torch.tensor(loss_history))},
+                sesh.logical_epoch,
             )
 
         # Write checkpoints in case user has been waiting for them.
@@ -334,7 +344,7 @@ def train(
         )
 
         log.flush()
-        sesh.finish_epoch() # increments the logical_epoch
+        sesh.finish_epoch()  # increments the logical_epoch
 
 
 if __name__ == "__main__":
