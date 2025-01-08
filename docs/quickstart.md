@@ -203,7 +203,7 @@ The chipping process copies chips out of collections of images and resamples the
 We can chip our data like this:
 
 ```bash
-python chipper.py --log italy23.log make-chips --ard-dir ards/italy23 --chip-dir chips/italy23 -n 1024
+python chip.py --log italy23.log make-chips --ard-dir ards/italy23 --chip-dir chips/italy23 -n 1024
 ```
 
 You can skip ahead to the Training section if you’re in a hurry.
