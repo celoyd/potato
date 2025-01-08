@@ -148,6 +148,7 @@ class Session(object):
     "--checkpoints", default="sessions", help="Where to save session checkpoints"
 )
 @click.option("--workers", default=0, help="Chip-loading workers")
+@click.option("--logs", default="logs", help="TensorboardX log directory")
 @click.option("--device", default="cuda", help="Torch device to run on")
 @click.option(
     "--agenda",
@@ -169,6 +170,7 @@ def train(
     test_length,
     checkpoints,
     workers,
+    logs,
     device,
     agenda,
 ):
@@ -214,7 +216,7 @@ def train(
         epochs = up_to_epoch - sesh.logical_epoch
 
     # Now we know what to name the log.
-    log = SummaryWriter(f"logs/{sesh.name}")
+    log = SummaryWriter(f"{logdir}/{sesh.name}")
 
     # Set up our image-damagers.
     pan_halo = HaloMaker(1, device=device)
