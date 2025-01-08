@@ -129,14 +129,6 @@ class Session(object):
         self.logical_epoch += 1
 
 
-def net_loss(y, ŷ):
-    t_loss = rfft_texture_loss(y, ŷ)
-    s_loss = rfft_saturation_loss(y, ŷ)
-    ok_loss = ΔEOK(y, ŷ)
-
-    return t_loss + ok_loss + s_loss
-
-
 @click.command()
 @click.option("--session", required=True, help="Name of training session")
 @click.option("--load-from", help="Checkpoint to start off: <session>/<number>")
@@ -211,6 +203,11 @@ def train(
         gen.load_state_dict(gen_weights)
         opt.load_state_dict(opt_weights)
 
+    if up_to_epoch:
+        if epochs:
+            raise ValueError("Can’t have both --epochs and --up-to-epoch.")
+        epochs = up_to_epoch - sesh.logical_epoch
+
     # Now we know what to name the log.
     log = SummaryWriter(f"logs/{sesh.name}")
 
@@ -219,10 +216,11 @@ def train(
     mul_halo = HaloMaker(8, device=device)
     misalignment = WV23Misaligner(side_length=128, device=device, weight_power=2.0)
 
-    if up_to_epoch:
-        if epochs:
-            raise ValueError("Can’t have both --epochs and --up-to-epoch.")
-        epochs = up_to_epoch - sesh.logical_epoch
+    def net_loss(y, ŷ):
+        ok_loss = ΔEOK(y, ŷ)
+        s_loss = rfft_saturation_loss(y, ŷ)
+        t_loss = rfft_texture_loss(y, ŷ)
+        return ok_loss + s_loss + t_loss
 
     try:
         torch.compile(gen)
