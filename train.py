@@ -158,7 +158,12 @@ class Session(object):
 @click.option("--workers", default=0, help="Chip-loading workers")
 @click.option("--logs", default="logs", help="TensorboardX log directory")
 @click.option("--device", default="cuda", help="Torch device to run on")
-@click.option("--compile", is_flag=True, default=False, help="Compile model with JIT (only works on some devices)")
+@click.option(
+    "--compile",
+    is_flag=True,
+    default=False,
+    help="Compile model with JIT (only works on some devices)",
+)
 @click.option(
     "--agenda",
     is_flag=True,
