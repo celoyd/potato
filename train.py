@@ -224,7 +224,7 @@ def train(
         epochs = up_to_epoch - sesh.logical_epoch
 
     # Now we know what to name the log.
-    log = SummaryWriter(f"{logdir}/{sesh.name}")
+    log = SummaryWriter(f"{logs}/{sesh.name}")
 
     # Set up our image-damagers.
     pan_halo = HaloMaker(1, device=device)
