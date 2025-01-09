@@ -88,11 +88,11 @@ def quarter_window(w):
     required=True,
     help="Checkpoint (weights) file",
 )
-@click.option("--compile", is_flag=True, default=False, help="Compile model with JIT (only works on some devices)")
+@click.option("-c", "--compile", is_flag=True, default=False, help="Compile model with JIT (only works on some devices)")
 @click.option(
     "-d", "--device", default="cuda", help="Torch device (e.g., cuda, cpu, mps)"
 )
-@click.option("-o", "--overwrite", is_flag=True)
+@click.option("-o", "--overwrite", is_flag=True, help="Destroy existing destination file")
 def pansharpen(panpath, mulpath, dstpath, weights, compile, device, overwrite):
     with rasterio.open(panpath) as panfile, rasterio.open(mulpath) as mulfile:
 
