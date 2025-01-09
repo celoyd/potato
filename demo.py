@@ -88,11 +88,12 @@ def quarter_window(w):
     required=True,
     help="Checkpoint (weights) file",
 )
+@click.option("--compile", is_flag=True, default=False, help="Compile model with JIT (only works on some devices)")
 @click.option(
     "-d", "--device", default="cuda", help="Torch device (e.g., cuda, cpu, mps)"
 )
 @click.option("-o", "--overwrite", is_flag=True)
-def pansharpen(panpath, mulpath, dstpath, weights, device, overwrite):
+def pansharpen(panpath, mulpath, dstpath, weights, compile, device, overwrite):
     with rasterio.open(panpath) as panfile, rasterio.open(mulpath) as mulfile:
 
         if mulfile.count != 8:
@@ -133,10 +134,14 @@ def pansharpen(panpath, mulpath, dstpath, weights, device, overwrite):
 
         with rasterio.open(dstpath, "w", **profile) as dstfile:
             model = Potato().to(device)
+
             model.load_state_dict(
                 torch.load(weights, map_location=device, weights_only=True)
             )
             model.eval()
+
+            if compile:
+                model = torch.compile(model)
 
             sRGB = OklabTosRGB().to(device)
 

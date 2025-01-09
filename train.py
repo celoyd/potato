@@ -158,6 +158,7 @@ class Session(object):
 @click.option("--workers", default=0, help="Chip-loading workers")
 @click.option("--logs", default="logs", help="TensorboardX log directory")
 @click.option("--device", default="cuda", help="Torch device to run on")
+@click.option("--compile", is_flag=True, default=False, help="Compile model with JIT (only works on some devices)")
 @click.option(
     "--agenda",
     is_flag=True,
@@ -180,6 +181,7 @@ def train(
     workers,
     logs,
     device,
+    compile,
     agenda,
 ):
     """
@@ -237,11 +239,9 @@ def train(
         t_loss = rfft_texture_loss(y, ŷ)
         return ok_loss + s_loss + t_loss
 
-    try:
-        torch.compile(gen)
-        torch.compile(net_loss)
-    except:
-        print("Could not compile.")
+    if compile:
+        net_loss = torch.compile(net_loss)
+        gen = torch.compile(gen)
 
     if agenda:
         print(f"Training time! Running on {device}.")
