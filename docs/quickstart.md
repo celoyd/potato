@@ -41,20 +41,20 @@ Here we will combine a panchromatic image and a multispectral image to make an R
 
 ### Download pansharpening inputs
 
-To find sample input data, I went to [the Maxar Open Data Program landing page](https://registry.opendata.aws/maxar-open-data/), clicked the STAC Browser link, and navigated among many other good choices to [here](https://radiantearth.github.io/stac-browser/#/external/maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahramanmaras-turkey-earthquake-23/ard/37/031133102033/2022-07-20/10300100D6740900.json?.language=en), which shows direct TIFF links in the Assets section. We need the panchromatic and multispectral images.
+To find sample input data, I went to [the Maxar Open Data Program landing page](https://registry.opendata.aws/maxar-open-data/), clicked the STAC Browser link, and navigated among many other good choices to [here](https://radiantearth.github.io/stac-browser/#/external/maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahramanmaras-turkey-earthquake-23/ard/37/031133102033/2022-07-20/10300100D6740900.json?.language=en), which shows direct TIFF links in the Assets section. We need the panchromatic and multispectral images. (We could do this all directly off the network, but for clarity, here we’ll actually download the files.)
 
-As a sidebar if you’re thinking of other inputs: Potato expects data that looks like WorldView-2 or -3 bands in Maxar’s ARD format. In short, the images are pixel-aligned (not simply georeferenced), the multispectral image has 8 bands as documented for the WV-2/3 sensor, and the DNs are reflectance mapped from 0..1 to 1..10,000 in `uint16`. Anything with _approximately_ those spectral bands, where the values are _approximately_ reflectance × 10,000, is likely to _approximately_ work. But the spec input is Maxar’s ARD.
+A sidebar if you’re thinking of other inputs: Potato expects data that looks like WorldView-2 or -3 bands in Maxar’s ARD format. In short, the images are pixel-aligned at a factor of 4 (not simply georeferenced), the multispectral image has 8 bands as documented for the WV-2/3 sensor, and the DNs are reflectance mapped from 0..1 to 1..10,000 in `uint16`. Anything with _approximately_ those spectral bands, where the values are _approximately_ 10k reflectance, is likely to _approximately_ work. But the design input for the model (with the weights shipped in this repo) is Maxar’s ARD.
 
 We use a {} expansion to make this slightly more legible with the long and very similar URIs:
 
-```bash
-curl -O "https://maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahramanmaras-turkey-earthquake-23/ard/37/031133102033/2022-07-20/10300100D6740900-{pan,ms}.tif"
+```console
+user@host:~/potato $ curl -O "https://maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahramanmaras-turkey-earthquake-23/ard/37/031133102033/2022-07-20/10300100D6740900-{pan,ms}.tif"
 ```
 
 We now have the two TIFF files:
 
 ```console
-user@host $ du -h 10300100D6740900-*
+user@host:~/potato $ du -h 10300100D6740900-*
 102M  10300100D6740900-ms.tif
 199M  10300100D6740900-pan.tif
 ```
@@ -63,15 +63,15 @@ user@host $ du -h 10300100D6740900-*
 
 Let’s go for it:
 
-```bash
-python demo.py --device=cuda 10300100D6740900-{pan,ms}.tif weights/space_heater-gen-99.pt 10300100D6740900-ps.tiff 
+```console
+user@host:~/potato $ python demo.py --device=cuda 10300100D6740900-{pan,ms}.tif -w sessions/yukon-gold/49-gen.pt 10300100D6740900-ps.tiff
 ```
 
-You should see either some kind of reasonably helpful error or a progress bar. On my 1070 (a GPU about 5 years old), it takes exactly a minute. We now have a big output file:
+You should see either some kind of reasonably helpful error or a progress bar. On my 1070 (a GPU released in 2016), it takes 8 seconds; on the CPU alone (i.e., with `--device=cpu`), it takes 90 seconds. We now have a big output file:
 
 ```console
-user@host $ du -h 10300100D6740900-ps.tiff
-484M  10300100D6740900-ps.tiff
+user@host:~/potato $ du -h 10300100D6740900-ps.tiff
+483M  10300100D6740900-ps.tiff
 ```
 
 This is a reasonably ordinary RGB TIFF – other than its substantial size of nearly 100 megapixels – that should be readable by most image libraries, photo editing software, and so on. (It does use zstd compression, which is still considered “the new one”, but libtiff has supported it [since 2018](http://libtiff.maptools.org/v4.0.10.html) and it’s really good, so make your own choices.)
