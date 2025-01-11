@@ -1,20 +1,23 @@
 import torch
 import rasterio as rio
 from potato.color import BandsToOklab, OklabTosRGB
+from potato.util import pile, cheap_half
 
 import imageio.v3 as iio
 
-def fast_half(x):
-	return (x[0::2, 0::2] + x[0::2, 1::2] + x[1::2, 0::2] + x[1::2, 1::2]).mean()
+full_edge = 512
+
 
 def fast_quarter(x):
-	return fast_half(fast_half(x))
+    return fast_half(fast_half(x))
+
 
 b2l = BandsToOklab()
 l2r = OklabTosRGB()
 
 colors = {
     "classic blue roofs": (2172.3125, [1954, 2761, 1530, 1067, 1757, 4503, 4574, 4490]),
+    "blue roof 2": (1996.6875, [1996, 2901, 1731, 1073, 1878, 4386, 4375, 4489]),
     "rust on blue roof": (1221.5, [539, 965, 959, 993, 1277, 2465, 2927, 3190]),
     "blue roof ridgeline": (2454.0, [1855, 2758, 1879, 1539, 2226, 4276, 4276, 4074]),
     "more blue roof": (2476.9375, [2565, 3456, 1734, 1149, 2038, 4600, 4720, 4648]),
@@ -51,20 +54,16 @@ colors = {
 pans = torch.tensor(list(c[0] for c in colors.values())) / 10_000.0
 muls = torch.tensor(list(c[1] for c in colors.values())) / 10_000.0
 
-pan = torch.zeros((1024, 1024))
-mul = torch.zeros((8, 256, 256))
-
 for n in range(len(colors.keys())):
-	rgb = torch.zeros((3, 1024, 1024))
-	m = muls[n]
+    p = pans[n]
+    pan = torch.zeros((full_edge, full_edge)) + p
+    m = muls[n]
+    mul = torch.zeros((8, full_edge // 4, full_edge // 4)) + m.unsqueeze(1).unsqueeze(1)
 
-	lab = b2l(m.unsqueeze(1).unsqueeze(1))
-	true = l2r(lab)
+    # make y the target image
+    y = b2l(m.unsqueeze(1).unsqueeze(1))
+    y = torch.zeros((3, full_edge, full_edge)) + y
 
-	rgb += true
-	rgb *= torch.normal(1, 0.05, rgb.shape)
-
-	pngable = (rgb * 255).clamp(0, 255).byte().swapaxes(0, -1)
-	iio.imwrite(f"difficult-colors/{n}.png", pngable)
-
-#def make_gradient
+    pack = torch.cat([pile(pan.unsqueeze(0), 4), mul])
+    xy = (pack, y)
+    torch.save(xy, f"synthetics/{n}.pt")
