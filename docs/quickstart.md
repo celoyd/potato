@@ -222,6 +222,10 @@ For some development strategies, it’s handy to chip a few hundred or a few tho
 
 If you have more than one folder of chips, it’s nice to be able to mix them into a single folder. The `link-chips` chipper command does this by taking a set of source directories and making symlinks to their chips in the destination directory. The links are renamed (with the same <var>integer</var>.pt naming scheme) and deterministically shuffled so that a `DataLoader` gets a mixed sample even if it only reads the first _n_ chips. This is convenient to change the mix of source data for training, and to load-balance chip reads across multiple storage devices.
 
+### Synthetic chips
+
+TK
+
 ## Training
 
 To start training from the pretrained weights shipped in the repo, we can use:
