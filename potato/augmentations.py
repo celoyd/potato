@@ -13,8 +13,8 @@ class WV23Misaligner(Module):
     See __init__() and forward() for technical notes.
 
     ## General todos
-    
-    1. Reduce unnecessary memory hunger and traffic, keeping reasonable 
+
+    1. Reduce unnecessary memory hunger and traffic, keeping reasonable
        clarity. For example, small_noise could be a reused instance variable
        instead of creating a new tensor every forward().
     2. Specify amount in pixels, so changining chip size doesn’t break things.
@@ -23,9 +23,9 @@ class WV23Misaligner(Module):
     ## What this is all about
 
     The artifact that we’re trying to emulate here is band misalignment that
-    stems from half the multispectral bands seeing the grounf just before the 
-    pan band does, and the other half just after. This means that image of 
-    things in motion or not at the modeled ground surface tend to split 
+    stems from half the multispectral bands seeing the grounf just before the
+    pan band does, and the other half just after. This means that image of
+    things in motion or not at the modeled ground surface tend to split
     symmetrically away from the pan band in the multispectral band groups.
 
     (An excellent paper to build some intutions about all of this is
@@ -34,16 +34,16 @@ class WV23Misaligner(Module):
     (http://dx.doi.org/10.5194/isprsarchives-XL-1-179-2014). It’s open
     access and has the best illustrations I’ve seen on this topic.)
 
-    To emulate this, we generate an offset field that adds random smooth 
-    distortions to the image, then (a) roll it off at the image edges so we 
-    don’t have to think about pulling in outside pixels and (b) apply it to 
-    half the channels in the positive direction and the other half in the 
+    To emulate this, we generate an offset field that adds random smooth
+    distortions to the image, then (a) roll it off at the image edges so we
+    don’t have to think about pulling in outside pixels and (b) apply it to
+    half the channels in the positive direction and the other half in the
     negtive direction.
 
     An ealier version of this code also did a “joint” offset, (i.e., a difference
-    of all the multispectral bands at once v. the panchromatic band), but this 
-    is a rare enough problem that training with it as an augmentation seemed 
-    to attract more artifacts than it cleared away. There may still be a few 
+    of all the multispectral bands at once v. the panchromatic band), but this
+    is a rare enough problem that training with it as an augmentation seemed
+    to attract more artifacts than it cleared away. There may still be a few
     traces of it.
     """
 
@@ -72,9 +72,7 @@ class WV23Misaligner(Module):
 
         v = self.grid[..., 0]
         u = self.grid[..., 1]
-        self.center_weight = (
-            ((1 - torch.sqrt(u**2 + v**2)) ** weight_power).clamp(0, 1)
-        )
+        self.center_weight = ((1 - torch.sqrt(u**2 + v**2)) ** weight_power).clamp(0, 1)
         self.small_noise_shape = (2, side_length // 8, side_length // 8)
 
     def forward(self, x, amt):
@@ -133,10 +131,10 @@ class WV23Misaligner(Module):
 
 
 class HaloMaker(Module):
-    '''
+    """
     Emulate a ringing point spread function for resampling.
 
-    We create a binomial kernel (a small blur), use it to make a blurry 
+    We create a binomial kernel (a small blur), use it to make a blurry
     version of the input, make a smooth random mask, and, modulated by the
     smooth random mask, subtract out some amount of the blurred version
     from the original version. This gives us an image that is oversharp
@@ -145,7 +143,7 @@ class HaloMaker(Module):
 
     ## Todos
     1. Better docs, variable names, and general clarity.
-    '''
+    """
 
     def __init__(self, depth, device):
         super().__init__()
