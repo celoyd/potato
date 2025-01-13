@@ -7,60 +7,61 @@ from torchvision.transforms import InterpolationMode
 
 class WV23Misaligner(Module):
     """
-        Simulate multispectral band misalignments, including motion
-        artifacts (a.k.a. rainbowing) in WorldView-2/3 data
+    Simulate multispectral band misalignments, including motion
+    artifacts (a.k.a. rainbowing) in WorldView-2/3 data.
 
-        See __init__() and forward() for technical notes.
+    See __init__() and forward() for technical notes.
 
-        TODOs:
-        1. This is stupendously memory-hungry right now.
-        - square -> circle offset variation
+    ## General todos:
+    
+    1. Reduce unnecessary memory hunger and traffic, keeping reasonable 
+       clarity. For example, small_noise could be a reused instance variable
+       instead of creating a new tensor every forward().
+    2. Specify amount in pixels, so changining chip size doesn’t break things.
+    3. Make things less hard-coded and more configurable.
 
-    think about what makes sense
-        to set at init v. at call.
-        1. Right now we err on the side of too few options and too
-           much hardcoding of parameters at non–rigorously-determined
-           constant values.
+    ## What this is all about
 
-        We want to accomplish two basic things here:
-        1. Apply some random warps (like torchvison’s ElasticTransform),
-           but rolled off toward the image sides to avoid edge effects.
-           This simulates the multispectral bands not perfectly aligning
-           with the panchromatic band. Call this joint warp.
-        2. Much the same but with two sets of bands separately – the
-           upper and lower bands, named for their placement to either
-           side of the panchromatic band on the satellite’s sensor.
-           These tend to symmetrically diverge from the pan band where
-           there is motion (e.g., cars, planes) or departure from the
-           modeled gound surface (e.g., clouds, skyscrapers, planes).
-           Call this split warp.
+    The artifact that we’re trying to emulate here is band misalignment that
+    stems from half the multispectral bands seeing the grounf just before the 
+    pan band does, and the other half just after. This means that image of 
+    things in motion or not at the modeled ground surface tend to split 
+    symmetrically away from the pan band in the multispectral band groups.
 
-        (An excellent paper to build some intutions about split warp is
-        “Exploiting Satellite Focal Plane Geometry for Automatic Extraction
-        of Traffic Flow from Single Optical Satellite Imagery” by T. Krauß
-        (http://dx.doi.org/10.5194/isprsarchives-XL-1-179-2014). It’s open
-        access and has the best illustrations I’ve seen on this topic.)
+    (An excellent paper to build some intutions about all of this is
+    “Exploiting Satellite Focal Plane Geometry for Automatic Extraction
+    of Traffic Flow from Single Optical Satellite Imagery” by T. Krauß
+    (http://dx.doi.org/10.5194/isprsarchives-XL-1-179-2014). It’s open
+    access and has the best illustrations I’ve seen on this topic.)
 
-        The implementation is best understood line by line, because it
-        involves a bunch of inter-related steps, pytorch quirks,
-        optimizations, and so on. But basically we generate a weight
-        field that peaks in the center, then multiply that with
-        smoothed noise to generate an offset field for grid_sample.
+    To emulate this, we generate an offset field that adds random smooth 
+    distortions to the image, then (a) roll it off at the image edges so we 
+    don’t have to think about pulling in outside pixels and (b) apply it to 
+    half the channels in the positive direction and the other half in the 
+    negtive direction.
+
+    An ealier version of this code also did a “joint” offset, (i.e., a difference
+    of all the multispectral bands at once v. the panchromatic band), but this 
+    is a rare enough problem that training with it as an augmentation seemed 
+    to attract more artifacts than it cleared away. There may still be a few 
+    traces of it.
     """
 
     def __init__(self, side_length, device, weight_power=2.0):
         super().__init__()
         self.device = device
 
+        # number of channels
         self.C = 8
 
-        # Non-square input will raise in forward().
+        # non-square input will raise in forward()
         self.side_length = side_length
 
+        # layout of the WV-2 and -3 sensors
         self.upper_bands = [6, 4, 2, 1]
         self.lower_bands = [5, 3, 0, 7]
 
-        # grid_warp expects what are sometimes called “normalized
+        # grid_warp() expects what are sometimes called “normalized
         # coordinates”, which are like u,v coordinates except they
         # go from -1 to 1. So we build a big coordinate tensor.
 
@@ -73,31 +74,17 @@ class WV23Misaligner(Module):
         u = self.grid[..., 1]
         self.center_weight = (
             ((1 - torch.sqrt(u**2 + v**2)) ** weight_power).clamp(0, 1)
-            # .unsqueeze(0)
         )
         self.small_noise_shape = (2, side_length // 8, side_length // 8)
-        # print(f"{self.center_weight.shape = }")
 
-        # self.small_noise = torch.empty(
-        # (2, side_length // 8, side_length // 8), device=self.device
-        # )
-        # self.noise = torch.empty(
-        # (2, side_length, side_length), device=self.device
-        # )
-
-        # We could save some space by juggling some of this data
-        # between fewer tensors, but it would add operations and
-        # make people trying to understand this justifiably angry.
-        # self.upper_offsets = torch.empty((side_length, side_length, 2), device=self.device)
-        # self.lower_offsets = torch.empty((side_length, side_length, 2), device=self.device)
-
-    def forward(self, x, amt, joint_amt):
+    def forward(self, x, amt):
         self.check_shape(x.shape)
 
         res = torch.zeros_like(x)
 
-        # N, _, H, W = x.shape
         N = x.shape[0]
+
+        # FIXME: make this in terms of pixels (absolute, not relative to side)
         amt = amt / self.side_length
 
         small_noise = torch.normal(0, amt, self.small_noise_shape, device=self.device)
@@ -108,13 +95,9 @@ class WV23Misaligner(Module):
             InterpolationMode("bicubic"),
         )
 
-        # From image layout to warp-field layout
+        # from image layout to warp-field layout – clean this up
         noise = noise.swapaxes(1, -1)
-
-        # joint_offset = noise * joint_amt
-
         upper_offset = (noise * self.center_weight).swapaxes(-1, 0)
-
         lower_offset = (-1 * noise * self.center_weight).swapaxes(-1, 0)
 
         res[:, self.upper_bands] = grid_sample(
@@ -150,6 +133,20 @@ class WV23Misaligner(Module):
 
 
 class HaloMaker(Module):
+    '''
+    Emulate a rining point spread function for resampling.
+
+    We create a binomial kernel (a small blur), use it to make a blurry 
+    version of the input, make a smooth random mask, and, modulated by the
+    smooth random mask, subtract out some amount of the blurred version
+    from the original version. This gives us an image that is oversharp
+    by random amounts in different parts of the image. (It can also be a
+    bit undersharp.)
+
+    Todos:
+    1. Better docs, variable names, and general clarity.
+    '''
+
     def __init__(self, depth, device):
         super().__init__()
         self.device = device
