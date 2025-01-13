@@ -12,7 +12,7 @@ class WV23Misaligner(Module):
 
     See __init__() and forward() for technical notes.
 
-    ## General todos:
+    ## General todos
     
     1. Reduce unnecessary memory hunger and traffic, keeping reasonable 
        clarity. For example, small_noise could be a reused instance variable
@@ -134,7 +134,7 @@ class WV23Misaligner(Module):
 
 class HaloMaker(Module):
     '''
-    Emulate a rining point spread function for resampling.
+    Emulate a ringing point spread function for resampling.
 
     We create a binomial kernel (a small blur), use it to make a blurry 
     version of the input, make a smooth random mask, and, modulated by the
@@ -143,7 +143,7 @@ class HaloMaker(Module):
     by random amounts in different parts of the image. (It can also be a
     bit undersharp.)
 
-    Todos:
+    ## Todos
     1. Better docs, variable names, and general clarity.
     '''
 
