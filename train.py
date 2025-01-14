@@ -292,7 +292,7 @@ def train(
                 # mul = mul * torch.normal(1, 0.0025, mul.shape, device=x.device)
 
                 pan = pile(pan_halo(tile(pan, 4), mean=0.25, std=0.1), 4)
-                mul = misalignment(mul, amt=1.0, joint_amt=0.5)
+                mul = misalignment(mul, amt=1.0)
                 mul = mul_halo(mul, mean=1.0, std=0.5)
 
                 x[:, :16] = pan

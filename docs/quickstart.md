@@ -41,9 +41,9 @@ Here we will combine a panchromatic image and a multispectral image to make an R
 
 ### Download pansharpening inputs
 
-To find sample input data, I went to [the Maxar Open Data Program landing page](https://registry.opendata.aws/maxar-open-data/), clicked the STAC Browser link, and navigated among many other good choices to [here](https://radiantearth.github.io/stac-browser/#/external/maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahramanmaras-turkey-earthquake-23/ard/37/031133102033/2022-07-20/10300100D6740900.json?.language=en), which shows direct TIFF links in the Assets section. We need the panchromatic and multispectral images.
+To find sample input data, I went to [the Maxar Open Data Program landing page](https://registry.opendata.aws/maxar-open-data/), clicked the STAC Browser link, and navigated among many other good choices to [here](https://radiantearth.github.io/stac-browser/#/external/maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahramanmaras-turkey-earthquake-23/ard/37/031133102033/2022-07-20/10300100D6740900.json?.language=en), which shows direct TIFF links in the Assets section. We need the panchromatic and multispectral images. (We could do this all directly off the network, but for clarity, here we’ll actually download the files.)
 
-As a sidebar if you’re thinking of other inputs: Potato expects data that looks like WorldView-2 or -3 bands in Maxar’s ARD format. In short, the images are pixel-aligned (not simply georeferenced), the multispectral image has 8 bands as documented for the WV-2/3 sensor, and the DNs are reflectance mapped from 0..1 to 1..10,000 in `uint16`. Anything with _approximately_ those spectral bands, where the values are _approximately_ reflectance × 10,000, is likely to _approximately_ work. But the spec input is Maxar’s ARD.
+A sidebar if you’re thinking of other inputs: Potato expects data that looks like WorldView-2 or -3 bands in Maxar’s ARD format. In short, the images are pixel-aligned at a factor of 4 (not simply georeferenced), the multispectral image has 8 bands as documented for the WV-2/3 sensor, and the DNs are reflectance mapped from 0..1 to 1..10,000 in `uint16`. Anything with _approximately_ those spectral bands, where the values are _approximately_ 10k reflectance, is likely to _approximately_ work. But the design input for the model (with the weights shipped in this repo) is Maxar’s ARD.
 
 We use a {} expansion to make this slightly more legible with the long and very similar URIs:
 
@@ -54,7 +54,7 @@ curl -O "https://maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahr
 We now have the two TIFF files:
 
 ```console
-user@host $ du -h 10300100D6740900-*
+user@host:~/potato $ du -h 10300100D6740900-*
 102M  10300100D6740900-ms.tif
 199M  10300100D6740900-pan.tif
 ```
@@ -63,15 +63,14 @@ user@host $ du -h 10300100D6740900-*
 
 Let’s go for it:
 
-```bash
-python demo.py --device=cuda 10300100D6740900-{pan,ms}.tif weights/space_heater-gen-99.pt 10300100D6740900-ps.tiff 
+```bash python demo.py --device=cuda 10300100D6740900-{pan,ms}.tif -w sessions/yukon-gold/49-gen.pt 10300100D6740900-ps.tiff
 ```
 
-You should see either some kind of reasonably helpful error or a progress bar. On my 1070 (a GPU about 5 years old), it takes exactly a minute. We now have a big output file:
+You should see either some kind of reasonably helpful error or a progress bar. On my 1070 (a GPU released in 2016), it takes 8 seconds; on the CPU alone (i.e., with `--device=cpu`), it takes 90 seconds. We now have a big output file:
 
 ```console
-user@host $ du -h 10300100D6740900-ps.tiff
-484M  10300100D6740900-ps.tiff
+user@host:~/potato $ du -h 10300100D6740900-ps.tiff
+483M  10300100D6740900-ps.tiff
 ```
 
 This is a reasonably ordinary RGB TIFF – other than its substantial size of nearly 100 megapixels – that should be readable by most image libraries, photo editing software, and so on. (It does use zstd compression, which is still considered “the new one”, but libtiff has supported it [since 2018](http://libtiff.maptools.org/v4.0.10.html) and it’s really good, so make your own choices.)
@@ -79,7 +78,7 @@ This is a reasonably ordinary RGB TIFF – other than its substantial size of ne
 It’s also a geotiff, meaning it’s in a defined projection, which can make some cautious tools complain that it has unknown tags. This should be harmless. For example, if we use the [ImageMagick](https://imagemagick.org/index.php) tool `convert` to crop out a section, we get warnings:
 
 ```console
-user@host $ convert 10300100D6740900-ps.tiff -crop 512x512+8200+9150 Yeşilvadi.png
+user@host:~/potato $ convert 10300100D6740900-ps.tiff -crop 512x512+8200+9150 Yeşilvadi.png
 convert-im6.q16: Unknown field with tag 33550 (0x830e) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/905.
 convert-im6.q16: Unknown field with tag 33922 (0x8482) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/905.
 convert-im6.q16: Unknown field with tag 34735 (0x87af) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/905.
@@ -93,7 +92,7 @@ TK Yeşilvadi crop
 If we add some contrast with `convert`, like this:
 
 ```bash
-convert 10300100D6740900-ps.tiff -crop 512x512+8200+9150 -sigmoidal-contrast 20x50% Yeşilvadi-pretty.png
+10300100D6740900-ps.tiff -crop 512x512+8200+9150 -sigmoidal-contrast 20x50% Yeşilvadi-pretty.png
 ```
 
 We get a nicer image:
@@ -140,7 +139,7 @@ There’s a lot of output but the line we want is `Pixel Size = (0.5492659222497
 
 Now we need the bit of knowledge about Maxar’s ARD format that the official pansharpened image will have the same name as the `-pan.tif` and `-ms.tif` but with `-visual.tif`. Knowing this, we can use `gdalwarp` to punch out the shape of our box on the corner of Yeşilvadi Park. The tooling knows how to use the network, so we can give it an HTTPS URI instead of a filename, but we’ll need to tell it the resolution to resample to, and what resampling method to use (we’ll go with [Lanczos](https://en.wikipedia.org/wiki/Lanczos_resampling), for sharpness – it’s debatable whether that’s the best choice but this is just a demo). This looks like:
 
-```bash
+```bash 
 gdalwarp -cutline box.json -crop_to_cutline -r Lanczos -tr 0.5493 0.5493 https://maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahramanmaras-turkey-earthquake-23/ard/37/031133102033/2022-07-20/10300100D6740900-visual.tif Maxar-Yeşilvadi.tiff
 
 # same except source and destination:
@@ -212,6 +211,8 @@ You can skip ahead to the Training section if you’re in a hurry.
 
 You may want to limit which CIDs (catalog IDs, or individual images) you use to make training data. For example, as described in the documentation on band misalignment, I prefer to train on cloud-free CIDs with little surface water. To support this, I spent a day early this summer subjectively evaluating every image in the Maxar Open Data Program on axes of cloudiness, surface water coverage, and interestingness of landcover. These are weighted into an overall quality index, and I selected only the top-scoring CIDs. There are plenty of other things you might want to do with an allow-list; for example, you might want to select individual scenes for train/test splits.
 
+TK link to ARD CIDs sheet
+
 The `--allow-list` option expects a path that’s a plaintext file with one CID per line. There’s no extra parsing; it won’t recognize a regex, for example.
 
 ### Restarting
@@ -221,6 +222,10 @@ For some development strategies, it’s handy to chip a few hundred or a few tho
 ### Linking (storage load balancing)
 
 If you have more than one folder of chips, it’s nice to be able to mix them into a single folder. The `link-chips` chipper command does this by taking a set of source directories and making symlinks to their chips in the destination directory. The links are renamed (with the same <var>integer</var>.pt naming scheme) and deterministically shuffled so that a `DataLoader` gets a mixed sample even if it only reads the first _n_ chips. This is convenient to change the mix of source data for training, and to load-balance chip reads across multiple storage devices.
+
+### Synthetic chips
+
+TK
 
 ## Training
 
