@@ -44,11 +44,11 @@ I’ve made small adjustments to match it to the general brightness and contrast
 
 ![Potato output](docs/images/Chungthang/potato.png)
 
-To see differences, try opening each in its own tab and flipping between tabs. There is no way to make a completely fair comparison, for example because the Maxar image has been lossily compressed and resampled back to nominal resolution. However, several of what I consider its shortcomings – the dark water edges, sensitivity to grainy noise, difficulty rendering deeper blue hues – are not plausibly artifacts of those processing steps. Google Earth [also uses this collect](https://earth.google.com/web/@27.60326593,88.64660971,1610.66494177a,1045.83623347d,35y,0h,0t,0r/data=ChYqEAgBEgoyMDIyLTAzLTA3GAFCAggBQgIIAEoNCP___________wEQAA), and although their color treatment is much darker than Maxar’s, the general look of the pansharpening is similar enough that adding it to the comparison would be practically redundant.
+To see differences, try opening each in its own tab and flipping between them. There is no way to make a completely fair comparison, for example because the Maxar image has been lossily compressed and resampled back to nominal resolution. However, several of what I consider its shortcomings – the dark water edges, sensitivity to grainy noise, difficulty rendering deeper blue hues – are not plausibly artifacts of those processing steps. Google Earth [also uses this collect](https://earth.google.com/web/@27.60326593,88.64660971,1610.66494177a,1045.83623347d,35y,0h,0t,0r/data=ChYqEAgBEgoyMDIyLTAzLTA3GAFCAggBQgIIAEoNCP___________wEQAA), and although their color treatment is much darker than Maxar’s, the general look of the pansharpening is similar enough that adding it to the comparison would be practically redundant.
 
 ## Documentation
 
-Please see [the docs directory](/docs) for a quickstart guide and lengthy discussion of the usual techniques in Potato.
+Please see [the docs directory](/docs) for a quickstart guide and lengthy discussion of the unusual techniques in Potato.
 
 ## License
 
