@@ -20,7 +20,7 @@ A very high resolution optical satellite collects an image in two parts. It gets
 
 ![Monochrome image of a mountain village at a river confluence](docs/images/Chungthang/pan.png)
 
-_These images are of Chungthang, India, from Maxar collect 10300100CE8D0400 on 2022-03-07. Like all images shown in this project except otherwise noted, it’s [CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/deed.en) from the [Maxar Open Data Program](https://registry.opendata.aws/maxar-open-data/)._
+_These images are of Chungthang, India, from Maxar collect 10300100CE8D0400 on 2022-03-07. Like all images shown in this repo except otherwise credited, it’s [CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/deed.en) from the [Maxar Open Data Program](https://registry.opendata.aws/maxar-open-data/)._
 
 This is called the panchromatic or pan band, and it works like black and white film, or like applying a black and white filter to a photo. A band is a range of the spectrum, and pan-chromatic means all-color – this band collects all visible light.
 
@@ -28,19 +28,21 @@ At the same time, the satellite collects a full-color image, with red, green, an
 
 ![Upsampled color image of the same scene](docs/images/Chungthang/rgb-upsampled.png)
 
-So we have one image that is sharp, and one that is full-color. We want to merge them into a combined version that is both sharp _and_ full-color at the same time. We can think of this as using the pan image to sharpen the RGB image, so the process is called **pansharpening**.
+So we have one image that is sharp, and one that is full-color. We want to merge them into a combined version that is both sharp _and_ full-color at the same time. We can think of this as using the pan image to sharpen the full-color image, so the process is called **pansharpening**.
 
 Like compression or instant messaging, pansharpening isn’t any one algorithm or technique; it’s a category defined only by the problem being solved.
 
 Two examples of pansharpening this pair of pan and multispectral images:
 
+![Potato output](docs/images/Chungthang/mx-nice.png)
+
 _Maxar’s pansharpening, adjusted to match the general brightness and contrast of…_
 
-![Potato output](docs/images/Chungthang/rgb-upsampled.png)
+![Potato output](docs/images/Chungthang/potato.png)
 
 _Potato’s pansharpening._
 
-There is no way to make a completely fair comparison, for example because the Maxar image has been lossily compressed. However, several of what I consider the shortcomings of the Maxar-provided example here – dark water edges, sensitivity to grainy noise, difficulty rendering deeper blue hues – are not plausibly compression artifacts.
+There is no way to make a completely fair comparison, for example because the Maxar image has been lossily compressed and resampled back to nominal resolution. However, several of what I consider the shortcomings of the Maxar-provided example here – the dark water edges, sensitivity to grainy noise, difficulty rendering deeper blue hues – are not plausibly artifacts of those processing steps.
 
 ## License
 
