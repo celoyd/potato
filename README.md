@@ -58,6 +58,27 @@ Here is a comparison of a different image chip with a different set of visualiza
 
 The rescaling is unflattering to the fine detail in both, but of note is the blocky artifacting around some of the [brick-through-grass](https://earth.google.com/web/search/Quito,+Ecuador/@-0.08986531,-78.44806574,2632.5715332a,0d,60y,270.41779775h,79.45498836t,0r/data=CiwiJgokCSF-pJOHnDtAEQdki5yumDtAGRLQGY0TKlZAIXMmJJ-4KFZAQgIIASIaChZIX0pETEI2d1VfcndHcS1fQVJTZklBEAJCAggASg0I____________ARAA) textures in the playground/plaza west of the bus stop. This is a relatively rare artifact but a revealing one: it shows a failure state of local adaptation–based pansharpening algorithms, which is confused by certain patterns. (The Maxar version of this image also fails in this area, but with blurriness instead of blockiness.) Potato is certainly not perfect, but it paints a picture that reasonably matches on-the-ground views.
 
+### San Fernando
+
+Finally, a more abstract example. The subject is the area around [All American Asphalt](https://allamericanasphalt.com/) and [Moviemachines](https://moviemachines.net/collections/all) in San Fernando, California (from 10400100A0BAD600, 2025-01-14). To account for lossy compression favoring Potato in these comparisons, I’ve (1) resampled and (2) JPEG-compressed its output with ImageMagick to match Maxar’s JPEG-compressed pansharpened TIFF. (I only measured the size of the full-resolution subimage, extracted with `tiffsplit`, which was just over 80 megabytes. I used `convert -filter Catrom -resize 17408x -quality 87%` to make Potato’s output about 77.5 megabytes. Thus they both have slightly more than 2 bits per pixel.)
+
+Here’s 
+
+To clarify _color detail enhancement_, the core concept of pansharpening, we see these images in exaggerated chroma-only versions.
+
+, I’ve used `tiffsplit` to extract the JPEG from the Maxar pansharpened TIFF (without recompression), then used ImageMagick with Potato’s rendering to (1) resize the scene, with Catmull-Rom interpolation, to the same dimensions, and (2) compress Potato’s rendering of the scene to a 
+
+Here is Potato’s rendering of , lossily compressed with JPEG to TK kB (TK bpp).
+
+Here is its ab plane in the Oklab color space, in other words just its chroma (hue and saturation) with luma set to 0.5, with a and b each normalized to a standard deviation of 0.25 for comparison.
+
+Same for 
+
+### On comparisons
+
+Here I have tried to make comparisons that _I_ consider 
+
+
 ## Documentation
 
 Please see [the docs directory](/docs) for a quickstart guide and lengthy discussion of the unusual techniques in Potato.
