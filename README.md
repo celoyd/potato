@@ -34,7 +34,9 @@ Like compression or instant messaging, pansharpening isn’t any one algorithm o
 
 ## Examples
 
-Two examples of pansharpening these pan and multispectral images of Chungthang. (For the connoisseurs, this is CID 10300100CE8D0400, 2022-03-07.)
+### Chungthang
+
+Two examples of pansharpening these pan and multispectral images of Chungthang, Sikkim. (For the connoisseurs, this is CID 10300100CE8D0400, 2022-03-07.)
 
 First, Maxar’s pansharpening that they provide with the data:
 
@@ -46,7 +48,9 @@ Second, Potato’s output for the same data:
 
 I’ve adjusted the brightness and contrast of both images to make them roughly match. (Image-wide adjustments that you can make with a [curves tool](https://en.wikipedia.org/wiki/Curve_(tonality)) are independent of pansharpening – we’re looking at local details here, not overall tones.)
 
-To see differences, try opening each in its own tab and flipping between them. There is no way to make a completely fair comparison, for example because the Maxar image has been lossily compressed and resampled back to nominal resolution. However, several of what I consider its shortcomings – the dark water edges, sensitivity to grainy noise, difficulty rendering deeper blue hues – are not plausibly artifacts of those processing steps. Google Earth [also uses this collect](https://earth.google.com/web/@27.60326593,88.64660971,1610.66494177a,1045.83623347d,35y,0h,0t,0r/data=ChYqEAgBEgoyMDIyLTAzLTA3GAFCAggBQgIIAEoNCP___________wEQAA), and although their color treatment is much darker than Maxar’s, the general look of the pansharpening is similar. We also see that in the next example.
+To see differences, try opening each in its own tab and flipping between them. There is no way to make a completely fair comparison, for example because the Maxar image has been lossily compressed and resampled back to nominal resolution. However, several of what I consider its shortcomings – the dark water edges, sensitivity to grainy noise, difficulty rendering deeper blue hues – are not plausibly artifacts of those processing steps. Google Earth [also uses this collect](https://earth.google.com/web/@27.60326593,88.64660971,1610.66494177a,1045.83623347d,35y,0h,0t,0r/data=ChYqEAgBEgoyMDIyLTAzLTA3GAFCAggBQgIIAEoNCP___________wEQAA), and although their color treatment is much darker than Maxar’s, the general look of the pansharpening is similar.
+
+### Quito
 
 Here is a comparison of a different image chip with a different set of visualization choices. On the left we have a small part of Quito [as seen on Google Earth](https://earth.google.com/web/search/Quito,+Ecuador/@-0.08986503,-78.44810289,2628.27205598a,346.32203057d,35y,0h,0t,0r/data=Cj4iJgokCSF-pJOHnDtAEQdki5yumDtAGRLQGY0TKlZAIXMmJJ-4KFZAKhAIARIKMjAyMi0wMS0wOBgBQgIIAUICCABKDQj___________8BEAA) (from 10300100CC8F7900, 2022-01-08; image credit as given within the screenshot; n.b., the link is to the web version but the screenshot is from the desktop version). On the right is Potato’s output, resized and lightly color-adjusted to roughly match the screenshot.
 
