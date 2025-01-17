@@ -32,19 +32,27 @@ So we have one image that is sharp, and one that is full-color. We want to merge
 
 Like compression or instant messaging, pansharpening isn’t any one algorithm or technique; it’s a category defined only by the problem being solved.
 
-## Example
+## Examples
 
-Two examples of pansharpening these pan and multispectral images of Chungthang.
+Two examples of pansharpening these pan and multispectral images of Chungthang. (For the connoisseurs, this is CID 10300100CE8D0400, 2022-03-07.)
 
-Frist, this is Maxar’s pansharpening that they provide with the data:
+First, Maxar’s pansharpening that they provide with the data:
 
 ![Maxar output](docs/images/Chungthang/mx-nice.png)
 
-I’ve made small adjustments to match it to the general brightness and contrast of Potato’s output for the same data:
+Second, Potato’s output for the same data:
 
 ![Potato output](docs/images/Chungthang/potato.png)
 
-To see differences, try opening each in its own tab and flipping between them. There is no way to make a completely fair comparison, for example because the Maxar image has been lossily compressed and resampled back to nominal resolution. However, several of what I consider its shortcomings – the dark water edges, sensitivity to grainy noise, difficulty rendering deeper blue hues – are not plausibly artifacts of those processing steps. Google Earth [also uses this collect](https://earth.google.com/web/@27.60326593,88.64660971,1610.66494177a,1045.83623347d,35y,0h,0t,0r/data=ChYqEAgBEgoyMDIyLTAzLTA3GAFCAggBQgIIAEoNCP___________wEQAA), and although their color treatment is much darker than Maxar’s, the general look of the pansharpening is similar enough that adding it to the comparison would be practically redundant.
+I’ve adjusted the brightness and contrast of both images to make them roughly match. (Image-wide adjustments that you can make with a [curves tool](https://en.wikipedia.org/wiki/Curve_(tonality)) are independent of pansharpening – we’re looking at local details here, not overall tones.)
+
+To see differences, try opening each in its own tab and flipping between them. There is no way to make a completely fair comparison, for example because the Maxar image has been lossily compressed and resampled back to nominal resolution. However, several of what I consider its shortcomings – the dark water edges, sensitivity to grainy noise, difficulty rendering deeper blue hues – are not plausibly artifacts of those processing steps. Google Earth [also uses this collect](https://earth.google.com/web/@27.60326593,88.64660971,1610.66494177a,1045.83623347d,35y,0h,0t,0r/data=ChYqEAgBEgoyMDIyLTAzLTA3GAFCAggBQgIIAEoNCP___________wEQAA), and although their color treatment is much darker than Maxar’s, the general look of the pansharpening is similar. We also see that in the next example.
+
+Here is a comparison of a different image chip with a different set of visualization choices. On the left we have a small part of Quito [as seen on Google Earth](https://earth.google.com/web/search/Quito,+Ecuador/@-0.08986503,-78.44810289,2628.27205598a,346.32203057d,35y,0h,0t,0r/data=Cj4iJgokCSF-pJOHnDtAEQdki5yumDtAGRLQGY0TKlZAIXMmJJ-4KFZAKhAIARIKMjAyMi0wMS0wOBgBQgIIAUICCABKDQj___________8BEAA) (from 10300100CC8F7900, 2022-01-08; image credit as given within the screenshot; n.b., the link is to the web version but the screenshot is from the desktop version). On the right is Potato’s output, resized and lightly color-adjusted to roughly match the screenshot.
+
+![A side-by side comparison of images of a mixed neighborhood with a plaza park, a bus stop, and some large semi-industrial buildings in Quito](docs/images/Quito/both.png)
+
+The rescaling is unflattering to the fine detail in both, but of note is the blocky artifacting around some of the [brick-through-grass](https://earth.google.com/web/search/Quito,+Ecuador/@-0.08986531,-78.44806574,2632.5715332a,0d,60y,270.41779775h,79.45498836t,0r/data=CiwiJgokCSF-pJOHnDtAEQdki5yumDtAGRLQGY0TKlZAIXMmJJ-4KFZAQgIIASIaChZIX0pETEI2d1VfcndHcS1fQVJTZklBEAJCAggASg0I____________ARAA) textures in the playground/plaza west of the bus stop. This is a relatively rare artifact but a revealing one: it shows a failure state of local adaptation–based pansharpening algorithms, which is confused by certain patterns. (The Maxar version of this image also fails in this area, but with blurriness instead of blockiness.) Potato is certainly not perfect, but it paints a picture that reasonably matches on-the-ground views.
 
 ## Documentation
 
