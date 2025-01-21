@@ -60,10 +60,10 @@ The rescaling is unflattering to the fine detail in both, but of note is the blo
 
 ### Comparison to ZS-Pan
 
-Here we compare Ripple’s output to the output of [ZS-Pan](https://github.com/coder-qicao/ZS-Pan), a recent research algorithm which is [published](https://www.sciencedirect.com/science/article/abs/pii/S1566253523003172) and claims to meet or exceed state-of-the-art methods. (The choice of ZS-Pan is not for any specifics of its design, but somewhat arbitrarily because (a) it makes a peer-reviewed claim to high quality and (b) it is well enough implemented and documented that it’s easy to run.)
+Here we compare Ripple’s output to the output of [ZS-Pan](https://github.com/coder-qicao/ZS-Pan), a recent research algorithm which is [published](https://www.sciencedirect.com/science/article/abs/pii/S1566253523003172) and claims to exceed recent state-of-the-art methods. (The choice of ZS-Pan is not for any specifics of its design, but somewhat arbitrarily because (a) it makes a peer-reviewed claim to high quality and (b) it’s well enough implemented and documented that it’s easy to run.)
 
 <details><summary>Process for generating ZS-Pan comparison</summary>
-Other than the python libraries, this process will use the ImageMagic CLI tools and [`uv`](https://github.com/astral-sh/uv). For both there are many alternatives (Photoshop, numpy, …; pip, conda, …), and translations should be straightforward.
+Other than the python libraries, this process will use the ImageMagic CLI tools and [uv](https://github.com/astral-sh/uv). For both there are many alternatives (Photoshop, numpy, …; pip, conda, …), and translations should be straightforward.
 
 ```bash
 cd ~/Documents
@@ -74,7 +74,7 @@ source .venv/bin/activate
 uv pip install torch numpy scipy h5py torchsummary rasterio
 ```
 
-Download [the WV-3 test data](https://drive.google.com/drive/folders/1x3b3ERBXKGXncTRL3gKcidV5BBdG2QjC) (having followed ZS-Pan’s link to [PanCollection](https://github.com/liangjiandeng/PanCollection).) Here we’ll assume it’s in `~/Downloads`:
+Download [the WV-3 test data](https://drive.google.com/drive/folders/1x3b3ERBXKGXncTRL3gKcidV5BBdG2QjC) (having followed ZS-Pan’s link to [PanCollection](https://github.com/liangjiandeng/PanCollection).) Assuming it’s in `~/Downloads`:
 
 ```sh
 mkdir dataset/wv3
@@ -83,7 +83,7 @@ ln -s ~/Downloads/test_wv3_OrigScale_multiExm1.h5 dataset/wv3/train.h5
 python test.py --satellite wv3/ --name 19
 ```
 
-The output is in linear radiance and is all-band, so we’ll extract it in a python session; then, still in the session, we’ll set the data up to be used by Potato. We use `rasterio` because it reliably produces multiband TIFFs, while something like `imageio` has a simpler API but takes more work to produce correct behavior if the user happens to have certain plugins installed, &c. (This could also work as a script.)
+The output is in linear radiance and is all-band, so we’ll extract it in a python session; then, still in the session, we’ll set the data up to be used by Potato. We use `rasterio` because it reliably produces multiband TIFFs, while something like `imageio` has a terser API but takes more work to produce correct behavior if the user happens to have certain plugins installed, &c. (This could also work as a script.)
 
 
 ```python
@@ -109,7 +109,7 @@ with rio.open("19-mul.tiff", "w", driver="gtiff", width=128, height=128, count=8
 
 Notice the arbitrary `* 4` scaling, which _very_ roughly approximates turning radiance into reflectance. This shoddy conversion theoretically puts Potato at a disadvantage since the data statistics will be slightly out of its training distribution.
 
-Now we can run Potato (adjust the paths if necessary):
+Now we can run Potato (remembering to adjust paths if necessary):
 
 ```sh
 cd ~/Documents/potato
@@ -117,7 +117,7 @@ cd ~/Documents/potato
 python demo.py -d cuda ~/Documents/ZS-Pan/19-{pan,mul}.tiff -w sessions/yukon-synths/147-gen.pt 19-potato.tiff
 ```
 
-Now we have an RGB TIFF from each model, but they are scaled differently; ZS-Pan’s would look virtually all black if opened in an image viewer. (This is correct behavior for a radiance→radiance model, but it’s not what we want here.) We will bring it into a visible range with a channelwise `-normalize`, roughly equivalent to an auto-leveling operation in an image editor. We will also give it some modest gamma in order to be directly comparable to Potato’s output (which we will give the same adjustment, other than the gamma). This adjustment is not particular good-looking for either image but it is at least _fair_. Edit paths again as needed.
+Now we have an RGB TIFF from each model, but they are scaled differently; ZS-Pan’s would look virtually all black if opened in an image viewer. (This is correct behavior for a radiance→radiance model, but it’s not what we want here.) We will bring it into a visible range with a channelwise `-normalize`, roughly equivalent to an auto-leveling operation in an image editor. We will also give it some modest gamma in order to be directly comparable to Potato’s output (which we will give the same adjustment, other than the gamma). This color mix is not particularly good-looking for either image but it is at least _fair_. Edit paths again as needed.
 
 ```sh
 convert -channel R,G,B -normalize +channel -gamma 1.25 ~/Documents/ZS-Pan/19-zs.tiff zs-demo.jpeg
@@ -130,13 +130,18 @@ ZS-Pan’s output, following its documentation (adjusted for display with the pr
 
 ![ZS-Pan output](docs/images/ZS-Pan/zs-demo.jpeg)
 
+_Image source data: Maxar via PanCollection._
+
 And Potato’s, on the same data (also as explained above):
 
 ![Potato output](docs/images/ZS-Pan/potato-demo.jpeg)
 
+_Image source data: Maxar via PanCollection._
+
+
 ### Motion artifact comparison
 
-TK
+This is a bonus comparison, to inform and not to persuade. A stress test for any pansharpener is an airplane in flight, since its motion makes its image violate some usual assumptions of how bands behave. No pansharpening algorithm that I know of seriously attempts to fully merge images of planes in flight, and philosophically I think it would probably be a mistake to try. So here we are not trying to judge which image is _better_, only to learn about what the different algorithms are doing.
 
 ## Documentation
 
