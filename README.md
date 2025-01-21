@@ -32,13 +32,13 @@ So we have one image that is sharp, and one that is full-color. We want to merge
 
 Like compression or instant messaging, pansharpening isn’t any one algorithm or technique; it’s a category defined only by the problem being solved.
 
-## Examples
+## Comparisons
 
-### Chungthang
+### Comparison to Maxar’s pansharpening
 
-Two examples of pansharpening these pan and multispectral images of Chungthang, Sikkim. (For the connoisseurs, this is CID 10300100CE8D0400, 2022-03-07.)
+Two examples of pansharpening these pan and multispectral images of Chungthang. (For the connoisseurs, this is CID 10300100CE8D0400, 2022-03-07.)
 
-First, Maxar’s pansharpening that they provide with the data:
+First, Maxar’s pansharpening, provided with the raw data:
 
 ![Maxar output](docs/images/Chungthang/mx-nice.png)
 
@@ -50,7 +50,7 @@ I’ve adjusted the brightness and contrast of both images to make them roughly 
 
 To see differences, try opening each in its own tab and flipping between them. There is no way to make a completely fair comparison, for example because the Maxar image has been lossily compressed and resampled back to nominal resolution. However, several of what I consider its shortcomings – the dark water edges, sensitivity to grainy noise, difficulty rendering deeper blue hues – are not plausibly artifacts of those processing steps. Google Earth [also uses this collect](https://earth.google.com/web/@27.60326593,88.64660971,1610.66494177a,1045.83623347d,35y,0h,0t,0r/data=ChYqEAgBEgoyMDIyLTAzLTA3GAFCAggBQgIIAEoNCP___________wEQAA), and although their color treatment is much darker than Maxar’s, the general look of the pansharpening is similar.
 
-### Quito
+### Comparison to Google Earth’s pansharpening
 
 Here is a comparison of a different image chip with a different set of visualization choices. On the left we have a small part of Quito [as seen on Google Earth](https://earth.google.com/web/search/Quito,+Ecuador/@-0.08986503,-78.44810289,2628.27205598a,346.32203057d,35y,0h,0t,0r/data=Cj4iJgokCSF-pJOHnDtAEQdki5yumDtAGRLQGY0TKlZAIXMmJJ-4KFZAKhAIARIKMjAyMi0wMS0wOBgBQgIIAUICCABKDQj___________8BEAA) (from 10300100CC8F7900, 2022-01-08; image credit as given within the screenshot; n.b., the link is to the web version but the screenshot is from the desktop version). On the right is Potato’s output, resized and lightly color-adjusted to roughly match the screenshot.
 
@@ -58,26 +58,85 @@ Here is a comparison of a different image chip with a different set of visualiza
 
 The rescaling is unflattering to the fine detail in both, but of note is the blocky artifacting around some of the [brick-through-grass](https://earth.google.com/web/search/Quito,+Ecuador/@-0.08986531,-78.44806574,2632.5715332a,0d,60y,270.41779775h,79.45498836t,0r/data=CiwiJgokCSF-pJOHnDtAEQdki5yumDtAGRLQGY0TKlZAIXMmJJ-4KFZAQgIIASIaChZIX0pETEI2d1VfcndHcS1fQVJTZklBEAJCAggASg0I____________ARAA) textures in the playground/plaza west of the bus stop. This is a relatively rare artifact but a revealing one: it shows a failure state of local adaptation–based pansharpening algorithms, which is confused by certain patterns. (The Maxar version of this image also fails in this area, but with blurriness instead of blockiness.) Potato is certainly not perfect, but it paints a picture that reasonably matches on-the-ground views.
 
-### San Fernando
+### Comparison to ZS-Pan
 
-Finally, a more abstract example. The subject is the area around [All American Asphalt](https://allamericanasphalt.com/) and [Moviemachines](https://moviemachines.net/collections/all) in San Fernando, California (from 10400100A0BAD600, 2025-01-14). To account for lossy compression favoring Potato in these comparisons, I’ve (1) resampled and (2) JPEG-compressed its output with ImageMagick to match Maxar’s JPEG-compressed pansharpened TIFF. (I only measured the size of the full-resolution subimage, extracted with `tiffsplit`, which was just over 80 megabytes. I used `convert -filter Catrom -resize 17408x -quality 87%` to make Potato’s output about 77.5 megabytes. Thus they both have slightly more than 2 bits per pixel.)
+Here we compare Ripple’s output to the output of [ZS-Pan](https://github.com/coder-qicao/ZS-Pan), a recent research algorithm which is [published](https://www.sciencedirect.com/science/article/abs/pii/S1566253523003172) and claims to meet or exceed state-of-the-art methods. (The choice of ZS-Pan is not for any specifics of its design, but somewhat arbitrarily because (a) it makes a peer-reviewed claim to high quality and (b) it is well enough implemented and documented that it’s easy to run.)
 
-Here’s 
+<details><summary>Process for generating ZS-Pan comparison</summary>
+Other than the python libraries, this process will use the ImageMagic CLI tools and [`uv`](https://github.com/astral-sh/uv). For both there are many alternatives (Photoshop, numpy, …; pip, conda, …), and translations should be straightforward.
 
-To clarify _color detail enhancement_, the core concept of pansharpening, we see these images in exaggerated chroma-only versions.
+```bash
+cd ~/Documents
+git clone https://github.com/coder-qicao/ZS-Pan.git
+cd ZS-Pan
+uv venv
+source .venv/bin/activate
+uv pip install torch numpy scipy h5py torchsummary rasterio
+```
 
-, I’ve used `tiffsplit` to extract the JPEG from the Maxar pansharpened TIFF (without recompression), then used ImageMagick with Potato’s rendering to (1) resize the scene, with Catmull-Rom interpolation, to the same dimensions, and (2) compress Potato’s rendering of the scene to a 
+Download [the WV-3 test data](https://drive.google.com/drive/folders/1x3b3ERBXKGXncTRL3gKcidV5BBdG2QjC) (having followed ZS-Pan’s link to [PanCollection](https://github.com/liangjiandeng/PanCollection).) Here we’ll assume it’s in `~/Downloads`:
 
-Here is Potato’s rendering of , lossily compressed with JPEG to TK kB (TK bpp).
+```sh
+mkdir dataset/wv3
+ln -s ~/Downloads/test_wv3_OrigScale_multiExm1.h5 dataset/wv3/train.h5
 
-Here is its ab plane in the Oklab color space, in other words just its chroma (hue and saturation) with luma set to 0.5, with a and b each normalized to a standard deviation of 0.25 for comparison.
+python test.py --satellite wv3/ --name 19
+```
 
-Same for 
+The output is in linear radiance and is all-band, so we’ll extract it in a python session; then, still in the session, we’ll set the data up to be used by Potato. We use `rasterio` because it reliably produces multiband TIFFs, while something like `imageio` has a simpler API but takes more work to produce correct behavior if the user happens to have certain plugins installed, &c. (This could also work as a script.)
 
-### On comparisons
 
-Here I have tried to make comparisons that _I_ consider 
+```python
+import scipy.io as sio
+import rasterio as rio
+import numpy as np
+import h5py
 
+result = sio.loadmat("result/wv3/19.mat")
+r, g, b = (result["I_SR"].clip(0, 65535).astype('uint16')[..., b] for b in (4, 2, 1))
+
+with rio.open("19-zs.tiff", "w", driver="gtiff", width=512, height=512, count=3, photometric="RGB", dtype="uint16") as zs_result:
+    zs_result.write(np.stack([r, g, b]))
+
+inputs = h5py.File('dataset/wv3/train.h5', 'r')
+
+with rio.open("19-pan.tiff", "w", driver="gtiff", width=512, height=512, count=1, dtype="uint16") as pan:
+    pan.write(np.stack((inputs['pan'][19] * 4).clip(0, 10_000).astype('uint16')))
+
+with rio.open("19-mul.tiff", "w", driver="gtiff", width=128, height=128, count=8, dtype="uint16") as mul:
+    mul.write(np.stack((inputs['lms'][19] * 4).clip(0, 10_000).astype('uint16')))
+```
+
+Notice the arbitrary `* 4` scaling, which _very_ roughly approximates turning radiance into reflectance. This shoddy conversion theoretically puts Potato at a disadvantage since the data statistics will be slightly out of its training distribution.
+
+Now we can run Potato (adjust the paths if necessary):
+
+```sh
+cd ~/Documents/potato
+
+python demo.py -d cuda ~/Documents/ZS-Pan/19-{pan,mul}.tiff -w sessions/yukon-synths/147-gen.pt 19-potato.tiff
+```
+
+Now we have an RGB TIFF from each model, but they are scaled differently; ZS-Pan’s would look virtually all black if opened in an image viewer. (This is correct behavior for a radiance→radiance model, but it’s not what we want here.) We will bring it into a visible range with a channelwise `-normalize`, roughly equivalent to an auto-leveling operation in an image editor. We will also give it some modest gamma in order to be directly comparable to Potato’s output (which we will give the same adjustment, other than the gamma). This adjustment is not particular good-looking for either image but it is at least _fair_. Edit paths again as needed.
+
+```sh
+convert -channel R,G,B -normalize +channel -gamma 1.25 ~/Documents/ZS-Pan/19-zs.tiff zs-demo.jpeg
+
+convert -channel R,G,B -normalize +channel 19-potato.tiff potato-demo.jpeg
+```
+</details>
+
+ZS-Pan’s output, following its documentation (adjusted for display with the process above):
+
+![ZS-Pan output](docs/images/ZS-Pan/zs-demo.jpeg)
+
+And Potato’s, on the same data (also as explained above):
+
+![Potato output](docs/images/ZS-Pan/potato.jpeg)
+
+### Motion artifact comparison
+
+TK
 
 ## Documentation
 
