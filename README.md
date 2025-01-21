@@ -132,7 +132,7 @@ ZS-Pan’s output, following its documentation (adjusted for display with the pr
 
 And Potato’s, on the same data (also as explained above):
 
-![Potato output](docs/images/ZS-Pan/potato.jpeg)
+![Potato output](docs/images/ZS-Pan/potato-demo.jpeg)
 
 ### Motion artifact comparison
 
