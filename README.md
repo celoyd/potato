@@ -141,7 +141,17 @@ _Image source data: Maxar via PanCollection._
 
 ### Motion artifact comparison
 
-This is a bonus comparison, to inform and not to persuade. A stress test for any pansharpener is an airplane in flight, since its motion makes its image violate some usual assumptions of how bands behave. No pansharpening algorithm that I know of seriously attempts to fully merge images of planes in flight, and philosophically I think it would probably be a mistake to try. So here we are not trying to judge which image is _better_, only to learn about what the different algorithms are doing.
+This is a bonus comparison, to inform and not to persuade. A stress test for any pansharpener is an airplane in flight, since its motion makes its image violate some usual assumptions of how bands behave. No pansharpening algorithm that I know of seriously attempts to fully merge images of planes in flight, and actually I think [it would be a mistake to try](https://github.com/celoyd/potato/issues/20). So here we are not trying to judge which image is _better_, only to learn about what the different algorithms are doing.
+
+![both](https://github.com/user-attachments/assets/3d20886b-fbf9-4dbc-80dc-5de76d5ef132)
+
+This is Maxar’s pansharpening on the left and Potato output on the right. Two of the differences we might draw out:
+
+- Maxar only uses the RGB multispectral channels. (I don’t actually know that for certain; it’s merely a deduction from cases like this one.) A disadvantage is that there’s less information to work with, but an advantage is that it cuts band misalignment problems to 3/8. There’s only one rainbowed plane on the left, but two on the right, where Potato is trying to integrate two groups of 4 multispectral channels.
+
+- Maxar’s pansharpener is clearly getting more of the overall brightness from the multispectral bands. This manifests as its lead plane being much brighter than Potato’s. Potato seems more willing to discount multispectral bands that appear mistaken. Then, on the other hand, the center (panchromatic) plane only exists in fine details in Maxar’s version, while Potato appears very confident that there is in fact an object there. Potato adds very little of the rich green color even though its signal must be strong.
+
+I underline once more that in _this_ comparison I don’t think it’s useful to ask which model is doing better. Here I only want to show some of what’s interesting in pansharpening. This sort of extreme case, where pansharpeners must deal with assumption-violating inputs, makes their different strategies easier to understand.
 
 ## Documentation
 
