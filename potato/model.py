@@ -1,9 +1,8 @@
 import torch
 from torch import nn
-import torch.nn.functional as fn
 from torch.nn import Mish
 
-from potato.util import pile, tile, cheap_half
+from potato.util import pile, tile
 from potato.color import BandsToOklab
 
 
@@ -57,7 +56,6 @@ class ConvChunk(nn.Module):
         self.end_pointwise = nn.Conv2d(mid_depth, out_depth, 1)
 
     def forward(self, x):
-
         skip = self.skip(x)
 
         x = self.front_pointwise(x)
@@ -66,7 +64,6 @@ class ConvChunk(nn.Module):
         x = self.nl(x)
 
         x = self.middle_pointwise(x)
-        x = self.drop(x)
         x = self.back_conv(x)
         x = self.nl(x)
 
@@ -79,9 +76,10 @@ class Potato(nn.Module):
         super().__init__()
 
         self.zoom = nn.Upsample(scale_factor=2, mode="bilinear")
-
         self.oklab = BandsToOklab()
 
+        # Depths given as expressions to help mental math.
+        # E.g., here, 3 layers of oklab, 8 of mul, 16 of piled pan:
         self.bq = ConvChunk(3 + 8 + 16, n)
         self.eq = ConvChunk(n, n // 2)
 
@@ -96,8 +94,6 @@ class Potato(nn.Module):
 
         oklab_half = self.zoom(oklab)
         oklab_full = self.zoom(oklab_half)
-
-        x = torch.pow(x, 1 / 3)
 
         pan_quarter = x[:, :16]
         pan_full = tile(pan_quarter, 4)
@@ -117,15 +113,12 @@ class Potato(nn.Module):
         q = self.eq(q)
 
         h = self.zoom(q)
-
         h = concat(h, pan_half, oklab_half)
         h = self.bh(h)
         h = self.eh(h)
 
         f = self.zoom(h)
-
         f = concat(f, pan_full, oklab_full, pan_detail)
-
         f = self.f(f)
 
         return cheap_sharp + f
