@@ -18,7 +18,7 @@ class ConvChunk(nn.Module):
 
     The main branch of this block basically does this twice:
 
-    1×1 | dropout | 3×3 (4 groups) | mish
+    1×1 | dropout | 3×3 (in 8 groups) | mish
 
     and then ends with a final 1x1.
 
