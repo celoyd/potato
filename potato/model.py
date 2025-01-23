@@ -67,7 +67,6 @@ class ConvChunk(nn.Module):
         x = self.nl(x)
 
         x = self.middle_pointwise(x)
-        x = self.drop(x)
         x = self.back_conv(x)
         x = self.nl(x)
 
