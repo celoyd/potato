@@ -41,6 +41,7 @@ class ConvChunk(nn.Module):
         else:
             self.drop = lambda x: x
 
+
         self.skip = nn.Conv2d(in_depth, out_depth, 1)
         self.front_pointwise = nn.Conv2d(in_depth, mid_depth, 1)
 
@@ -96,8 +97,6 @@ class Potato(nn.Module):
 
         oklab_half = self.zoom(oklab)
         oklab_full = self.zoom(oklab_half)
-
-        x = torch.pow(x, 1 / 3)
 
         pan_quarter = x[:, :16]
         pan_full = tile(pan_quarter, 4)
