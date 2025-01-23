@@ -1,9 +1,8 @@
 import torch
 from torch import nn
-import torch.nn.functional as fn
 from torch.nn import Mish
 
-from potato.util import pile, tile, cheap_half
+from potato.util import pile, tile
 from potato.color import BandsToOklab
 
 
