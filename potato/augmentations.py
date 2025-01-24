@@ -1,6 +1,6 @@
 import torch
 from torch.nn import Conv2d, Module
-from torch.nn.functional import grid_sample, conv2d
+from torch.nn.functional import grid_sample
 from torchvision.transforms.functional import resize
 from torchvision.transforms import InterpolationMode
 

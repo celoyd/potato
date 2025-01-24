@@ -1,4 +1,3 @@
-import datetime
 import json
 import pathlib
 from pathlib import Path
@@ -10,12 +9,8 @@ from potato.util import tile, pile, cheap_half
 
 import rasterio as rio
 import torch
-from einops import rearrange
-from torch import nn
-from torch.nn import functional as F
 
-# from typing import Sequence, Tuple
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import Dataset
 
 import click
 import logging
@@ -132,7 +127,6 @@ class Chipper(Dataset):
     """
 
     def __init__(self, ard_roots, length, accept_cids, starting_from):
-
         self.length = length
         self.starting_from = starting_from
 

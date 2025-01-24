@@ -1,9 +1,5 @@
 from sys import argv
 
-import numpy as np
-
-# import torch
-
 import rasterio
 from rasterio import windows
 
