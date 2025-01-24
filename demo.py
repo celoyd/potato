@@ -3,17 +3,24 @@ demo.py: pansharpen with potato
 Usage: python demo.py pan.tiff mul.tiff -w weights.pt output.tiff
 Also see the --help.
 
-This code contains many hardcoded assmptions about data format and user 
-preferences. It is truly a demo.
+This code contains many hardcoded assmptions about data format and 
+user preferences. It is truly a demo.
 
 Example workflow:
 
+First let’s break up the super long filenames by part for ease
+(and to make my linter stop complaining about line length):
+
+$ export nbo_demo_base=maxar-opendata/events/Kenya-Flooding-May24/ard/37/211111023311
+$ export nbo_demo_file=2023-11-30/104001008E063C00
+
 We get the pan and mul parts of a big image (downtown Nairobi):
 
-$ aws s3 cp s3://maxar-opendata/events/Kenya-Flooding-May24/ard/37/211111023311/2023-11-30/104001008E063C00-pan.tif .
-$ aws s3 cp s3://maxar-opendata/events/Kenya-Flooding-May24/ard/37/211111023311/2023-11-30/104001008E063C00-ms.tif .
+$ aws s3 cp s3://${nbo_demo_base}/${nbo_demo_file}-pan.tif .
+$ aws s3 cp s3://${nbo_demo_base}/${nbo_demo_file}-ms.tif .
 
-$ python demo.py -d cuda -w sessions/bintje/23-gen.pt 104001008E063C00-{pan,ms}.tif test.tiff
+$ python demo.py -d cuda -w sessions/bintje/23-gen.pt \
+    104001008E063C00-{pan,ms}.tif test.tiff
 
 You might then want to, for example, make it a cloud-optimized geotiff:
 
@@ -22,7 +29,7 @@ $ rio cogeo create test.tiff nairobi.tiff
 
 You could then fetch the default pansharpening:
 
-$ aws s3 cp s3://maxar-opendata/events/Kenya-Flooding-May24/ard/37/211111023311/2023-11-30/104001008E063C00-visual.tif .
+$ aws s3 cp s3://${nbo_demo_base}/${nbo_demo_file}-visual.tif .
 
 And then open both in QGIS to compare:
 
