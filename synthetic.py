@@ -1,15 +1,8 @@
 import torch
-import rasterio as rio
 from potato.color import BandsToOklab, OklabTosRGB
-from potato.util import pile, cheap_half
-
-import imageio.v3 as iio
+from potato.util import pile
 
 full_edge = 512
-
-
-def fast_quarter(x):
-    return fast_half(fast_half(x))
 
 
 b2l = BandsToOklab()
