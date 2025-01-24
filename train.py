@@ -1,16 +1,12 @@
-import sys
 from pathlib import Path
 
 import torch
-from torch import nn
-from torch.nn import functional as F
 from torch.utils.data import DataLoader, Dataset
 
-from potato.model import Potato, concat
-from potato.util import tile, pile, cheap_half
-from potato.color import BandsToOklab
+from potato.model import Potato
+from potato.util import tile, pile
 from potato.augmentations import HaloMaker, WV23Misaligner
-from potato.losses import rfft_texture_loss, rfft_saturation_loss, ΔEuOK, ΔEOK
+from potato.losses import rfft_texture_loss, rfft_saturation_loss, ΔEOK
 
 from tensorboardX import SummaryWriter
 
@@ -73,7 +69,7 @@ class Session(object):
             try:
                 load_session, load_epoch = load_from.split("/")
                 load_epoch = int(load_epoch)
-            except:
+            except ValueError:
                 raise ValueError(
                     "Expected --load-from to look like sesh or sesh/1 "
                     f"(name[/number]) but got {load_from}."
@@ -108,7 +104,7 @@ class Session(object):
         gen_exists, opt_exists = (path.exists() for path in (gen_path, opt_path))
 
         if gen_exists != opt_exists:
-            raise FileNotFoundError(f"Only one of {gen} or {opt} exists!")
+            raise FileNotFoundError(f"Only one of {gen_path} or {opt_path} exists!")
 
         epoch_exists = gen_exists
         if epoch_exists == should_exist:
@@ -255,7 +251,7 @@ def train(
             ckpt = sesh.starters[0]
             origin_string = f"Loaded {ckpt} and corresponding optimizer."
         else:
-            origin_string = f"Starting training from scratch."
+            origin_string = "Starting training from scratch."
         print(origin_string)
         print(f"The plan is {epochs} epochs of:")
         print(
@@ -267,7 +263,7 @@ def train(
         )
 
         print(f"The next checkpoint will go in {sesh.get_next_paths()[0]}, and so on.")
-        print(f"Training starts at " + datetime.datetime.now().isoformat() + ".\n")
+        print("Training starts at " + datetime.datetime.now().isoformat() + ".\n")
 
     for physical_epoch in range(epochs):
         batch_counter = 0
