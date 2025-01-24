@@ -199,7 +199,6 @@ def train(
     # Set up the chip loaders.
     loader_params = {
         "batch_size": physical_batch_size,
-        "shuffle": True,
         "num_workers": workers,
         "pin_memory": True,
     }
@@ -207,8 +206,8 @@ def train(
     Train = ChipReader(chips, train_length)
     Test = ChipReader(test_chips, test_length)
 
-    trainloader = DataLoader(Train, **loader_params)
-    testloader = DataLoader(Test, **loader_params)
+    trainloader = DataLoader(Train, **loader_params, shuffle=True)
+    testloader = DataLoader(Test, **loader_params, shuffle=False)
 
     # Set up the model and optimizer so we can load their weights.
     gen = Potato(48).to(device)
