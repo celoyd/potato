@@ -13,7 +13,7 @@ We get the pan and mul parts of a big image (downtown Nairobi):
 $ aws s3 cp s3://maxar-opendata/events/Kenya-Flooding-May24/ard/37/211111023311/2023-11-30/104001008E063C00-pan.tif .
 $ aws s3 cp s3://maxar-opendata/events/Kenya-Flooding-May24/ard/37/211111023311/2023-11-30/104001008E063C00-ms.tif .
 
-$ python demo.py -d cuda -w weights/space_heater-gen-95.pt 104001008E063C00-{pan,ms}.tif test.tiff
+$ python demo.py -d cuda -w sessions/bintje/23-gen.pt 104001008E063C00-{pan,ms}.tif test.tiff
 
 You might then want to, for example, make it a cloud-optimized geotiff:
 
@@ -30,7 +30,6 @@ $ qgis nairobi.tiff 104001008E063C00-visual.tif
 
 """
 
-from sys import argv, stderr
 import click
 
 import torch
@@ -103,17 +102,18 @@ def quarter_window(w):
 )
 def pansharpen(panpath, mulpath, dstpath, weights, compile, device, overwrite):
     with rasterio.open(panpath) as panfile, rasterio.open(mulpath) as mulfile:
-
         if mulfile.count != 8:
             raise ImageDimensionError(
-                f"Expected an 8-band multispectral image but got {mulfile.count} bands. "
-                "Check that this is a WV-2/3 image (CID should start 103 or 104)."
+                "Expected an 8-band multispectral image but got "
+                f"{mulfile.count} bands. Check that this is a "
+                "WV-2/3 image (CID should start 103 or 104)."
             )
         if (mulfile.width != panfile.width // 4) or (
             mulfile.height != panfile.height // 4
         ):
             raise ImageDimensionError(
-                f"Expected multispectral edge length exactly 1/4 pan edge length but got "
+                "Expected multispectral edge length exactly "
+                "1/4 pan edge length but got "
                 f"pan w×h {panfile.width}×{panfile.height} and "
                 f"mul w×h {mulfile.width}×{mulfile.height}"
             )
@@ -166,7 +166,6 @@ def pansharpen(panpath, mulpath, dstpath, weights, compile, device, overwrite):
                     mul_pixels = mulfile.read(window=quarter_window(reading_window))
 
                 pan_pixels_shape = pan_pixels.shape
-                mul_pixels_shape = mul_pixels.shape
 
                 if np.all(pan_pixels == 0) and np.all(mul_pixels == 0):
                     blank = torch.ones((3, pan_pixels_shape[-2], pan_pixels_shape[-1]))
