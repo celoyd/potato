@@ -160,8 +160,8 @@ The vectorscope below is from the original Potato screenshot and not its JPEG ve
 
 Maxar’s rendering, then Potato’s:
 
-![Maxar image of the Port of New Orleans](docs/images/Nola/potato-q85.jpeg)
-![Potato’s image of the Port of New Orleans](docs/images/Nola/maxar.png)
+![Maxar image of the Port of New Orleans](docs/images/Nola/maxar.jpeg)
+![Potato’s image of the Port of New Orleans](docs/images/Nola/potato-q85.png)
 
 One way of comparing them is to create a difference image, where we subtract one from the other and then recenter the 0 level at medium gray. In this image, gray means no change, blue means Potato’s output is bluer than Maxar’s, dark gray means Potato is darker than Maxar, and so on:
 
