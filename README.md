@@ -163,15 +163,17 @@ Maxar’s rendering, then Potato’s:
 ![Maxar image of the Port of New Orleans](docs/images/Nola/maxar.png)
 ![Potato’s image of the Port of New Orleans](docs/images/Nola/potato-q85.jpeg)
 
-One way of comparing them is to create a difference image, where we subtract one from the other and then recenter the 0 level at medium gray. In this image, gray means no change, blue means Potato’s output is bluer than Maxar’s, dark gray means Potato is darker than Maxar, and so on:
+One way of comparing them is to subtract one from the other and then center the difference at medium gray. In this image, neutral gray means no change, blue means Potato’s output is bluer than Maxar’s, dark gray means Potato is darker than Maxar, and so on:
 
 ![Difference image of the Port of New Orleans](docs/images/Nola/diff.jpeg)
 
-Potato is better able to represent various bright hues like safety yellow and the hot fuchsia of the [ONE](https://www.one-line.com/en) brand. The shipping containers are a useful stress test because they are only slightly wider than a multispectral pixel. Both pansharpeners here clearly struggle with certain color adjacencies, for example. But Potato appears to struggle somewhat less overall. It also leds a more lifelike yellowness to living vegetation, instead of the cooler blue-greens that the standard method uses.
+Potato is better able to represent various bright hues like safety yellow and the hot fuchsia of the [ONE](https://www.one-line.com/en) brand. The shipping containers are a useful stress test because they are only slightly wider than a multispectral pixel. Both pansharpeners here clearly struggle with certain color adjacencies, for example. But Potato appears to struggle somewhat less overall. It also allows for warmer tones in living vegetation, instead of the slightly bluer greens that the standard method finds.
 
-Many of the largest changes are to colors at the blue end of the spectrum. For example, Maxar renders the outside walls of the building in the lower left (Nashville Ave Wharf B) in periwinkle – a light violet-blue. Potato renders it with a more down-the-middle light sky blue, nearly the color of the cranes standing in front of it. Based on [videos of the port](https://youtu.be/xEJI3SkSH4A?t=229), [Google’s 3D aerial imagery](https://earth.google.com/web/search/New+Orleans/@29.91222285,-90.1157171,11.52396512a,163.67048562d,35y,0.00000001h,60.63998696t,0r/), etc., Potato is closer to reality. As a generalization, standard methods tends to avoid clear, medium blues; they tend to make them either darker or more violet than reality. In short this is because they do not use the sensor’s deep blue band; in long, see the [deeper documentation](https://github.com/celoyd/potato/blob/docs/docs/features.md#all-band-color-conversion).
+Many of the largest changes are to colors at the blue end of the spectrum. For example, Maxar renders the outside walls of the building in the lower left (Nashville Ave Wharf B) in periwinkle – a light violet-blue. (Remember to click through for more detail.) Potato renders it with a more down-the-middle light sky blue, nearly the color of the cranes standing in front of it. Based on [videos of the port](https://youtu.be/xEJI3SkSH4A?t=229), [Google’s 3D aerial imagery](https://earth.google.com/web/search/New+Orleans/@29.91222285,-90.1157171,11.52396512a,163.67048562d,35y,0.00000001h,60.63998696t,0r/), and other public sources, Potato is closer to reality. As a generalization, standard methods tends to avoid clear, medium blues; they tend to make them darker or more violet than reality. In short this is because they do not use the sensor’s deep blue band; in long, see the [deeper documentation](https://github.com/celoyd/potato/blob/docs/docs/features.md#all-band-color-conversion).
 
-We can also explore these color characteristics with a _vectorscope_, a visualization used in film grading to see pixels (or their counts) projected onto the chroma plane of a luma/chroma colorspace. Here is a vectorscope visualization of Maxar’s image: 
+<details>
+	<summary>Vectorscope visualization</summary>
+We can also explore these color characteristics with a _vectorscope_, a visualization used in film grading to see pixels projected onto the chroma plane of a luma/chroma colorspace. Here is a vectorscope visualization of Maxar’s image:
 
 ![Vectorscope of Maxar’s image](docs/images/Nola/mv.png)
 
@@ -179,6 +181,14 @@ And Potato’s:
 
 ![Vectorscope of Potato’s image](docs/images/Nola/pv.png)
 
+There is much to interpret here but also some pitfalls. For example, raw saturation (pure distance from image center) isn’t important here; as mentioned in the first comparison, that kind of thing would be trivial to correct and doesn’t get to the actually difficult parts of this processing. Also, the very light lime and seafoam lines in Potato will be from the clipping inherent in QGIS’s linear stretch – see the processing details above.
+
+It is more telling that Potato’s output shows more middle blues in an image that should contain middle blues (for example, the [sky-colored cranes](https://portnola.com/info/news-media/press-releases/seacor-marine-receives-marad-grant-also-initiates-carbon-offset-program) and some of the shipping containers) while Maxar’s blue arm skews counterclockwise and inward, toward gray-purples. (We can also see the cluster of mistaken periwinkle.) Likewise, Potato uses variety of greens, from cyans to near-yellows, while Maxar renders both Evergreen shipping containers and actual grass with a surprisingly similar hue angle.
+
+In general, Potato’s vectorscopes – here and elsewhere – show a more filled-in use of the color space. This is because it uses more spectral information. 
+
+Standard pansharpening is working in a color space with 3 primaries (the blue, green, and red bands). Potato is working in a color space with 6 primaries (the deep blue, blue, green, yellow, red, and red-edge bands), which gives it a wider gamut – and also, at least ideally, some redundancy with which to spot certain kinds of artifacts.
+</details>
 
 ### Motion artifact comparison
 
