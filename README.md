@@ -20,7 +20,7 @@ A very high resolution optical satellite collects an image in two parts. It gets
 
 ![Monochrome image of a mountain village at a river confluence](docs/images/Chungthang/pan.png)
 
-_The samples images here are of Chungthang, Sikkim, from Maxar collect 10300100CE8D0400 on 2022-03-07. Like all images shown in this repo except otherwise credited, they are [CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/deed.en) from the [Maxar Open Data Program](https://registry.opendata.aws/maxar-open-data/)._
+_The samples images here are of Chungthang, Sikkim, from Maxar collect 10300100CE8D0400 on 2022-03-07. Like all images shown in this repo except otherwise credited, they are [CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/deed.en) from the [Maxar Open Data Program](https://registry.opendata.aws/maxar-open-data/). See [the credits/license] section for more information._
 
 This is called the panchromatic or pan band, and it works like black and white film, or like applying a black and white filter to a photo. A band is a range of the spectrum, and pan-chromatic means all-color – this band collects the range of all visible light.
 
@@ -208,10 +208,65 @@ I underline again that in _this_ comparison I don’t think it’s useful to ask
 
 Please see [the docs directory](/docs) for a quickstart guide and lengthy discussion of the unusual techniques in Potato.
 
-## License
+## Licensing, data credit, and thanks
+
+### Licensing and data credit
 
 Potato is licensed [CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/deed.en).
 
+All satellite imagery data in this repository, except as otherwise credited, is derived from data copyright © Maxar Technologies, licensed [CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/deed.en) via [the Maxar Open Data Program](https://registry.opendata.aws/maxar-open-data/) (see further links there), adapted and modified as described in the accompanying text.
+
+I avidly support Maxar’s Open Data Program. I hope to advance its humanitarian goals by making more people aware of it and its usefulness. Moreover, I hope that Potato is of service specifically to people developing fast, lightweight processing pipelines to make use of that resource. My interest in citing this data properly is therefore not only a legal obligation; it’s also real enthusiasm. So if you notice errors or shortcomings in any credit in this repo, please let me know. As I see it, we have been given broad rights to millions of dollars worth of top-tier data, and the only cost is proper attribution. I am beyond happy to pay that price in full.
+
+### Thanks
+
+Many friends and peers pointed me down useful paths or entertained my marathon diatribes on this topic over many years. Some are Camilla Mahon, Bhavika Tekwani, Damon Burgett, Justin Pickard, Kevin Bullock, Kevin Wurster, Robert Simmon, Virginia Ng, and Yoni Nachmany. Others lurk in the shadows.
+
+Stephan Hügel (@urschrei) started me talking publicly about pansharpening – not just glaring at Jupyter notebooks – by eliciting a [pansharpening Long Telegram](https://gist.github.com/celoyd/5bb5417b24801e0446ad5977cc3581e4) in 2021. Potato is simply an illustration of that e-mail. And since then he has often had a thought-provoking remark or a kind word at just the right time.
+
+Peter Richardson (@meetar) took an interest in Potato when it was some borderline unrunnable code and sketchy, conflicting ideas for a wavelet-based pansharpener called Ripple. He was pulled away after only few sessions of brainstorming, testing, and coding, but his contributions in that time were richly clarifying. Potato might have deliquesced back into one-offs and what-ifs without him helping it over the threshold to solidity.
+
+Potato’s remaining problems are mine alone and do not reflect on anyone mentioned.
+
+## Environmental effects
+
+I’ll assume, based on my GPU’s power rating and benchmarked generation rate, that Potato runs at 150 J/s and 12.5 megapixel/s, or 12 J/Mpel. (It uses 3.5 to 4× as much energy per work if run entirely on the CPU; only the GPU is considered here.)
+
+CAISO, the local grid authority, does not publish marginal GHG intensity, so I’m working from estimates like [figure 2 in Mayes et al. 2024](https://www.researchgate.net/figure/Month-hourly-average-left-and-marginal-right-Emissions-Factors-for-the-CAISO-grid-in_fig2_374597170) (from 2021, when the grid emitted ~30% more). My GPU use is very sensitive to the temperature of my living space, which (given California’s cooling-heavy duck curve) shifts it to grid-friendly times: the GPU is nearly always idle at peak, and in winter, it’s substituting residential heating. My best point estimate of my marginal intensity is 160 g/[kWh](https://www.youtube.com/watch?v=kkfIXUjkYqE).
+
+A CO₂e intensity of 160 g/kWh at 150 W = 6.7 mg/s = 24 g/hour = 575 g/day = 18 kg/month = 210 kg/year. This is the estimated CO₂e production of _continuous_ Potato use. From the processing rate, we also get a CO₂e/pixel estimate: 536 µg/Mpel = **536 grams per terapixel**.
+
+The training data has a mean ground sample distance of about 50 cm per pixel: a density of 4 Mpel/km². This gives us the CO₂e per area processed of **2.15 mg/km²**. We can now estimate, for example, the carbon emissions of pansharpening Earth’s whole land surface with Potato: 320 kg – over a year and a half, if on my agèd GPU. (If you were really building a global mosaic, you would probably select for higher than mean resolution, and could end up near a tonne.)
+
+My upper estimate for Potato’s total training time, including that wasted on dead ends, is 5 GPU days. Training draws about the same power as inference, since both nearly saturate the GPU. So the GPU-originated emissions embodied in Potato’s trained weights are about **3 kg CO₂e**.
+
+These figures are all based on my understanding of my own circumstances. If an oracle told me the true number were a factor of 2 higher or lower, I would by only moderately surprised, and you in your circumstances might plausibly get a number 10× higher or lower. But this is my best estimate.
+
+<details>
+<summary>Remarks</summary>
+
+A few comparisons for context:
+
+- My personal carbon emissions rise, on average, 2% over whatever they would otherwise be while I’m using Potato.
+- At this level, Potato in continuous use emits about 2/3 as much CO₂ as I do by exhalation.
+- Our compact car emits on the order of 100 g CO₂e/km, similar to a widebody commercial flight (per passenger). All my Potato work is thus similar to inducing a single 30 km car trip, or, spread over a year, 82 extra meters of driving per day, or, at urban arterial speeds, 5.2 seconds of extra driving per day. (Or 2 minutes of extra widebody flying per year.)
+- Potato’s total emissions to date are roughly equivalent to that embodied in 30 g (1 oz) of conventionally farmed steak, one large hand of bananas, or 150 g (6 oz) of chocolate. Or 10 kg (22 lbs) of potatoes – a carbon-friendly food, and much more nutritious than most assume.
+- The dominant factor in Potato’s greenhouse forcing effects to date, as far as I can account for them, has been food and drink choices I have made while working on it.
+
+The assumption that deep learning is necessarily wildly energy-hungry only serves to benefit the outliers who do it in wildly energy-hungry ways. I have been tired of them since about 30 seconds after I heard about them. Our moment deserves a sprawling, heterogeneous, complex ecosystem of individuals and small groups tinkering with these technologies, charting possibility spaces and developing bottom-up understandings, independent of any business goals, and with hobby-scale carbon emissions. We have only shadows and echos of that.
+
+From what I’ve heard, there is much to admire in what the [RWKV](https://www.rwkv.com/) people are doing: producing capable models with computing resources that [large companies consider rounding errors](https://www.youtube.com/watch?v=LPe6iC73lrc#t=24m18s), making the creation of accessible tools an explicit ideal, and without externally determined goals. Perhaps if I looked closer I’d notice them doing things I disagree with – but all the more reason I should be able to name a dozen peer groups to RWKV, each with its own ethos and technical interests. I can’t. And I think that’s a serious problem.
+
+We all live in a blighted landscape ML-wise: an ecosystem without a middle. We have kaiju-like companies that shake the ground with every step. We have millions of consumerified “AI” users, the economic equivalents of algal mats, almost all without any practical options other than choosing which model to pay for and how to prompt it. What we don’t have in plenty are, in the ecosystem metaphor, the ordinary iguanas, caribou, and wallabies; the salamanders, honeybees, and potatoes. These are the RWKV peers, the people making their own pansharpeners and birdsong decoders. They are rare and even more rarely organized.
+
+The kaiju, battling each other off in the haze, project the impression that there is no point doing anything unless you’re big enough to level forests while you do it: that it would be irrational to even _try_ to compete with them, because you can’t burn enough carbon to beat them. Credulous “AI skeptics” transcribe these roars and psionic attacks with concern, as if they are good-faith veridical statements that we should accept uncritically. After all, the kaiju are the experts! If _even they_ say you have to spend a petajoule and act like a kaiju to do anything interesting, why should we doubt them? And so the algae-and-kaiju world maintains itself.
+
+Let’s do better. Please join me, exceed me, in individual- to chat-server–scale ML work that uses data and energy conscientiously and tries to understand this odd technology on terms other than those chosen by the kaiju and accepted by their pseudo-critics. Come be an octopus, a mangrove, or an okapi, and let’s see if we can get something going in the middle. I’m not telling you to make a state-of-the-art LLM on your home computer. I’m telling you that the world of ML is bigger, more interesting, and generally _better_ than O(<var>n</var>²) chatbots with 50,000,000,000 parameters.
+
+This section was supposed to be three comparisons and three sentences of remarks. I’ll close by saying: do carbon math.
+
+</details>
+
 ## Contributing
 
-Potato is basically a personal project, and is intended primarily as a one-and-done demonstration, not as a continually improving pansharpening package. It’s born in bug-fix–only mode. Feel free to file an issue to point out an error or ask a question, but ideas for bold new features are unlikely to interest me here; mine are going in other (as yet unreleased) projects. I warmly encourage forks that build on Potato in license-respecting ways. The whole point of this project is to get more people doing better work on pansharpening, and if Potato is a useful foundation or even a productive annoyance to you, I’m happy.
+Potato is basically a personal project, and is intended primarily as a one-and-done demonstration, not as a continually improving pansharpening package. It’s born in bug-fix–only mode. Feel free to file an issue to point out an error, request a minor enhancement, or ask a question, but ideas for bold new features are unlikely to interest me here; mine are going in other (as yet unreleased) projects. I warmly encourage new work that builds on Potato in license-respecting ways. The whole point of this project is to get more people doing better work on pansharpening, and if Potato is a useful foundation or even a productive annoyance to you, I’m happy.
