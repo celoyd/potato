@@ -268,7 +268,6 @@ def train(
         batch_counter = 0
 
         with tqdm(trainloader, unit="b", mininterval=2) as progress:
-
             # Training part of epoch
             loss_history = []
 
