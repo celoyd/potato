@@ -216,6 +216,7 @@ def pansharpen(panpath, mulpath, dstpath, weights, compile, device, overwrite):
                         executor.map(process, windows),
                         total=len(windows),
                         unit=" block",
+                        smoothing=0.1,
                     )
                 )
 
