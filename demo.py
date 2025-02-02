@@ -128,6 +128,8 @@ def pansharpen(panpath, mulpath, dstpath, weights, compile, device, overwrite):
         profile = panfile.profile
         profile.update(
             {
+                "driver": "gtiff",  # in case some jokester wasts to try VRTs
+                "bigtiff": "if_safer",
                 "count": 3,
                 "photometric": "RGB",
                 "blocksize": block,
