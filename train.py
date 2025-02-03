@@ -211,6 +211,7 @@ def train(
 
     # Set up the model and optimizer so we can load their weights.
     gen = Potato(48).to(device)
+    # gen = torch.jit.script(gen)
     opt = torch.optim.AdamW(gen.parameters(), lr)
 
     sesh = Session(session, load_from, dir=checkpoints)
@@ -246,7 +247,7 @@ def train(
     if agenda:
         print(f"Training time! Running on {device}.")
 
-        if sesh.has_starters:
+        if sesh.has_starters():
             ckpt = sesh.starters[0]
             origin_string = f"Loaded {ckpt} and corresponding optimizer."
         else:

@@ -6,10 +6,6 @@ from potato.util import pile, tile
 from potato.color import BandsToOklab
 
 
-def concat(*a):
-    return torch.cat([*a], dim=1)
-
-
 class ConvChunk(nn.Module):
     """
     A lightweight, nonspecialized image processing convolutional chunk.
@@ -100,7 +96,7 @@ class Potato(nn.Module):
         pan_half = pile(pan_full, 2)
 
         pan_detail = pan_full - self.zoom(
-            self.zoom(pan_quarter.mean(axis=-3, keepdim=True))
+            self.zoom(pan_quarter.mean(dim=-3, keepdim=True))
         )
 
         cheap_sharp = oklab_full.clone()
@@ -108,17 +104,17 @@ class Potato(nn.Module):
 
         mul = x[:, 16:]
 
-        q = concat(oklab, mul, pan_quarter)
+        q = torch.cat((oklab, mul, pan_quarter), dim=1)
         q = self.bq(q)
         q = self.eq(q)
 
         h = self.zoom(q)
-        h = concat(h, pan_half, oklab_half)
+        h = torch.cat((h, pan_half, oklab_half), dim=1)
         h = self.bh(h)
         h = self.eh(h)
 
         f = self.zoom(h)
-        f = concat(f, pan_full, oklab_full, pan_detail)
+        f = torch.cat((f, pan_full, oklab_full, pan_detail), dim=1)
         f = self.f(f)
 
         return cheap_sharp + f
