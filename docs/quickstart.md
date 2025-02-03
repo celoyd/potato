@@ -41,7 +41,11 @@ Here we will combine a panchromatic image and a multispectral image to make an R
 
 To find sample input data, I went to [the Maxar Open Data Program landing page](https://registry.opendata.aws/maxar-open-data/), clicked the STAC Browser link, and navigated among many other good choices to [here](https://stacindex.org/catalogs/maxar-open-data-catalog-ard-format#/item/aCtvMLE92XskBWQbvt9J3vsA7EgRSdJ15SD3LJA6JS6f5SAxD/4dKymbGqAdScTepcQsBdACXvFvWipUToM2xs4gbaKtavizTRjBNSoaWKYELhidUbN2hF3DhyD1jwqeqhcZs1BuxpzChBDkqEB43meyRhi4D3YSy/5utsGWgkk8Rmyft4fhmmxhnoUPK96JjztCbzDmqpoMsS34t1fsuwh3R85msyGVfHd1fYvjV5yChWzjUf6mvpqnzhsFxT1Ws3iAcu?si=2#13/-1.288302/36.820695), which shows direct TIFF links in the Assets section. We need the panchromatic and multispectral images. (We could in principle do everything directly off the network, but for clarity, here we’ll actually download the files.)
 
-A sidebar if you’re thinking of other inputs: Potato expects data that looks like WorldView-2 or -3 bands in Maxar’s ARD format. The images are pixel-aligned at a factor of 4 (not simply both georeferenced), the multispectral image has 8 bands as documented for the WV-{2,3} sensor, and the DNs are reflectance, mapped from 0..1 to 1..10,000 in `uint16`. Anything with _approximately_ those spectral bands, where the values are _approximately_ 10k reflectance, is likely to _approximately_ work. But the design input for the model (with the weights shipped in this repo) is ARD.
+<details>
+  <summary>Sidebar: using other data</summary>
+
+Potato expects data that looks like WorldView-2 or -3 bands in Maxar’s ARD format. The images are pixel-aligned at a factor of 4 (not simply both georeferenced), the multispectral image has 8 bands as documented for the WV-{2,3} sensor, and the DNs are reflectance, mapped from 0..1 to 1..10,000 in `uint16`. Anything with _approximately_ those spectral bands, where the values are _approximately_ 10k reflectance, is likely to _approximately_ work. But the design input for the model (with the weights shipped in this repo) is ARD.
+</details>
 
 We use a {} expansion to make this slightly more legible with the long and very similar URIs:
 
@@ -61,28 +65,28 @@ user@host:~/potato $ du -h 104001008E063C00-*
 
 Let’s go for it:
 
-TK: check most recent weights.
-
 ```bash
 python demo.py --device=cuda 104001008E063C00-{pan,ms}.tif -w sessions/bintje/377-gen.pt 104001008E063C00-ps.tiff
 ```
 
-You should see either some kind of reasonably helpful error or a progress bar. On my 1070 (a GPU released in 2016), it takes 26 seconds; on my CPU alone (i.e., with `--device=cpu`), it takes about 5 minutes. We now have a big output file:
+We should see either some kind of reasonably helpful error or a progress bar. On my 1070 (a GPU released in 2016), it takes 26 seconds; on my CPU alone (i.e., with `--device=cpu`), it takes about 5 minutes. We now and have a big, pansharpened output file:
 
 ```console
 user@host:~/potato $ du -h 104001008E063C00-ps.tiff
 1.4G  104001008E063C00-ps.tiff
 ```
 
-This is a reasonably ordinary RGB TIFF and should be readable by most image libraries, photo editing software, and so on. (It does use zstd compression, which is still considered “the new one”, but libtiff has supported it [since 2018](http://libtiff.maptools.org/v4.0.10.html) and it’s really good.) You may notice that it’s relatively low-contrast. This is intentional. Earth’s surface is extremely contrasty: a light-colored object in full sun is more than 100× brighter than a dark object in the shade, and we want to be able to represent both. Just turn the contrast up.
+This is a reasonably ordinary RGB TIFF and should be readable by image libraries, photo editing software, and so on. (It does use zstd compression, which is still considered “the new one”, but libtiff has supported it [since 2018](http://libtiff.maptools.org/v4.0.10.html) and it’s really good. If necessary, replace `zstd` with `deflate` in the `demo.py` line that reads `"compress": "zstd",`.)
 
-It’s also a geotiff, meaning it’s in a defined projection. This allows for a wide range of interesting experiments (and, of course, the sort of work you would do to use the imagery seriously to construct a web or static map). For example, it can be reprojected, matched to other geotiffs (such as the default pansharpening, at the same address but ending in `-visual.tif`), and overlaid on other data in tools like QGIS:
+Output is relatively low-contrast. This is intentional. In short, it makes it easier to represent extreme colors correctly if we keep most colors near the middle of the range. Just turn the contrast up.
+
+It’s also a geotiff, meaning it’s in a defined projection. This allows for a wide range of interesting experiments (and, of course, the sort of work you would do to use the imagery seriously to construct a web or static map). For example, it can be reprojected, matched to other geotiffs (such as the default pansharpening, at the same address but ending in `-visual.tif`), and mixed with other data in tools like QGIS:
 
 ![The image overlaid on OSM](images/Wakulima/overlay.png)
 
-_Pansharpened image translucently overlaid on [OSM](https://www.openstreetmap.org) (© [OpenStreetMap contributors](https://www.openstreetmap.org/copyright)). Professional driver on a closed course. Do not attempt._
+_Pansharpened image translucently overlaid on [OSM](https://www.openstreetmap.org) (© [OpenStreetMap contributors](https://www.openstreetmap.org/copyright)). This is confusing and unpleasant, yet possible and accurate._
 
-The main cost of being a geotiff is that some cautious non-geospatial tools will complain that it has unknown tags. This should be harmless. For example, if we use the [ImageMagick](https://imagemagick.org/index.php) tool `convert` to crop out a section, we get warnings:
+The main cost of being a geotiff is that some cautious non-geospatial tools will complain about the geotags. This should be harmless. For example, if we use the [ImageMagick](https://imagemagick.org/index.php) tool `convert` to crop out a section, we get warnings:
 
 ```console
 user@host:~/potato $ convert 104001008E063C00-ps.tiff -crop 768x512+12000+8000 Wakulima-market.png
@@ -93,7 +97,7 @@ convert-im6.q16: Unknown field with tag 34737 (0x87b1) encountered. `TIFFReadDir
 convert-im6.q16: Unknown field with tag 42113 (0xa481) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/905.
 ```
 
-These are safely ignored; we get the image we should:
+These are safely ignored, and we get the image we should:
 
 ![Wakulima market, looking under-contrasty](images/Wakulima/Wakulima-market.jpeg)
 
@@ -109,14 +113,12 @@ We get a nicer image:
 
 And that’s the pansharpening demo. To familiarize yourself with the process a little more, you might try it on other images from the Maxar Open Data Program, and you might try postprocessing the outputs a little further (with some gamma, for example).
 
-Because the (full) pansharpened image is a geotiff, it can be reprojected, matched to other geotiffs , overlaid on a map, and so forth.
-
 
 ## Training quickstart
 
 Training itself is done with `train.py`, but setting up the data for it to use is a relatively involved process, called chipping, which takes up most of this tutorial.
 
-We will use [`aws-cli`](https://github.com/aws/aws-cli). In principle it’s all possible using the HTTPS API endpoints, but `aws s3 sync` is so handy.
+We will use [`aws-cli`](https://github.com/aws/aws-cli). In principle it’s all possible using the HTTPS API endpoints, but `aws s3 sync` makes things simpler.
 
 ### Source data and directory setup
 
@@ -151,7 +153,7 @@ aws s3 sync s3://maxar-opendata/events/Emilia-Romagna-Italy-flooding-may23/ard/ 
 
 ## Chipping
 
-A _chip_ is jargon for a small image, often a sample pulled out of a larger image.
+A _chip_ is jargon for a small image pulled out of a larger image.
 
 The chipping process copies chips out of collections of images and resamples them into training pairs. The main arguments to the chipper are the path of an ARD (the tiled delivery package for an image) and the path of a directory in which to put training pairs of chips (as [`.pt` files](https://pytorch.org/docs/stable/generated/torch.save.html)).
 
