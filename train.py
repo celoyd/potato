@@ -246,7 +246,7 @@ def train(
     if agenda:
         print(f"Training time! Running on {device}.")
 
-        if sesh.has_starters:
+        if sesh.has_starters():
             ckpt = sesh.starters[0]
             origin_string = f"Loaded {ckpt} and corresponding optimizer."
         else:
