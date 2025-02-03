@@ -76,7 +76,13 @@ user@host:~/potato $ du -h 104001008E063C00-ps.tiff
 
 This is a reasonably ordinary RGB TIFF and should be readable by most image libraries, photo editing software, and so on. (It does use zstd compression, which is still considered “the new one”, but libtiff has supported it [since 2018](http://libtiff.maptools.org/v4.0.10.html) and it’s really good.) You may notice that it’s relatively low-contrast. This is intentional. Earth’s surface is extremely contrasty: a light-colored object in full sun is more than 100× brighter than a dark object in the shade, and we want to be able to represent both. Just turn the contrast up.
 
-It’s also a geotiff, meaning it’s in a defined projection, which can make some cautious tools complain that it has unknown tags. This should be harmless. For example, if we use the [ImageMagick](https://imagemagick.org/index.php) tool `convert` to crop out a section, we get warnings:
+It’s also a geotiff, meaning it’s in a defined projection. This allows for a wide range of interesting experiments (and, of course, the sort of work you would do to use the imagery seriously to construct a web or static map). For example, it can be reprojected, matched to other geotiffs (such as the default pansharpening, at the same address but ending in `-visual.tif`), and overlaid on other data in tools like QGIS:
+
+![The image overlaid on OSM](images/Wakulima/overlay.png)
+
+_Pansharpened image translucently overlaid on [OSM](https://www.openstreetmap.org) (© [OpenStreetMap contributors](https://www.openstreetmap.org/copyright)). Professional driver on a closed course. Do not attempt._
+
+The main cost of being a geotiff is that some cautious non-geospatial tools will complain that it has unknown tags. This should be harmless. For example, if we use the [ImageMagick](https://imagemagick.org/index.php) tool `convert` to crop out a section, we get warnings:
 
 ```console
 user@host:~/potato $ convert 104001008E063C00-ps.tiff -crop 768x512+12000+8000 Wakulima-market.png
@@ -91,7 +97,7 @@ These are safely ignored; we get the image we should:
 
 ![Wakulima market, looking under-contrasty](images/Wakulima/Wakulima-market.jpeg)
 
-If we add some contrast with `convert`, for example with a channelwise auto-level (don’t worry if `convert`’s syntax seems weird; it’s still off-balance from the end of the Bretton Woods system):
+If we add some contrast with `convert`, for example with a channelwise auto-level:
 
 ```bash
 convert Wakulima-market.png -channel R,G,B -normalize +channel Wakulima-market-contrast.png
@@ -101,62 +107,10 @@ We get a nicer image:
 
 ![Wakulima market, looking nicer](images/Wakulima/Wakulima-market-normed.jpeg)
 
-And that’s the pansharpening demo. To familiarize yourself with the process a little more, you might try it on other images from the Maxar Open Data Program.
+And that’s the pansharpening demo. To familiarize yourself with the process a little more, you might try it on other images from the Maxar Open Data Program, and you might try postprocessing the outputs a little further (with some gamma, for example).
 
-## Bonus geotiff tricks
+Because the (full) pansharpened image is a geotiff, it can be reprojected, matched to other geotiffs , overlaid on a map, and so forth.
 
-Let’s do some spatial things for the readers who want to see how fun that can be. Suppose we want to compare Potato’s output to Maxar’s default pansharpening. We could use [QGIS](https://www.qgis.org/), [`rio`](https://rasterio.readthedocs.io/en/stable/cli.html), or other tools, but for this example let’s try `gdalwarp` (from the GDAL package).
-
-First we’ll use [geojson.io](https://geojson.io) to draw a box around the corner of Yeşilvadi Park that’s visible in the image. Copy and paste the JSON (in the sidebar on the right) into a file named `box.json`, or use mine:
-
-```bash
-cat << EOF > box.json
-{
-  "type": "FeatureCollection",
-  "features": [{
-    "type": "Feature",
-    "properties": {},
-    "geometry": {
-      "type": "Polygon",
-      "coordinates": [[
-        [37.418, 37.035],
-        [37.422, 37.035],
-        [37.422, 37.037],
-        [37.418, 37.037],
-        [37.418, 37.035]
-      ]]
-    }
-  }]
-}
-EOF
-```
-
-I now regret using this region for an example because it happens to be near the curve where longitude = latitude, so we see an implausible number of 37s, but that’s how it goes sometimes. We have to check the resolution of Potato’s output (which is also the resolution of the original pan image), because Maxar’s pansharpening gets upsampled for the ARD format, so we’ll want to downsample it for comparison. We can do that like so:
-
-```bash
-gdalinfo 10300100D6740900-ps.tiff
-```
-
-There’s a lot of output but the line we want is `Pixel Size = (0.549265922249793,-0.549265922249793)`.
-
-Now we need the bit of knowledge about Maxar’s ARD format that the official pansharpened image will have the same name as the `-pan.tif` and `-ms.tif` but with `-visual.tif`. Knowing this, we can use `gdalwarp` to punch out the shape of our box on the corner of Yeşilvadi Park. The tooling knows how to use the network, so we can give it an HTTPS URI instead of a filename, but we’ll need to tell it the resolution to resample to, and what resampling method to use (we’ll go with [Lanczos](https://en.wikipedia.org/wiki/Lanczos_resampling), for sharpness – it’s debatable whether that’s the best choice but this is just a demo). This looks like:
-
-```bash 
-gdalwarp -cutline box.json -crop_to_cutline -r Lanczos -tr 0.5493 0.5493 https://maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahramanmaras-turkey-earthquake-23/ard/37/031133102033/2022-07-20/10300100D6740900-visual.tif Maxar-Yeşilvadi.tiff
-
-# same except source and destination:
-gdalwarp -cutline box.json -crop_to_cutline -r Lanczos -tr 0.5493 0.5493 10300100D6740900-ps.tif potato-Yeşilvadi.tiff
-```
-
-Now, although they started at different resolutions, we have pixel-aligned images. Maxar’s:
-
-TK
-
-And Potato’s:
-
-TK
-
-Now we can zoom in and compare how they render the blue bike lanes along some of the park paths, for example. 
 
 ## Training quickstart
 
