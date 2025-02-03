@@ -29,9 +29,9 @@ uv pip sync requirements.txt
 
 Decide which hardware [backend](https://pytorch.org/docs/stable/backends.html) to run the model on. The safest choice is `cpu`: the model will run on the main processor. This works on any machine but is slow. For hardware acceleration, figure out the brand of the best GPU on your machine. If it’s AMD or Nvidia, use the `cuda` backend. If it’s Apple, use `mps`. Beyond that, you will have to figure it out yourself. If you have multiple GPUs, you may want something like `cuda:1`. If you get stuck, `cpu` is enough for testing (but not training, unless you’re extraordinarily patient).
 
-The device selection is something you remember and use as a flag, not a global configuration option. This is to help you mix devices. I want to be able to test while I’m training, but training intentionally maxes out the GPU’s memory, so at these times I test on the CPU.
+The device selection is something you remember and use as a flag, not a global configuration option. This is to help you mix devices. I often want to test while I’m training, but training intentionally maxes out the GPU’s memory, so at these times I test on the CPU.
 
-This quickstart will use `cuda`, because it happens to be my best option, so think of it as a variable to be replaced if you need to.
+This quickstart will use `cuda`, my best option, so when you see it, think of it as a variable to be replaced with yours.
 
 ## Pansharpening
 
@@ -39,63 +39,67 @@ Here we will combine a panchromatic image and a multispectral image to make an R
 
 ### Download pansharpening inputs
 
-To find sample input data, I went to [the Maxar Open Data Program landing page](https://registry.opendata.aws/maxar-open-data/), clicked the STAC Browser link, and navigated among many other good choices to [here](https://radiantearth.github.io/stac-browser/#/external/maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahramanmaras-turkey-earthquake-23/ard/37/031133102033/2022-07-20/10300100D6740900.json?.language=en), which shows direct TIFF links in the Assets section. We need the panchromatic and multispectral images. (We could do this all directly off the network, but for clarity, here we’ll actually download the files.)
+To find sample input data, I went to [the Maxar Open Data Program landing page](https://registry.opendata.aws/maxar-open-data/), clicked the STAC Browser link, and navigated among many other good choices to [here](https://stacindex.org/catalogs/maxar-open-data-catalog-ard-format#/item/aCtvMLE92XskBWQbvt9J3vsA7EgRSdJ15SD3LJA6JS6f5SAxD/4dKymbGqAdScTepcQsBdACXvFvWipUToM2xs4gbaKtavizTRjBNSoaWKYELhidUbN2hF3DhyD1jwqeqhcZs1BuxpzChBDkqEB43meyRhi4D3YSy/5utsGWgkk8Rmyft4fhmmxhnoUPK96JjztCbzDmqpoMsS34t1fsuwh3R85msyGVfHd1fYvjV5yChWzjUf6mvpqnzhsFxT1Ws3iAcu?si=2#13/-1.288302/36.820695), which shows direct TIFF links in the Assets section. We need the panchromatic and multispectral images. (We could in principle do everything directly off the network, but for clarity, here we’ll actually download the files.)
 
-A sidebar if you’re thinking of other inputs: Potato expects data that looks like WorldView-2 or -3 bands in Maxar’s ARD format. In short, the images are pixel-aligned at a factor of 4 (not simply georeferenced), the multispectral image has 8 bands as documented for the WV-2/3 sensor, and the DNs are reflectance mapped from 0..1 to 1..10,000 in `uint16`. Anything with _approximately_ those spectral bands, where the values are _approximately_ 10k reflectance, is likely to _approximately_ work. But the design input for the model (with the weights shipped in this repo) is Maxar’s ARD.
+A sidebar if you’re thinking of other inputs: Potato expects data that looks like WorldView-2 or -3 bands in Maxar’s ARD format. The images are pixel-aligned at a factor of 4 (not simply both georeferenced), the multispectral image has 8 bands as documented for the WV-{2,3} sensor, and the DNs are reflectance, mapped from 0..1 to 1..10,000 in `uint16`. Anything with _approximately_ those spectral bands, where the values are _approximately_ 10k reflectance, is likely to _approximately_ work. But the design input for the model (with the weights shipped in this repo) is ARD.
 
 We use a {} expansion to make this slightly more legible with the long and very similar URIs:
 
 ```bash
-curl -O "https://maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahramanmaras-turkey-earthquake-23/ard/37/031133102033/2022-07-20/10300100D6740900-{pan,ms}.tif"
+curl -O "https://maxar-opendata.s3.amazonaws.com/events/Kenya-Flooding-May24/ard/37/211111023311/2023-11-30/104001008E063C00-{pan,ms}.tif"
 ```
 
 We now have the two TIFF files:
 
 ```console
-user@host:~/potato $ du -h 10300100D6740900-*
-102M  10300100D6740900-ms.tif
-199M  10300100D6740900-pan.tif
+user@host:~/potato $ du -h 104001008E063C00-*
+295M  104001008E063C00-ms.tif
+561M  104001008E063C00-pan.tif
 ```
 
 ### Pansharpening
 
 Let’s go for it:
 
-```bash python demo.py --device=cuda 10300100D6740900-{pan,ms}.tif -w sessions/yukon-gold/49-gen.pt 10300100D6740900-ps.tiff
+TK: check most recent weights.
+
+```bash
+python demo.py --device=cuda 104001008E063C00-{pan,ms}.tif -w sessions/bintje/377-gen.pt 104001008E063C00-ps.tiff
 ```
 
-You should see either some kind of reasonably helpful error or a progress bar. On my 1070 (a GPU released in 2016), it takes 8 seconds; on the CPU alone (i.e., with `--device=cpu`), it takes 90 seconds. We now have a big output file:
+You should see either some kind of reasonably helpful error or a progress bar. On my 1070 (a GPU released in 2016), it takes 26 seconds; on my CPU alone (i.e., with `--device=cpu`), it takes about 5 minutes. We now have a big output file:
 
 ```console
-user@host:~/potato $ du -h 10300100D6740900-ps.tiff
-483M  10300100D6740900-ps.tiff
+user@host:~/potato $ du -h 104001008E063C00-ps.tiff
+1.4G  104001008E063C00-ps.tiff
 ```
 
-This is a reasonably ordinary RGB TIFF – other than its substantial size of nearly 100 megapixels – that should be readable by most image libraries, photo editing software, and so on. (It does use zstd compression, which is still considered “the new one”, but libtiff has supported it [since 2018](http://libtiff.maptools.org/v4.0.10.html) and it’s really good, so make your own choices.)
+This is a reasonably ordinary RGB TIFF and should be readable by most image libraries, photo editing software, and so on. (It does use zstd compression, which is still considered “the new one”, but libtiff has supported it [since 2018](http://libtiff.maptools.org/v4.0.10.html) and it’s really good.) You may notice that it’s relatively low-contrast. This is intentional. Earth’s surface is extremely contrasty: a light-colored object in full sun is more than 100× brighter than a dark object in the shade, and we want to be able to represent both. Just turn the contrast up.
 
 It’s also a geotiff, meaning it’s in a defined projection, which can make some cautious tools complain that it has unknown tags. This should be harmless. For example, if we use the [ImageMagick](https://imagemagick.org/index.php) tool `convert` to crop out a section, we get warnings:
 
 ```console
-user@host:~/potato $ convert 10300100D6740900-ps.tiff -crop 512x512+8200+9150 Yeşilvadi.png
+user@host:~/potato $ convert 104001008E063C00-ps.tiff -crop 768x512+12000+8000 -channel R,G,B -normalize +channel Wakulima-market.png
 convert-im6.q16: Unknown field with tag 33550 (0x830e) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/905.
 convert-im6.q16: Unknown field with tag 33922 (0x8482) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/905.
 convert-im6.q16: Unknown field with tag 34735 (0x87af) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/905.
 convert-im6.q16: Unknown field with tag 34737 (0x87b1) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/905.
+convert-im6.q16: Unknown field with tag 42113 (0xa481) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/905.
 ```
 
 These are safely ignored; we get the image we should:
 
-TK Yeşilvadi crop
+![Wakulima market, looking under-contrasty](docs/images/Wakulima-market.jpeg)
 
-If we add some contrast with `convert`, like this:
+If we add some contrast with `convert`, for example with a channelwise auto-level (don’t worry if `convert`’s syntax seems weird; it’s still off-balance from the end of the Bretton Woods system):
 
 ```bash
-10300100D6740900-ps.tiff -crop 512x512+8200+9150 -sigmoidal-contrast 20x50% Yeşilvadi-pretty.png
+convert Wakulima-market.png -channel R,G,B -normalize +channel Wakulima-market-contrast.png
 ```
 
 We get a nicer image:
 
-TK Yeşilvadi-pretty
+![Wakulima market, looking under-contrasty](docs/images/Wakulima-market-normed.jpeg)
 
 And that’s the pansharpening demo. To familiarize yourself with the process a little more, you might try it on other images from the Maxar Open Data Program.
 
