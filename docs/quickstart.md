@@ -11,29 +11,27 @@ with the focus on getting results as quickly as possible without skipping any cr
 
 ### Python environment setup
 
-The following works on a recent Ubuntu system. Readers who prefer some other way of doing things (e.g., a different operating system or a different python environment system) are entrusted with making the appropriate translations for themselves.
-
-[Install pip](https://pip.pypa.io/en/stable/installation/) and create a new virtual environment. This code is tested with python 3.12, so I’ll specify that.
+The following works on a recent Ubuntu system with [uv](https://github.com/astral-sh/uv). Readers who prefer some other way of doing things (e.g., regular pip/virtualenv on macOS, or conda on NetBSD) are entrusted to make the translations. All that matters is that we have an environment with `python 3.12` (used for development – others may actually work) and the packages in the requirements file.
 
 ```bash
 
 # create a new virtual environment
-virtualenv ~/potato -p python3.12
+uv venv --python 3.12
 
 # enter it
-source ~/potato/bin/activate
+source .venv/bin/activate
 
 # populate it
-pip install -r requirements.txt
+uv pip sync requirements.txt
 ```
-
-### Device selection
 
 ### Finding a device
 
-You should decide up front which hardware [backend](https://pytorch.org/docs/stable/backends.html) (“device”) to use. The safest choice, because it’s available on any machine, is `cpu` – the model will run on the main processor. For hardware acceleration, figure out the brand of the best GPU on your machine. If it’s AMD or Nvidia, use the `cuda` backend. If it’s Apple, use `mps`. Beyond that, you will have to figure it out yourself. The key thing is that `cpu` is enough for testing (but not training, unless you are extremely patient), and that this quickstart will use `cuda`, because it happens to be my best option, so think of it as a variable to be replaced if you need to.
+Decide which hardware [backend](https://pytorch.org/docs/stable/backends.html) to run the model on. The safest choice is `cpu`: the model will run on the main processor. This works on any machine but is slow. For hardware acceleration, figure out the brand of the best GPU on your machine. If it’s AMD or Nvidia, use the `cuda` backend. If it’s Apple, use `mps`. Beyond that, you will have to figure it out yourself. If you have multiple GPUs, you may want something like `cuda:1`. If you get stuck, `cpu` is enough for testing (but not training, unless you’re extraordinarily patient).
 
-The device selection is something you remember and use as a flag, not a global configuration option. This is to help you mix devices. I often train on my GPU with a physical batch size set to nearly fill its RAM. Testing on the GPU is then impossible; it’s maxed out. So I test on the CPU without interrupting training.
+The device selection is something you remember and use as a flag, not a global configuration option. This is to help you mix devices. I want to be able to test while I’m training, but training intentionally maxes out the GPU’s memory, so at these times I test on the CPU.
+
+This quickstart will use `cuda`, because it happens to be my best option, so think of it as a variable to be replaced if you need to.
 
 ## Pansharpening
 
