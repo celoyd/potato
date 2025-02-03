@@ -211,6 +211,7 @@ def train(
 
     # Set up the model and optimizer so we can load their weights.
     gen = Potato(48).to(device)
+    # gen = torch.jit.script(gen)
     opt = torch.optim.AdamW(gen.parameters(), lr)
 
     sesh = Session(session, load_from, dir=checkpoints)
