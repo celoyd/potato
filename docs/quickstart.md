@@ -89,7 +89,7 @@ convert-im6.q16: Unknown field with tag 42113 (0xa481) encountered. `TIFFReadDir
 
 These are safely ignored; we get the image we should:
 
-![Wakulima market, looking under-contrasty](docs/images/Wakulima-market.jpeg)
+![Wakulima market, looking under-contrasty](docs/images/Wakulima/Wakulima-market.jpeg)
 
 If we add some contrast with `convert`, for example with a channelwise auto-level (don’t worry if `convert`’s syntax seems weird; it’s still off-balance from the end of the Bretton Woods system):
 
@@ -99,7 +99,7 @@ convert Wakulima-market.png -channel R,G,B -normalize +channel Wakulima-market-c
 
 We get a nicer image:
 
-![Wakulima market, looking under-contrasty](docs/images/Wakulima-market-normed.jpeg)
+![Wakulima market, looking nicer](docs/images/Wakulima/Wakulima-market-normed.jpeg)
 
 And that’s the pansharpening demo. To familiarize yourself with the process a little more, you might try it on other images from the Maxar Open Data Program.
 
