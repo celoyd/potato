@@ -19,6 +19,4 @@ with rasterio.open(pan_path) as pan:
 with rasterio.open(mul_path) as mul:
     mul_patch = mul.read(window=mul_window)
 
-print(pan_patch.mean())
-
-print(mul_patch.flatten())
+print((float(pan_patch.mean()), list(int(x) for x in mul_patch.flatten())))

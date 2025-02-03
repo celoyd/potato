@@ -268,7 +268,6 @@ def train(
         batch_counter = 0
 
         with tqdm(trainloader, unit="b", mininterval=2) as progress:
-
             # Training part of epoch
             loss_history = []
 
@@ -288,7 +287,7 @@ def train(
 
                 pan = pile(pan_halo(tile(pan, 4), mean=0.25, std=0.1), 4)
                 mul = misalignment(mul, amt=1.0)
-                mul = mul_halo(mul, mean=1.0, std=0.5)
+                mul = mul_halo(mul, mean=1.0, std=0.75)
 
                 x[:, :16] = pan
                 x[:, 16:] = mul
