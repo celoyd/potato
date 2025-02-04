@@ -106,7 +106,7 @@ copy
   where cid[:3] in ('103', '104')
     and score > 0.225
   order by score desc)
-to 'new-allow-list.txt' (header false);
+to 'new-allow-list.csv' (header false);
 ```
 
 We can use this new file with `chip.py`. The 0.225 cutoff is ad-hoc and not special. You could also use a `limit`, for example, although I’d be surprised if you were chipping every single scene in the Open Data Program, so it probably only makes sense if you’re also selecting for the `event`s you have at hand.
