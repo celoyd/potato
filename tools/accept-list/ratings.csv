@@ -132,7 +132,7 @@ cid,event,water,lulc,seeing,notes
 10300100C6D49600,SmokeHouseCreek-Wildfires-Texas-Mar24,3.0,2.0,4.0,
 10300100C71AE000,tstorm-ana22/pre,3.0,1.0,4.0,Classic mg
 10300100C750E100,tstorm-ana22/pre,3.0,1.0,4.0,
-10300100C844D700,tstorm-ana22/pre,2.0,4.0,4.0,Tanarive edge
+10300100C844D700,tstorm-ana22/pre,2.0,4.0,4.0,Tana edge
 10300100C8470C00,tstorm-ana22/pre,3.0,1.0,3.0,
 10300100C854CE00,tstorm-ana22/pre,3.0,2.0,4.0,
 10300100C86C9500,tstorm-ana22/pre,2.0,1.0,4.0,Classic mg
@@ -253,7 +253,7 @@ cid,event,water,lulc,seeing,notes
 10300100D94F1700,pakistan-flooding22,2.0,2.0,4.0,
 10300100DA086700,pakistan-flooding22,3.0,3.0,4.0,
 10300100DA25A300,Hurricane-Ian-9-26-2022,3.0,3.0,4.0,
-10300100DA368900,Hurricane-Ian-9-26-2022,1.0,3.0,4.0,4.9. Tanin/turbidity
+10300100DA368900,Hurricane-Ian-9-26-2022,1.0,3.0,4.0,4.9. Tannin/turbidity
 10300100DA38B600,pakistan-flooding22,2.0,3.0,3.0,Alpine
 10300100DA38EC00,pakistan-flooding22,0.0,2.0,3.0,Heavy flooding
 10300100DA570A00,Hurricane-Ian-9-26-2022,3.0,3.0,4.0,Good color
@@ -265,7 +265,7 @@ cid,event,water,lulc,seeing,notes
 10300100DABA5800,Hurricane-Ian-9-26-2022,3.0,2.0,2.0,
 10300100DACCA400,Hurricane-Ian-9-26-2022,1.0,3.0,3.0,Bright water
 10300100DB064000,Hurricane-Ian-9-26-2022,1.0,3.0,3.0,
-10300100DB06A700,Hurricane-Ian-9-26-2022,2.0,3.0,4.0,Tanin & dense; +
+10300100DB06A700,Hurricane-Ian-9-26-2022,2.0,3.0,4.0,Tannin & dense; +
 10300100DB0DDB00,Hurricane-Ian-9-26-2022,3.0,2.0,2.0,
 10300100DB4CF100,Hurricane-Ian-9-26-2022,3.0,2.0,2.0,
 10300100DB639C00,pakistan-flooding22,3.0,2.0,3.0,Alpine
@@ -542,7 +542,7 @@ cid,event,water,lulc,seeing,notes
 104001006427B700,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
 1040010064D36600,Brazil-Flooding-May24,4.0,2.0,3.0,Discontinuous
 104001006550A400,Morocco-Earthquake-Sept-2023,2.0,3.0,4.0,Green on red
-10400100658CED00,pakistan-flooding22,3.0,2.0,3.0,Alpine; maybe 5?
+10400100658CED00,pakistan-flooding22,3.0,2.0,3.0,Alpine; maybe 4?
 1040010066684700,tstorm-megi22/pre,1.0,1.0,3.0,
 1040010067A15500,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,Discont
 1040010067C49900,Kahramanmaras-turkey-earthquake-23,2.0,3.0,4.0,
@@ -707,7 +707,7 @@ cid,event,water,lulc,seeing,notes
 1040010084646C00,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
 10400100846B5A00,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
 1040010084B2E200,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
-1040010084CB6D00,HurricaneHelene-Oct24,3.0,3.0,4.0,Lousiville e side
+1040010084CB6D00,HurricaneHelene-Oct24,3.0,3.0,4.0,Lousiville E side
 1040010084D7A300,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
 1040010084D7A300,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
 10400100850EE800,Morocco-Earthquake-Sept-2023,3.0,1.0,3.0,
