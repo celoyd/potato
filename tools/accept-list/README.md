@@ -2,14 +2,14 @@
 
 ## Introduction
 
-The CID evaluation project was an odd idea that turned out to work well enough to keep. If I’d realized I would have to explain it I probably wouldn’t have tried it. Now I publish all this in the hope rather than the expectation that others will find it useful.
+The manual CID evaluation was an odd idea that turned out to work well enough to keep. If I’d realized I would have to explain it I probably wouldn’t have tried it. Now I publish all this in the hope rather than the expectation that others will find it useful.
 
-Each CID is rated on three dimensions, listed below. Each has 5 levels, where 4 is the best. 
+Each CID is rated under three rubrics, listed below. The scores are 0 for worst possible quality under a given rubric and 4 for best possible. The scores are subjective and poorly distributed; they still turned out to be useful. (See the last section of this page for some further reflections.) There’s also a notes field where I put things I knew I might want to find later.
 
 This was done mostly by parsing the constituent CID names out of ARD metadata and assembling VRTs that I’d look at in QGIS. This had various small problems, such as VRTs not working with multiple projections, so CIDs on UTM boundaries got split.
 
 
-## Rubrics (columns)
+## Rubrics (columns or dimensions)
 
 ### Water
 
@@ -49,7 +49,7 @@ Depending on your interests, desire to avoid water and clouds, and so on, you wi
 
 The one big gotcha is to make sure you’re filtering for WV-{2,3} satellites (assuming that’s what you want). Their CIDs start with 103 and 104, which looks like a typo but is not. My impression from public information as of 2025-02-03 is that the Legion series will have a very similar sensor to the WV-{2,3} generation and its CIDs will start with 2, but I could easily have misunderstood or missed something.
 
-A formula that I’ve used is illustrated below. For each CID _i_ of _n_ CIDs, it can be thought of as the product $w\times l\times s$ of three adjusted versions of the rating dimensions,
+A formula that I’ve used is illustrated below. For each CID _i_ of _n_ CIDs, it can be thought of as the product $w\times l\times s$ of three adjusted versions of the rating rubrics,
 
 ```math
 \begin{gathered}
@@ -64,16 +64,14 @@ All three values get scaled into the unit range: water and LULC by division, see
 
 ## Using the CSV (applying formulas to the ratings)
 
-The ratings are delivered as a CSV that should be easy to import to your database, dataframe library, or spreadsheet app. I have heard good things about [csvkit](https://csvkit.readthedocs.io/en/latest/), but here I’ll use [duckdb](https://duckdb.org/):
+The ratings are delivered as a CSV that should be easy to import to your database, dataframe notebook, or spreadsheet app. On the CLI, I’ve heard good things about [csvkit](https://csvkit.readthedocs.io/en/latest/), but here I’ll use [duckdb](https://duckdb.org/):
 
 ```sql
 -- for clarity, we load the CSV as a table
-
 create table ratings as select(*) from read_csv('ratings.csv', auto_detect=true);
 
 -- I used a free SQL formatting service but it
 -- came out all messed up like this ¯\_(ツ)_/¯
-
 with ranked as
   (select cid,
      -- see section above for commentary on this particular formula
@@ -105,7 +103,7 @@ copy
 to 'new-allow-list.txt' (header false);
 ```
 
-We can use this with `train.py`. There’s nothing particularly special about the 0.225 cutoff; it just happens to put the bar roughly where I think it’s sensible. You could also use a `limit`, for example, although I’d be surprised if you were chipping every single scene in the Open Data Program, so it probably only makes sense if you’re also selecting for the `event`s you have at hand.
+We can use this new file with `train.py`. There’s nothing particularly special about the 0.225 cutoff; it just happens to put the bar roughly where I think it’s sensible. You could also use a `limit`, for example, although I’d be surprised if you were chipping every single scene in the Open Data Program, so it probably only makes sense if you’re also selecting for the `event`s you have at hand.
 
 
 ## Reflections and regrets
@@ -114,6 +112,6 @@ Given a time machine, here’s what I would tell myself before doing this:
 
 - CIDs are coarser than the idea being applied; they aren’t the right unit of analysis. There are several really beautiful collects disqualified by a few big clouds in one corner (this is basically what seeing=3 means). The best way is probably something like a very simple polygon-drawing tool to make an “allow polygon” attached to each CID, such that ARD tiles that fall entirely within the polygon are accepted. Maybe the output CSV is a list of quadkeys or maybe it’s CIDs and geojson polygons. Maybe it makes more sense to do deny polygons instead, or maybe the chipper should actually use the polygons to do its own in-tile masking. Any of these would certainly add complexity, but I think they could probably increase the useful information by something like 1/3 on the same data.
 
-- My ratings definitely drifted over time; for example, I think I got less strict about what could go in the lowest-water class as I went along. I don’t think this is likely to cause any measurable problems, and I don’t regret cutting corners on proper methodology for human ratings in this case.
+- My ratings definitely drifted over time; for example, I think I got less strict about what could go in the lowest-water class as I went along. I never felt like I knew whether I wanted to call a LULC 5, partly because some CIDs have some really dense urban fabric and then also cattle fields at the other end – see previous point. I don’t regret cutting corners on proper methodology for human ratings in this case simply because rating 1,000 large images was hard enough and I’d rather do it badly than not do it.
 
 - The landcover dimension should probably be two dimensions, one for landcover complexity or rarity and the other for visible human influence. This is tricky; they’re entangled ideas. Possibly a better way to slice it is a landcover dimension of some kind and a personal preference dimension that’s a completely subjective weighting.
