@@ -54,7 +54,7 @@ A formula that I’ve used is illustrated below. For each CID _i_ of _n_ CIDs, i
 ```math
 \begin{gathered}
 w = \sqrt{\frac{\mathrm{water}}{4}} \\
-l = (\frac{\mathrm{LULC}}{4})^2 \\
+l = \left(\frac{\mathrm{LULC}}{4}\right)^2 \\
 s = max(0, \mathrm{seeing} - 3)
 \end{gathered}
 ```
@@ -94,7 +94,7 @@ copy
     (select cid,
             pow(water/4, 0.5) * pow(lulc/4, 2) * greatest(0, (seeing - 3)) as score
      from ratings)
-  select cid, score
+  select cid
   from ranked
   where cid[:3] in ('103',
                     '104')
