@@ -49,7 +49,7 @@ Depending on your interests, desire to avoid water and clouds, and so on, you wi
 
 The one big gotcha is to make sure you’re filtering for WV-{2,3} satellites (assuming that’s what you want). Their CIDs start with 103 and 104, which looks like a typo but is not. My impression from public information as of 2025-02-03 is that the Legion series will have a very similar sensor to the WV-{2,3} generation and its CIDs will start with 2, but I could easily have misunderstood or missed something.
 
-A formula that I’ve used is illustrated below. For each CID _i_ of _n_ CIDs, it can be thought of as the product $w*l*s$ of three adjusted versions of the rating dimensions:
+A formula that I’ve used is illustrated below. For each CID _i_ of _n_ CIDs, it can be thought of as the product $w\times l\times s$ of three adjusted versions of the rating dimensions:
 
 ```math
 \begin{gathered}
