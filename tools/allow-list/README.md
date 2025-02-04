@@ -1,5 +1,12 @@
 # CID evaluations for allow list creation
 
+A CID is a Maxar _catalog ID_, which names a single collect (i.e., one single contiguous image as seen by the satellite, but generally multiple tiled images as delivered in ARD). A CID looks like `10300100DF069700`.
+
+This directory contains:
+
+- [cids.csv](cids.csv), a CSV containing every CID (collect) in the Maxar Open Data Program and its subjective rating, by me, on several quality axes described below. You can use it to replicate:
+- [allow-list.csv](allow-list.csv), about 200 of the CIDs that rank highest in a combined quality metric defined below. The CSV filename suffix is only by courtesy; it’s simply one CID per line. This is useful as input for `chip.py`.
+
 ## Introduction
 
 The manual CID evaluation was an odd idea that turned out to work well enough to keep. If I’d realized I would have to explain it I probably wouldn’t have tried it. Now I publish all this in the hope rather than the expectation that others will find it useful.
@@ -102,7 +109,7 @@ copy
 to 'new-allow-list.txt' (header false);
 ```
 
-We can use this new file with `train.py`. The 0.225 cutoff is ad-hoc and not special. You could also use a `limit`, for example, although I’d be surprised if you were chipping every single scene in the Open Data Program, so it probably only makes sense if you’re also selecting for the `event`s you have at hand.
+We can use this new file with `chip.py`. The 0.225 cutoff is ad-hoc and not special. You could also use a `limit`, for example, although I’d be surprised if you were chipping every single scene in the Open Data Program, so it probably only makes sense if you’re also selecting for the `event`s you have at hand.
 
 
 ## Reflections and regrets
