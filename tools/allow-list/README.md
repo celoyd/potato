@@ -4,7 +4,7 @@ A CID is a Maxar _catalog ID_, which names a single collect (i.e., one single co
 
 This directory contains:
 
-- [cids.csv](cids.csv), a CSV containing every CID (collect) in the Maxar Open Data Program and its subjective rating, by me, on several quality axes described below. You can use it to replicate:
+- [ratings.csv](ratings.csv), a CSV containing every CID (collect) in the Maxar Open Data Program and its subjective rating, by me, on several quality axes described below. You can use it to replicate:
 - [allow-list.csv](allow-list.csv), about 200 of the CIDs that rank highest in a combined quality metric defined below. The CSV filename suffix is only by courtesy; it’s simply one CID per line. This is useful as input for `chip.py`.
 
 ## Introduction
