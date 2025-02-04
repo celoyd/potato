@@ -1,0 +1,1016 @@
+cid,event,water,lulc,seeing,notes
+10200100B01E7400,Hurricane-Ian-9-26-2022,2.0,3.0,4.0,
+10200100B0214600,Hurricane-Ian-9-26-2022,1.0,3.0,3.0,
+10200100B0344500,Hurricane-Ian-9-26-2022,3.0,2.0,3.0,
+10200100B5C3A800,Kahramanmaras-turkey-earthquake-23,4.0,3.0,4.0,
+10200100B5D89900,Hurricane-Ian-9-26-2022,1.0,3.0,3.0,
+10200100BC21AC00,Hurricane-Ian-9-26-2022,1.0,2.0,3.0,
+10200100BCB1A500,Marshall-Fire-21-Update,3.0,4.0,4.0,Spectacular fire
+10200100C0DA0700,Hurricane-Ian-9-26-2022,1.0,2.0,3.0,
+10200100C1472900,brazil-flooding22/post,1.0,2.0,1.0,
+10200100C208EE00,Hurricane-Ian-9-26-2022,3.0,3.0,4.0,
+10200100C2BD1E00,southafrica-flooding22,1.0,3.0,4.0,
+10200100C3078400,southafrica-flooding22,2.0,2.0,3.0,
+10200100C3537E00,tstorm-megi22/post,2.0,4.0,2.0,
+10200100C45E6A00,Nepal-Floods-Sept-2024,3.0,1.0,2.0,
+10200100C64F3000,Hurricane-Ian-9-26-2022,1.0,4.0,2.0,
+10200100C66ACB00,Hurricane-Ian-9-26-2022,3.0,2.0,1.0,
+10200100C844A500,Hurricane-Ian-9-26-2022,2.0,2.0,3.0,
+10200100C8D7A600,Hurricane-Ian-9-26-2022,2.0,3.0,1.0,
+10200100C99E2700,Sudan-flooding-8-22-2022,2.0,4.0,1.0,
+10200100CA0ED900,Hurricane-Ian-9-26-2022,2.0,2.0,3.0,Discont
+10200100CA14F100,pakistan-flooding22,3.0,3.0,4.0,
+10200100CA4D5F00,pakistan-flooding22,3.0,1.0,2.0,
+10200100CA8D0500,Hurricane-Ian-9-26-2022,3.0,2.0,3.0,
+10200100CAACA200,pakistan-flooding22,3.0,1.0,1.0,
+10200100CB16EA00,pakistan-flooding22,1.0,3.0,4.0,
+10200100CB582800,pakistan-flooding22,3.0,1.0,3.0,
+10200100CB64C600,pakistan-flooding22,3.0,3.0,4.0,
+10200100CB8EDE00,pakistan-flooding22,3.0,1.0,2.0,
+10200100CBE65000,pakistan-flooding22,3.0,2.0,4.0,
+10200100CC2E3800,Hurricane-Fiona-9-19-2022,2.0,2.0,2.0,
+10200100CC448100,pakistan-flooding22,2.0,3.0,3.0,
+10200100CC4BAF00,pakistan-flooding22,3.0,1.0,2.0,
+10200100CDB43F00,pakistan-flooding22,3.0,3.0,3.0,
+10200100CE910B00,Hurricane-Ian-9-26-2022,2.0,3.0,3.0,
+10200100D7BBA500,Nepal-Floods-Sept-2024,3.0,2.0,3.0,
+10200100DEB4C800,Hurricane-Idalia-Florida-Aug23,1.0,1.0,3.0,Power station
+10200100E6723900,Japan-Earthquake-Jan-2024,3.0,3.0,3.0,
+10200100E6D1C700,Japan-Earthquake-Jan-2024,3.0,3.0,3.0,
+10200100EC671A00,Nepal-Floods-Sept-2024,3.0,2.0,4.0,
+10200100EDC41500,Nepal-Floods-Sept-2024,3.0,2.0,4.0,
+10200100EDC72A00,Nepal-Floods-Sept-2024,3.0,2.0,4.0,
+10200100EFADC400,Nepal-Floods-Sept-2024,3.0,2.0,4.0,
+1030010006CA6400,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,
+103001000DA1E700,Morocco-Earthquake-Sept-2023,4.0,1.0,2.0,
+103001001A7CAE00,Morocco-Earthquake-Sept-2023,4.0,2.0,1.0,
+10300100295F5E00,Morocco-Earthquake-Sept-2023,4.0,1.0,3.0,Really beautiful
+103001003B299500,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,
+103001003B39FB00,Nepal-Earthquake-Nov-2023,3.0,3.0,4.0,
+103001003B745200,Morocco-Earthquake-Sept-2023,4.0,2.0,3.0,
+1030010053894200,Morocco-Earthquake-Sept-2023,3.0,2.0,2.0,
+1030010076672300,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+103001007F80D600,central-us-tornadoes21/pre,3.0,2.0,3.0,
+103001007FA33C00,central-us-tornadoes21/pre,3.0,2.0,3.0,
+10300100804F7000,central-us-tornadoes21/pre,3.0,2.0,3.0,
+1030010081322B00,central-us-tornadoes21/pre,3.0,2.0,3.0,
+1030010082403A00,central-us-tornadoes21/pre,3.0,2.0,3.0,
+103001008244DA00,Morocco-Earthquake-Sept-2023,4.0,1.0,3.0,
+1030010083A10700,Morocco-Earthquake-Sept-2023,4.0,1.0,2.0,
+103001008748E600,texas-tornadoes22/pre,3.0,3.0,4.0,Good lulc mix
+10300100887C0F00,Brazil-Flooding-May24,4.0,2.0,4.0,V discontinuous
+10300100890F4800,Brazil-Flooding-May24,4.0,2.0,4.0,
+103001008A11FC00,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+103001008E94E400,Hurricane-Idalia-Florida-Aug23,2.0,2.0,3.0,
+103001008F67C900,central-us-tornadoes21/pre,3.0,2.0,4.0,
+1030010095499000,volcano-indonesia21,4.0,2.0,3.0,Caldera
+1030010095B0BE00,volcano-indonesia21,4.0,2.0,4.0,V rugged :(
+103001009662E600,Morocco-Earthquake-Sept-2023,4.0,1.0,3.0,
+1030010098C49200,Morocco-Earthquake-Sept-2023,3.0,2.0,2.0,
+103001009B762F00,Morocco-Earthquake-Sept-2023,4.0,1.0,3.0,
+103001009D035500,HurricaneHelene-Oct24,2.0,2.0,4.0,Newport TN
+103001009D337C00,HurricaneHelene-Oct24,3.0,3.0,4.0,Asheville
+103001009E601A00,volcano-indonesia21,2.0,3.0,2.0,
+103001009E7D2E00,volcano-indonesia21,2.0,4.0,3.0,Surabaya
+103001009EC12700,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,
+103001009F749C00,ghana-explosion22,4.0,3.0,1.0,Heavy haze
+10300100A113B700,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+10300100A12E7B00,HurricaneHelene-Oct24,3.0,3.0,4.0,Asheville (snow dusting!)
+10300100A56BAB00,Belize-Wildfires-June24,4.0,0.0,2.0,
+10300100A636C900,tstorm-megi22/pre,1.0,1.0,3.0,
+10300100AA8F3B00,tstorm-ana22/pre,2.0,1.0,3.0,
+10300100AD607000,Morocco-Earthquake-Sept-2023,4.0,1.0,4.0,
+10300100AD91E200,central-us-tornadoes21/post,3.0,2.0,4.0,
+10300100AD91E200,central-us-tornadoes21/pre,3.0,2.0,4.0,
+10300100AF4B4700,tstorm-ana22/pre,2.0,2.0,4.0,
+10300100B33D1000,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+10300100B361A800,tstorm-ana22/pre,2.0,4.0,3.0,Tana
+10300100B3C23300,tstorm-megi22/pre,1.0,2.0,2.0,
+10300100B3CACF00,Morocco-Earthquake-Sept-2023,4.0,1.0,4.0,
+10300100B53F9800,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+10300100BC0A7700,tstorm-megi22/pre,1.0,1.0,2.0,
+10300100BC131900,tonga-volcano21,0.0,1.0,3.0,Intact island
+10300100BC53C500,central-us-tornadoes21/pre,3.0,2.0,4.0,Big diag
+10300100BC8ABD00,central-us-tornadoes21/pre,3.0,2.0,4.0,
+10300100BEB36500,volcano-indonesia21,3.0,2.0,2.0,
+10300100BF05A700,tstorm-ana22/pre,2.0,4.0,4.0,Tana
+10300100BF164000,Emilia-Romagna-Italy-flooding-may23,4.0,2.0,2.0,Discont
+10300100BF4B5700,tstorm-ana22/pre,3.0,1.0,3.0,Pretty
+10300100BF654C00,tstorm-ana22/pre,4.0,4.0,3.0,Blantyre
+10300100BFCFAF00,afghanistan-earthquake22,4.0,1.0,4.0,
+10300100C028B900,afghanistan-earthquake22,4.0,0.0,4.0,Nice
+10300100C04CC000,afghanistan-earthquake22,4.0,1.0,4.0,Nice series!
+10300100C084CC00,afghanistan-earthquake22,4.0,0.0,4.0,Nice
+10300100C0A51100,tstorm-ana22/pre,3.0,2.0,3.0,Mine
+10300100C0ADE700,tstorm-ana22/pre,3.0,3.0,4.0,
+10300100C0C06900,afghanistan-earthquake22,4.0,1.0,4.0,
+10300100C0CFDB00,tstorm-ana22/pre,3.0,2.0,3.0,Pretty
+10300100C0D70400,tstorm-ana22/pre,3.0,1.0,3.0,
+10300100C1030D00,tstorm-ana22/pre,2.0,2.0,4.0,
+10300100C12A9500,kentucky-flooding-7-29-2022,3.0,1.0,3.0,
+10300100C1352D00,tstorm-ana22/pre,3.0,3.0,3.0,Blantyre
+10300100C19C3900,brazil-flooding22/pre,1.0,2.0,4.0,
+10300100C1AAE600,cyclone-emnati22,2.0,2.0,4.0,Weird one (mixed proj)
+10300100C1AAE600,tstorm-ana22/pre,2.0,2.0,3.0,
+10300100C2996600,volcano-indonesia21,2.0,2.0,2.0,
+10300100C2C8E000,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10300100C2D81700,cyclone-emnati22,2.0,2.0,3.0,Only bad at top end
+10300100C319C600,tstorm-megi22/pre,2.0,1.0,3.0,
+10300100C33A6500,volcano-indonesia21,3.0,2.0,3.0,
+10300100C33E2200,SmokeHouseCreek-Wildfires-Texas-Mar24,3.0,2.0,3.0,
+10300100C3883E00,tstorm-megi22/pre,2.0,2.0,3.0,
+10300100C4303B00,central-us-tornadoes21/pre,3.0,2.0,2.0,
+10300100C48E0A00,Emilia-Romagna-Italy-flooding-may23,2.0,3.0,4.0,
+10300100C49BF100,tstorm-ana22/pre,3.0,2.0,4.0,Some plantations
+10300100C4D70E00,tstorm-megi22/pre,0.0,3.0,3.0,
+10300100C540A500,louisiana-tornadoes22/pre,2.0,4.0,4.0,Amazing Nola
+10300100C5655B00,Indonesia-Earthquake22,3.0,3.0,4.0,Narrow
+10300100C5A00B00,tstorm-ana22/pre,3.0,0.0,4.0,
+10300100C5C14E00,Emilia-Romagna-Italy-flooding-may23,2.0,3.0,4.0,Tiny; overlaps
+10300100C63DE100,central-us-tornadoes21/pre,3.0,3.0,4.0,
+10300100C6840800,tstorm-ana22/pre,3.0,1.0,4.0,Live fire; sere; village
+10300100C6D49600,SmokeHouseCreek-Wildfires-Texas-Mar24,3.0,2.0,4.0,
+10300100C71AE000,tstorm-ana22/pre,3.0,1.0,4.0,Classic mg
+10300100C750E100,tstorm-ana22/pre,3.0,1.0,4.0,
+10300100C844D700,tstorm-ana22/pre,2.0,4.0,4.0,Tanarive edge
+10300100C8470C00,tstorm-ana22/pre,3.0,1.0,3.0,
+10300100C854CE00,tstorm-ana22/pre,3.0,2.0,4.0,
+10300100C86C9500,tstorm-ana22/pre,2.0,1.0,4.0,Classic mg
+10300100C8B42700,tstorm-megi22/pre,1.0,4.0,3.0,
+10300100C912CA00,Indonesia-Earthquake22,3.0,3.0,3.0,
+10300100C988F500,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+10300100C99FD400,volcano-indonesia21,3.0,2.0,1.0,
+10300100C9CECF00,volcano-indonesia21,3.0,2.0,2.0,
+10300100CA2F4900,tstorm-megi22/pre,0.0,1.0,3.0,
+10300100CA31C600,tstorm-megi22/pre,2.0,1.0,1.0,
+10300100CA344700,tstorm-ana22/pre,2.0,1.0,4.0,Sere
+10300100CA7F9E00,volcano-indonesia21,3.0,2.0,3.0,
+10300100CA830A00,kentucky-flooding-7-29-2022,3.0,1.0,4.0,
+10300100CA84AA00,volcano-indonesia21,3.0,2.0,1.0,
+10300100CA894800,volcano-indonesia21,3.0,3.0,3.0,
+10300100CA903300,volcano-indonesia21,3.0,2.0,2.0,
+10300100CA966300,volcano-indonesia21,3.0,3.0,3.0,
+10300100CAC07500,Brazil-Flooding-May24,3.0,2.0,4.0,Little town
+10300100CB08B200,tonga-volcano21,0.0,1.0,2.0,
+10300100CB378C00,central-us-tornadoes21/post,3.0,2.0,1.0,
+10300100CB37CA00,tonga-volcano21,0.0,1.0,2.0,
+10300100CB5B9E00,Hurricane-Ian-9-26-2022,3.0,2.0,3.0,
+10300100CB626A00,Indonesia-Earthquake22,3.0,3.0,3.0,
+10300100CB675700,HurricaneHelene-Oct24,3.0,2.0,3.0,N segment dings it
+10300100CB8C5600,Morocco-Earthquake-Sept-2023,4.0,0.0,4.0,
+10300100CBAF7D00,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+10300100CBB79C00,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10300100CBC4BC00,ecuador-flooding22/post,2.0,4.0,3.0,Almost!
+10300100CBC4BC00,Tomasina_East,1.0,3.0,2.0,
+10300100CBC4BC00,tstorm-ana22/pre,2.0,2.0,2.0,
+10300100CBC96000,tstorm-megi22/pre,1.0,1.0,2.0,
+10300100CBCC2400,Hurricane-Ian-9-26-2022,2.0,2.0,4.0,Autumnal GA; nice
+10300100CC09BB00,tonga-volcano21,0.0,1.0,2.0,Island remains
+10300100CC295B00,tstorm-ana22/post,3.0,2.0,3.0,
+10300100CC32F800,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,Nice tho
+10300100CC508100,ecuador-flooding22/post,1.0,4.0,2.0,Cool but hazy
+10300100CC508100,Tomasina_East,1.0,4.0,2.0,
+10300100CC508100,tstorm-ana22/pre,1.0,2.0,2.0,
+10300100CC8F7900,10300100CC8F7900,3.0,4.0,3.0,
+10300100CCA6AB00,Hurricane-Ian-9-26-2022,2.0,3.0,4.0,Discont
+10300100CCC6CD00,Hurricane-Ian-9-26-2022,2.0,2.0,2.0,Discont
+10300100CCD4E100,tonga-volcano21,1.0,3.0,2.0,
+10300100CD3FA400,10300100CD3FA400,3.0,4.0,2.0,
+10300100CD5BB300,pakistan-flooding22,3.0,1.0,3.0,
+10300100CD5BB300,pakistan-flooding22,3.0,2.0,4.0,
+10300100CD936D00,Hurricane-Ian-9-26-2022,3.0,3.0,4.0,
+10300100CD9AAA00,texas-tornadoes22/pre,3.0,4.0,4.0,E Austin
+10300100CDADC400,tonga-volcano21,1.0,3.0,2.0,Ashfall
+10300100CE36CE00,India-Floods-Oct-2023,3.0,0.0,3.0,Glacial; noise likely
+10300100CE603100,Hurricane-Ian-9-26-2022,1.0,4.0,4.0,Charleston incl port
+10300100CE8D0400,India-Floods-Oct-2023,3.0,1.0,4.0,Alpine
+10300100CF310800,Hurricane-Idalia-Florida-Aug23,4.0,1.0,4.0,
+10300100CF519000,tstorm-megi22/pre,0.0,2.0,3.0,Reefs!
+10300100CF621C00,India-Floods-Oct-2023,3.0,0.0,3.0,Glacial; noise likely
+10300100CF727600,Morocco-Earthquake-Sept-2023,4.0,3.0,4.0,
+10300100CFA70700,pakistan-flooding22,2.0,4.0,4.0,Karachi
+10300100CFC9A500,Gambia-flooding-8-11-2022,2.0,4.0,4.0,Dusty; main one
+10300100D010FF00,Hurricane-Ian-9-26-2022,1.0,3.0,4.0,Weird tiny corner
+10300100D0172B00,pakistan-flooding22,2.0,3.0,4.0,
+10300100D01AC700,Hurricane-Ian-9-26-2022,2.0,4.0,4.0,
+10300100D0228200,louisiana-tornadoes22/post,1.0,3.0,4.0,
+10300100D026E700,Hurricane-Ian-9-26-2022,3.0,2.0,4.0,
+10300100D0383500,Hurricane-Ian-9-26-2022,1.0,4.0,4.0,
+10300100D0636800,Hurricane-Ian-9-26-2022,4.0,1.0,4.0,Autumnal & small fires
+10300100D0751B00,southafrica-flooding22,3.0,3.0,4.0,Lovely
+10300100D08F3B00,brazil-flooding22/pre,2.0,2.0,4.0,Port; noisy
+10300100D0939200,Nepal-Floods-Sept-2024,3.0,2.0,3.75,Tiny tiny cloud
+10300100D0965E00,Hurricane-Ian-9-26-2022,2.0,3.0,4.0,Big and good
+10300100D0CF0800,southafrica-flooding22,3.0,3.0,4.0,
+10300100D122D300,Hurricane-Ian-9-26-2022,1.0,3.0,4.0,
+10300100D13F6500,pakistan-flooding22,2.0,4.0,4.0,Karachi
+10300100D1466F00,Hurricane-Ian-9-26-2022,1.0,3.0,4.0,Smol
+10300100D1553D00,Hurricane-Ian-9-26-2022,1.0,3.0,4.0,
+10300100D1554100,Belize-Wildfires-June24,3.0,1.0,2.0,Superlong; popcorn at one end
+10300100D17EB700,southafrica-flooding22,3.0,4.0,4.0,
+10300100D18C0D00,Hurricane-Idalia-Florida-Aug23,2.0,1.0,3.0,
+10300100D1983D00,southafrica-flooding22,2.0,4.0,4.0,
+10300100D1B6F200,tstorm-megi22/post,2.0,1.0,2.0,
+10300100D22AF400,pakistan-flooding22,2.0,1.0,4.0,
+10300100D22DEF00,Libya-Floods-Sept-2023,2.0,2.0,4.0,Tiny
+10300100D24B1100,pakistan-flooding22,4.0,1.0,2.0,Dusty
+10300100D3067400,McDougallCreekWildfire-BC-Canada-Aug-23,2.0,2.0,3.0,
+10300100D3A13400,Morocco-Earthquake-Sept-2023,4.0,1.0,4.0,
+10300100D404DA00,pakistan-flooding22,2.0,4.0,4.0,Karachi
+10300100D42A5600,kentucky-flooding-7-29-2022,3.0,1.0,2.0,Tiny
+10300100D432C700,pakistan-flooding22,4.0,3.0,3.0,
+10300100D4769200,yellowstone-flooding22,3.0,1.0,2.0,
+10300100D4928800,afghanistan-earthquake22,4.0,1.0,4.0,
+10300100D4AFA800,yellowstone-flooding22,3.0,2.0,3.0,
+10300100D51B8C00,yellowstone-flooding22,3.0,2.0,2.0,
+10300100D5339F00,pakistan-flooding22,1.0,4.0,4.0,Karachi
+10300100D5947C00,Morocco-Earthquake-Sept-2023,4.0,1.0,2.0,Dusty
+10300100D5B4AB00,afghanistan-earthquake22,4.0,1.0,4.0,
+10300100D5B58B00,kentucky-flooding-7-29-2022,3.0,1.0,2.0,
+10300100D5B65A00,yellowstone-flooding22,3.0,2.0,2.0,
+10300100D5BC3800,kentucky-flooding-7-29-2022,3.0,1.0,2.0,
+10300100D665FE00,Hurricane-Ian-9-26-2022,1.0,3.0,3.0,
+10300100D6740900,Kahramanmaras-turkey-earthquake-23,4.0,4.0,4.0,
+10300100D6789800,Kahramanmaras-turkey-earthquake-23,4.0,3.0,4.0,Gnarly little outline
+10300100D6CECB00,pakistan-flooding22,2.0,2.0,1.0,
+10300100D6CFC000,Hurricane-Ian-9-26-2022,1.0,4.0,2.0,
+10300100D71DB500,Hurricane-Idalia-Florida-Aug23,2.0,2.0,2.0,
+10300100D76F1300,Kahramanmaras-turkey-earthquake-23,4.0,3.0,4.0,Tiny/weird
+10300100D797E100,Kahramanmaras-turkey-earthquake-23,4.0,4.0,4.0,
+10300100D7A78E00,pakistan-flooding22,2.0,2.0,4.0,
+10300100D7C2AD00,Hurricane-Fiona-9-19-2022,2.0,4.0,2.0,
+10300100D820C400,pakistan-flooding22,4.0,1.0,4.0,
+10300100D8235300,Hurricane-Ian-9-26-2022,3.0,2.0,2.0,
+10300100D8484400,pakistan-flooding22,4.0,1.0,3.0,
+10300100D861DD00,pakistan-flooding22,4.0,1.0,3.0,
+10300100D8629B00,kentucky-flooding-7-29-2022,3.0,1.0,2.0,
+10300100D8A30B00,pakistan-flooding22,3.0,1.0,4.0,
+10300100D8A7A100,Hurricane-Ian-9-26-2022,3.0,3.0,2.0,
+10300100D9316B00,pakistan-flooding22,2.0,3.0,4.0,
+10300100D93A5E00,Hurricane-Ian-9-26-2022,2.0,3.0,2.0,
+10300100D93D8600,Hurricane-Ian-9-26-2022,1.0,4.0,3.0,
+10300100D9410100,pakistan-flooding22,1.0,2.0,4.0,
+10300100D94F1700,pakistan-flooding22,2.0,2.0,4.0,
+10300100DA086700,pakistan-flooding22,3.0,3.0,4.0,
+10300100DA25A300,Hurricane-Ian-9-26-2022,3.0,3.0,4.0,
+10300100DA368900,Hurricane-Ian-9-26-2022,1.0,3.0,4.0,4.9. Tanin/turbidity
+10300100DA38B600,pakistan-flooding22,2.0,3.0,3.0,Alpine
+10300100DA38EC00,pakistan-flooding22,0.0,2.0,3.0,Heavy flooding
+10300100DA570A00,Hurricane-Ian-9-26-2022,3.0,3.0,4.0,Good color
+10300100DA63D300,Hurricane-Ian-9-26-2022,3.0,3.0,4.0,Big diag
+10300100DA86D900,Hurricane-Ian-9-26-2022,3.0,2.0,4.0,Ribbonfarmesque
+10300100DA8F7A00,Hurricane-Ian-9-26-2022,3.0,2.0,2.0,Damage
+10300100DAA09300,Hurricane-Ian-9-26-2022,0.0,2.0,4.0,Weird sliver
+10300100DAB84400,pakistan-flooding22,3.0,3.0,4.0,Pretty forest
+10300100DABA5800,Hurricane-Ian-9-26-2022,3.0,2.0,2.0,
+10300100DACCA400,Hurricane-Ian-9-26-2022,1.0,3.0,3.0,Bright water
+10300100DB064000,Hurricane-Ian-9-26-2022,1.0,3.0,3.0,
+10300100DB06A700,Hurricane-Ian-9-26-2022,2.0,3.0,4.0,Tanin & dense; +
+10300100DB0DDB00,Hurricane-Ian-9-26-2022,3.0,2.0,2.0,
+10300100DB4CF100,Hurricane-Ian-9-26-2022,3.0,2.0,2.0,
+10300100DB639C00,pakistan-flooding22,3.0,2.0,3.0,Alpine
+10300100DB6AFB00,Hurricane-Ian-9-26-2022,1.0,4.0,2.0,
+10300100DB913300,Kahramanmaras-turkey-earthquake-23,4.0,2.0,4.0,
+10300100DB9B9200,Hurricane-Ian-9-26-2022,1.0,3.0,3.0,
+10300100DB9E6F00,Hurricane-Ian-9-26-2022,1.0,4.0,2.0,
+10300100DBB9E500,Hurricane-Ian-9-26-2022,1.0,3.0,2.0,
+10300100DC08C900,Kahramanmaras-turkey-earthquake-23,4.0,2.0,2.0,Haze
+10300100DC9D2700,Hurricane-Ian-9-26-2022,1.0,3.0,3.0,
+10300100DCA2CF00,Hurricane-Ian-9-26-2022,1.0,3.0,2.0,
+10300100DD62DB00,Kahramanmaras-turkey-earthquake-23,4.0,2.0,1.0,
+10300100DD6AE200,Indonesia-Earthquake22,3.0,3.0,1.0,
+10300100DD72CA00,SmokeHouseCreek-Wildfires-Texas-Mar24,3.0,1.0,1.0,
+10300100DE2A5A00,Hurricane-Idalia-Florida-Aug23,4.0,2.0,4.0,
+10300100DE2DD700,Indonesia-Earthquake22,3.0,2.0,2.0,Stereo pair
+10300100DE4D9300,New-Zealand-Flooding23,2.0,3.0,3.0,
+10300100DE5CCF00,Indonesia-Earthquake22,3.0,2.0,1.0,
+10300100DF069700,Kahramanmaras-turkey-earthquake-23,4.0,4.0,4.0,Glitch
+10300100DF1DB000,Kahramanmaras-turkey-earthquake-23,4.0,4.0,4.0,Central Gaziantep
+10300100DF6BFE00,Kahramanmaras-turkey-earthquake-23,3.0,3.0,3.0,Wacky outline; signs of noise
+10300100DF7ADD00,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+10300100DFA9DD00,Kahramanmaras-turkey-earthquake-23,3.0,3.0,4.0,
+10300100E0287700,Kahramanmaras-turkey-earthquake-23,3.0,2.0,3.0,Pretty
+10300100E0817C00,Brazil-Flooding-May24,0.0,2.0,2.0,
+10300100E0AEE200,Brazil-Flooding-May24,3.0,2.0,2.0,
+10300100E131D000,Kahramanmaras-turkey-earthquake-23,2.0,2.0,4.0,
+10300100E14BEE00,Brazil-Flooding-May24,3.0,2.0,4.0,
+10300100E1700300,Kahramanmaras-turkey-earthquake-23,4.0,2.0,4.0,
+10300100E18A1000,Kahramanmaras-turkey-earthquake-23,4.0,2.0,4.0,
+10300100E18CB600,Kahramanmaras-turkey-earthquake-23,4.0,2.0,3.0,Windmills. Truncated? Noisy.
+10300100E19A4400,Kahramanmaras-turkey-earthquake-23,3.0,2.0,4.0,
+10300100E1B9D900,Kahramanmaras-turkey-earthquake-23,1.0,2.0,4.0,Snow; port
+10300100E201BA00,Kahramanmaras-turkey-earthquake-23,3.0,3.0,3.0,Redundant
+10300100E20A6300,Kahramanmaras-turkey-earthquake-23,4.0,1.0,4.0,Tiny/weird
+10300100E21A3000,Kahramanmaras-turkey-earthquake-23,2.0,1.0,4.0,Snow; reservoir
+10300100E2226200,Kahramanmaras-turkey-earthquake-23,3.0,3.0,4.0,Exceptionally good
+10300100E23B4300,New-Zealand-Flooding23,2.0,3.0,2.0,
+10300100E23F2400,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10300100E2514200,Kahramanmaras-turkey-earthquake-23,4.0,1.0,1.0,
+10300100E26DC400,Kahramanmaras-turkey-earthquake-23,2.0,2.0,4.0,Big and good
+10300100E2780300,Kahramanmaras-turkey-earthquake-23,3.0,2.0,1.0,
+10300100E287FA00,Kahramanmaras-turkey-earthquake-23,2.0,2.0,4.0,
+10300100E2901100,Kahramanmaras-turkey-earthquake-23,4.0,2.0,4.0,Radial towns
+10300100E291D100,Kahramanmaras-turkey-earthquake-23,3.0,2.0,4.0,Another pretty one
+10300100E29F9100,Kahramanmaras-turkey-earthquake-23,3.0,2.0,4.0,Heavy snow
+10300100E2A73B00,Kahramanmaras-turkey-earthquake-23,0.0,2.0,3.0,Turbid outflow
+10300100E2B30500,Kahramanmaras-turkey-earthquake-23,3.0,2.0,4.0,
+10300100E2BF8000,Kahramanmaras-turkey-earthquake-23,3.0,2.0,2.0,
+10300100E2C66F00,Kahramanmaras-turkey-earthquake-23,3.0,2.0,2.0,
+10300100E2D3B600,Kahramanmaras-turkey-earthquake-23,2.0,2.0,2.0,Charismatic
+10300100E304B400,Kahramanmaras-turkey-earthquake-23,2.0,2.0,2.0,
+10300100E30B3400,Nepal-Floods-Sept-2024,3.0,2.0,3.0,
+10300100E3154100,Kahramanmaras-turkey-earthquake-23,3.0,2.0,3.0,
+10300100E32E3D00,Kahramanmaras-turkey-earthquake-23,2.0,2.0,4.0,
+10300100E32F7A00,Kahramanmaras-turkey-earthquake-23,3.0,2.0,2.0,
+10300100E34B4D00,India-Floods-Oct-2023,3.0,0.0,3.0,Glacial; unclear if cloudy!
+10300100E383D900,Kahramanmaras-turkey-earthquake-23,2.0,2.0,4.0,Tiny but nice
+10300100E38C8800,Morocco-Earthquake-Sept-2023,4.0,0.0,1.0,Heavy snow
+10300100E3981000,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,Greenhouses
+10300100E3CF1000,Kahramanmaras-turkey-earthquake-23,2.0,1.0,2.0,Dam
+10300100E3D52E00,Kahramanmaras-turkey-earthquake-23,2.0,2.0,3.0,
+10300100E49E8000,Kahramanmaras-turkey-earthquake-23,2.0,2.0,4.0,
+10300100E5404900,Morocco-Earthquake-Sept-2023,4.0,1.0,4.0,
+10300100E57BC400,Kalehe-DRC-Flooding-5-8-23,3.0,2.0,3.0,
+10300100E5A0A100,Morocco-Earthquake-Sept-2023,4.0,0.0,4.0,
+10300100E5C9D100,HurricaneHelene-Oct24,3.0,4.0,4.0,Louisville
+10300100E6747500,BayofBengal-Cyclone-Mocha-May-23,2.0,2.0,2.0,
+10300100E8336F00,SmokeHouseCreek-Wildfires-Texas-Mar24,3.0,2.0,4.0,
+10300100E8599F00,SmokeHouseCreek-Wildfires-Texas-Mar24,3.0,2.0,4.0,
+10300100E8C15100,Morocco-Earthquake-Sept-2023,3.0,1.0,3.0,
+10300100E958A400,Morocco-Earthquake-Sept-2023,4.0,0.0,3.0,Haze
+10300100EAB5BD00,Brazil-Flooding-May24,1.0,2.0,4.0,
+10300100EB15FF00,Maui-Hawaii-fires-Aug-23,2.0,3.0,2.0,
+10300100EB27F000,SmokeHouseCreek-Wildfires-Texas-Mar24,3.0,2.0,4.0,Small but good
+10300100EB592000,Maui-Hawaii-fires-Aug-23,1.0,2.0,2.0,
+10300100EB8B4500,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+10300100EBB7D100,SmokeHouseCreek-Wildfires-Texas-Mar24,3.0,2.0,3.0,
+10300100EBC1A000,Morocco-Earthquake-Sept-2023,3.0,3.0,3.0,Haze
+10300100EC0F0E00,Libya-Floods-Sept-2023,3.0,3.0,4.0,
+10300100EC49A300,Morocco-Earthquake-Sept-2023,3.0,3.0,3.5,Seeing questionable
+10300100EC8B7900,Maui-Hawaii-fires-Aug-23,2.0,2.0,2.0,
+10300100EC9AE400,HurricaneHelene-Oct24,3.0,2.0,2.0,Erwin pre (overlapping)
+10300100ECC53700,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10300100ED044500,Libya-Floods-Sept-2023,2.0,3.0,2.0,
+10300100ED0AD100,Libya-Floods-Sept-2023,1.0,2.0,3.0,
+10300100ED11EA00,Morocco-Earthquake-Sept-2023,4.0,1.0,3.0,
+10300100ED169800,Brazil-Flooding-May24,4.0,2.0,2.0,
+10300100EDADE200,HurricaneHelene-Oct24,3.0,1.0,2.0,Erwin pre (overlapping)
+10300100EDD79100,Libya-Floods-Sept-2023,2.0,3.0,3.0,
+10300100EE07F000,Brazil-Flooding-May24,3.0,3.0,2.0,
+10300100EE7AD000,Brazil-Flooding-May24,4.0,3.0,3.0,
+10300100EE932C00,SmokeHouseCreek-Wildfires-Texas-Mar24,3.0,2.0,4.0,
+10300100EF06B400,Japan-Earthquake-Jan-2024,3.0,3.0,4.0,Barley?
+10300100EF116000,Nepal-Earthquake-Nov-2023,3.0,2.0,3.0,
+10300100EF2D2500,HurricaneMilton-Oct24,0.0,3.0,4.0,
+10300100EF530C00,Nepal-Earthquake-Nov-2023,3.0,2.0,3.0,
+10300100EF6AD700,SmokeHouseCreek-Wildfires-Texas-Mar24,4.0,2.0,4.0,Tiny
+10300100F0347800,Nepal-Earthquake-Nov-2023,3.0,2.0,3.0,
+10300100F0446700,Nepal-Earthquake-Nov-2023,3.0,3.0,4.0,
+10300100F0515300,Nepal-Earthquake-Nov-2023,3.0,2.0,3.0,
+10300100F0921000,Nepal-Earthquake-Nov-2023,3.0,2.0,3.0,
+10300100F09C4900,HurricaneHelene-Oct24,3.0,4.0,4.0,Knoxville all autumnal and beautiful
+10300100F0D1BA00,Nepal-Earthquake-Nov-2023,3.0,2.0,3.0,
+10300100F2BCCF00,Nepal-Floods-Sept-2024,3.0,4.0,4.0,E Kat
+10300100F2BE1300,Japan-Earthquake-Jan-2024,1.0,2.0,2.0,Seeing debatable
+10300100F304AA00,Japan-Earthquake-Jan-2024,2.0,2.0,4.0,W peninsula
+10300100F316CD00,Japan-Earthquake-Jan-2024,2.0,3.0,4.0,Snowy & Wajima
+10300100F33B2600,Japan-Earthquake-Jan-2024,1.0,2.0,2.0,E peninsula
+10300100F3753600,Japan-Earthquake-Jan-2024,0.0,2.0,2.0,
+10300100F54C6000,HurricaneMilton-Oct24,1.0,4.0,2.0,
+10300100F58F2200,HurricaneMilton-Oct24,1.0,4.0,2.0,
+10300100F5AB8000,Nepal-Floods-Sept-2024,3.0,4.0,4.0,W Kat
+10300100F6038B00,SmokeHouseCreek-Wildfires-Texas-Mar24,4.0,1.0,3.0,
+10300100F6524600,Brazil-Flooding-May24,1.0,4.0,4.0,Porto Alegre
+10300100F6AA7400,Nigeria-Floods-Sept-2024,3.0,4.0,4.0,Maiduguri
+10300100F9791C00,Belize-Wildfires-June24,4.0,2.0,1.0,Active fires
+10300100FA870500,Brazil-Flooding-May24,3.0,2.0,4.0,
+10300100FA952400,Brazil-Flooding-May24,3.0,3.0,4.0,
+10300100FAA4CA00,Brazil-Flooding-May24,2.0,3.0,4.0,
+10300100FAB49300,Cyclone-Chido-Dec15,4.0,1.0,2.0,
+10300100FACC3E00,Brazil-Flooding-May24,2.0,4.0,4.0,
+10300100FB783900,Cyclone-Chido-Dec15,4.0,2.0,4.0,
+10300100FBCF0200,Cyclone-Chido-Dec15,1.0,3.0,3.0,
+10300100FC189500,Nepal-Floods-Sept-2024,3.0,2.0,2.0,
+10300100FC47D100,Nepal-Floods-Sept-2024,3.0,2.0,2.0,
+10300100FC931700,Cyclone-Chido-Dec15,1.0,3.0,4.0,
+10300100FCA98200,Cyclone-Chido-Dec15,1.0,3.0,3.0,
+10300100FD270C00,Cyclone-Chido-Dec15,2.0,4.0,4.0,Antsiranana
+10300100FD302500,Cyclone-Chido-Dec15,2.0,3.0,3.0,
+10300100FD45EF00,Cyclone-Chido-Dec15,1.0,3.0,3.0,
+10300100FDC7C400,Belize-Wildfires-June24,4.0,1.0,0.0,
+10300100FEAEBC00,Cyclone-Chido-Dec15,0.0,4.0,3.0,
+10300101020A5400,HurricaneHelene-Oct24,3.0,4.0,2.0,Atlanta
+1030010105247F00,HurricaneHelene-Oct24,3.0,2.0,3.0,Boone
+10300101052E5D00,HurricaneHelene-Oct24,3.0,3.0,3.75,Tallahassee airport (one tiny cloud)
+1030010105395900,Vanuatu-Earthquake-Dec17,1.0,3.0,2.0,
+1030010105AA2600,HurricaneHelene-Oct24,0.0,3.0,2.0,Cedar Key
+1030010105AEF400,HurricaneHelene-Oct24,3.0,2.0,3.0,Old Fort
+1030010105CED800,Vanuatu-Earthquake-Dec17,0.0,3.0,2.0,
+1030010106042100,HurricaneHelene-Oct24,3.0,4.0,3.0,Atlanta
+10300101062BB300,HurricaneHelene-Oct24,3.0,2.0,2.0,Morganton
+10300101062F6300,HurricaneHelene-Oct24,3.0,4.0,3.0,Tallahassee
+103001010630F100,HurricaneHelene-Oct24,3.0,1.0,3.0,Newland NC
+1030010106516200,HurricaneHelene-Oct24,3.0,2.0,3.0,Old Fort NC
+1030010106715D00,HurricaneHelene-Oct24,3.0,1.0,4.0,Bryson City
+103001010684C000,HurricaneHelene-Oct24,3.0,2.0,2.0,Old Fort post
+1030010106951900,HurricaneHelene-Oct24,3.0,1.0,3.0,Bakersville
+10300101069A0C00,HurricaneHelene-Oct24,3.0,2.0,2.0,Forest City
+1030010106B32D00,HurricaneMilton-Oct24,1.0,4.0,2.0,
+10300101074E6F00,Floods-Spain-Oct24,2.0,4.0,2.0,
+1030010107742A00,Floods-Spain-Oct24,2.0,4.0,2.0,
+1030010107D6DD00,Vanuatu-Earthquake-Dec17,1.0,4.0,3.0,
+1030010108767300,Floods-Spain-Oct24,3.0,4.0,4.0,Valencia
+103001010890C000,Floods-Spain-Oct24,2.0,4.0,2.0,
+1030010109005A00,Cyclone-Chido-Dec15,4.0,4.0,2.0,
+1030010109153D00,Vanuatu-Earthquake-Dec17,1.0,3.0,2.0,
+1030010109A55E00,Cyclone-Chido-Dec15,4.0,4.0,3.0,
+103001010A3A8400,Cyclone-Chido-Dec15,1.0,4.0,2.0,Pemba
+103001010A705C00,WildFires-LosAngeles-Jan-2025,4.0,4.0,2.0,
+103001010A77E400,Cyclone-Chido-Dec15,0.0,3.0,3.0,Pamanzi
+103001010B00CA00,Cyclone-Chido-Dec15,1.0,3.0,3.0,
+103001010B4C5600,Cyclone-Chido-Dec15,1.0,2.0,2.0,
+103001010B698000,WildFires-LosAngeles-Jan-2025,4.0,3.0,2.0,
+103001010C12B000,WildFires-LosAngeles-Jan-2025,3.0,4.0,4.0,
+103001010C360000,WildFires-LosAngeles-Jan-2025,4.0,4.0,4.0,
+103001010C487900,WildFires-LosAngeles-Jan-2025,3.0,4.0,2.0,
+103001010C675C00,WildFires-LosAngeles-Jan-2025,3.0,4.0,2.0,
+103001010C7D2D00,WildFires-LosAngeles-Jan-2025,3.0,3.0,4.0,
+103001010C7DD700,WildFires-LosAngeles-Jan-2025,2.0,3.0,2.0,
+103001010C955800,WildFires-LosAngeles-Jan-2025,4.0,4.0,4.0,
+103001010CD31000,WildFires-LosAngeles-Jan-2025,3.0,4.0,4.0,
+10300110E84B5A00,BayofBengal-Cyclone-Mocha-May-23,1.0,2.0,2.0,
+1030050003F8D200,Morocco-Earthquake-Sept-2023,4.0,1.0,2.0,Dusty or sth
+103005009CF92900,Morocco-Earthquake-Sept-2023,3.0,2.0,2.0,
+103005009CF92A00,Morocco-Earthquake-Sept-2023,3.0,2.0,1.0,
+103005009DF96A00,Emilia-Romagna-Italy-flooding-may23,4.0,3.0,4.0,Tiny
+10300500BFF94800,Kahramanmaras-turkey-earthquake-23,3.0,4.0,4.0,Central Gaziantep
+10300500BFF94C00,Kahramanmaras-turkey-earthquake-23,3.0,3.0,4.0,Discont
+10300500BFF95000,Kahramanmaras-turkey-earthquake-23,3.0,3.0,4.0,Gnarly outline; very nice tho
+10300500C2F93F00,Morocco-Earthquake-Sept-2023,4.0,2.0,3.0,
+10300500CCF8B300,Emilia-Romagna-Italy-flooding-may23,4.0,2.0,4.0,
+10300500CFF89D00,Morocco-Earthquake-Sept-2023,3.0,1.0,3.0,
+10300500CFF91800,Morocco-Earthquake-Sept-2023,3.0,1.0,4.0,
+10300500D1F8E400,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10300500D1F8E500,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,
+10300500D3F8C500,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10300500D4F8E800,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10300500D4F8E900,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10300500D5F8A900,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10300500D8F90C00,Kahramanmaras-turkey-earthquake-23,3.0,3.0,4.0,
+10300500D8F96700,Libya-Floods-Sept-2023,2.0,3.0,4.0,Good stuff
+10300500D9F8CC00,Kahramanmaras-turkey-earthquake-23,3.0,3.0,3.0,
+10300500D9F8D100,Kahramanmaras-turkey-earthquake-23,3.0,3.0,3.0,Metro Gaziantep
+10300500D9F8D200,Kahramanmaras-turkey-earthquake-23,3.0,3.0,3.0,
+10300500D9F8D400,Kahramanmaras-turkey-earthquake-23,3.0,3.0,3.0,
+10300500D9F8D500,Kahramanmaras-turkey-earthquake-23,2.0,2.0,2.0,
+10300500D9F8E600,Kahramanmaras-turkey-earthquake-23,3.0,3.0,4.0,
+10300500DDF89E00,Emilia-Romagna-Italy-flooding-may23,4.0,4.0,3.0,
+10300500DEF95100,Morocco-Earthquake-Sept-2023,3.0,3.0,3.0,
+10300500DEF95200,Morocco-Earthquake-Sept-2023,4.0,2.0,3.0,
+10300500DFF94600,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,Tiny
+10300500E4F91400,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,
+10300500E4F91500,Morocco-Earthquake-Sept-2023,4.0,1.0,3.0,
+10300500E4F91700,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10300500E4F91800,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10300500E4F91900,Morocco-Earthquake-Sept-2023,1.0,4.0,4.0,
+10300500E4F92200,Morocco-Earthquake-Sept-2023,3.0,1.0,3.0,
+10300500E4F92300,Morocco-Earthquake-Sept-2023,3.0,1.0,4.0,
+10300500EAF8B400,Floods-Spain-Oct24,3.0,3.0,4.0,
+10300500EDF98B00,Floods-Spain-Oct24,4.0,2.0,4.0,
+10300500F7F8D500,Floods-Spain-Oct24,1.0,4.0,2.0,
+10300500F7F8D700,Floods-Spain-Oct24,4.0,2.0,2.0,
+1040010006B2B200,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,
+10400100300A1900,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,
+1040010030544E00,Emilia-Romagna-Italy-flooding-may23,4.0,4.0,4.0,Tiny
+104001003659B000,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+1040010037027600,Morocco-Earthquake-Sept-2023,4.0,1.0,4.0,
+1040010037542B00,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,Swap meet
+104001003E687200,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+104001003F7B9A00,Morocco-Earthquake-Sept-2023,3.0,1.0,4.0,
+104001003FAD9700,Morocco-Earthquake-Sept-2023,3.0,1.0,4.0,
+10400100405FEB00,Morocco-Earthquake-Sept-2023,4.0,1.0,3.0,
+10400100406FA800,Morocco-Earthquake-Sept-2023,3.0,1.0,2.0,
+1040010040D30400,Morocco-Earthquake-Sept-2023,3.0,1.0,2.0,
+10400100412EA300,Morocco-Earthquake-Sept-2023,4.0,1.0,3.0,
+104001004235EB00,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10400100440CC600,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+104001004464FC00,Morocco-Earthquake-Sept-2023,4.0,1.0,2.0,
+10400100446C8C00,Belize-Wildfires-June24,4.0,1.0,4.0,Huge
+104001004471CD00,Morocco-Earthquake-Sept-2023,3.0,1.0,4.0,
+1040010045AE4B00,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+10400100462E0400,Morocco-Earthquake-Sept-2023,3.0,3.0,2.0,
+10400100465BB600,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+1040010046B9E000,Morocco-Earthquake-Sept-2023,3.0,2.0,2.0,
+1040010049533A00,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+1040010049981000,Morocco-Earthquake-Sept-2023,3.0,3.0,2.0,
+1040010049D28B00,Morocco-Earthquake-Sept-2023,3.0,2.0,2.0,
+104001004A435000,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+104001004ACFF200,Morocco-Earthquake-Sept-2023,3.0,1.0,3.0,
+104001004B3F1B00,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+104001004C51F200,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+104001004D86FB00,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,Town in there
+104001004E78C700,Morocco-Earthquake-Sept-2023,3.0,3.0,3.0,
+104001004F028F00,Morocco-Earthquake-Sept-2023,4.0,1.0,3.0,
+104001004F5B7600,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+104001004FBCBE00,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+10400100514A1900,Morocco-Earthquake-Sept-2023,4.0,1.0,3.0,
+1040010051B60600,Belize-Wildfires-June24,4.0,1.0,2.0,
+10400100543BCB00,Morocco-Earthquake-Sept-2023,4.0,2.0,3.0,
+1040010055A5E300,pakistan-flooding22,3.0,2.0,1.0,Alpine
+1040010056061500,pakistan-flooding22,3.0,2.0,1.0,Alpine
+1040010056418C00,Morocco-Earthquake-Sept-2023,4.0,3.0,4.0,
+1040010057731800,Morocco-Earthquake-Sept-2023,4.0,3.0,4.0,
+1040010058438800,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+1040010058BFB100,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+104001005981D000,pakistan-flooding22,3.0,2.0,1.0,Alpine
+104001005C7F6800,pakistan-flooding22,3.0,2.0,3.0,
+104001005CBFF700,central-us-tornadoes21/pre,3.0,1.0,2.0,
+104001005D4E7B00,Morocco-Earthquake-Sept-2023,4.0,1.0,4.0,
+104001005DA48F00,tstorm-megi22/pre,2.0,3.0,2.0,
+104001005E3F4F00,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+104001005F086100,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+104001005F619000,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,
+104001005FC0C600,Morocco-Earthquake-Sept-2023,4.0,2.0,3.0,
+104001005FD25600,Morocco-Earthquake-Sept-2023,4.0,2.0,2.0,
+10400100600C9600,Morocco-Earthquake-Sept-2023,3.0,2.0,1.0,
+10400100610C9600,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+1040010061205400,Hurricane-Idalia-Florida-Aug23,1.0,2.0,4.0,
+1040010062840900,Morocco-Earthquake-Sept-2023,4.0,1.0,4.0,
+10400100628D7800,Morocco-Earthquake-Sept-2023,4.0,1.0,4.0,
+1040010062936C00,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+10400100635FA000,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,
+104001006427B700,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+1040010064D36600,Brazil-Flooding-May24,4.0,2.0,3.0,Discontinuous
+104001006550A400,Morocco-Earthquake-Sept-2023,2.0,3.0,4.0,Green on red
+10400100658CED00,pakistan-flooding22,3.0,2.0,3.0,Alpine; maybe 5?
+1040010066684700,tstorm-megi22/pre,1.0,1.0,3.0,
+1040010067A15500,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,Discont
+1040010067C49900,Kahramanmaras-turkey-earthquake-23,2.0,3.0,4.0,
+104001006800CE00,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,
+1040010068610000,cyclone-emnati22,3.0,2.0,3.5,
+1040010068A41B00,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,
+1040010068C06E00,tstorm-ana22/pre,2.0,4.0,4.0,Amazing Tana
+104001006975B600,Morocco-Earthquake-Sept-2023,3.0,3.0,3.0,
+1040010069786700,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,
+104001006A0D0900,tstorm-ana22/pre,4.0,2.0,3.0,Cute village
+104001006B084C00,Indonesia-Earthquake22,3.0,3.0,3.0,
+104001006B0BE100,brazil-flooding22/pre,2.0,2.0,4.0,
+104001006B14D800,tstorm-ana22/pre,2.0,3.0,4.0,Nacala
+104001006B8CDF00,brazil-flooding22/pre,2.0,2.0,4.0,Nice
+104001006B923D00,brazil-flooding22/pre,2.0,2.0,4.0,
+104001006BCC3700,central-us-tornadoes21/pre,3.0,3.0,4.0,
+104001006C3FFE00,Morocco-Earthquake-Sept-2023,4.0,1.0,3.0,
+104001006C64F200,brazil-flooding22/pre,2.0,2.0,3.0,
+104001006C7AA900,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,
+104001006D138700,Kahramanmaras-turkey-earthquake-23,4.0,3.0,4.0,
+104001006E108A00,Morocco-Earthquake-Sept-2023,3.0,1.0,4.0,
+104001006E192300,tstorm-megi22/pre,0.0,2.0,2.0,
+104001006E42F300,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+104001006E5BDF00,Morocco-Earthquake-Sept-2023,4.0,2.0,3.0,
+104001006EC38C00,tstorm-megi22/pre,0.0,1.0,2.0,
+104001006F063000,central-us-tornadoes21/pre,3.0,2.0,4.0,
+104001006F2F4300,central-us-tornadoes21/pre,3.0,2.0,4.0,
+104001006F2F4300,central-us-tornadoes21/pre,3.0,2.0,4.0,
+104001006F304F00,Morocco-Earthquake-Sept-2023,4.0,1.0,4.0,
+104001006F3AAE00,Morocco-Earthquake-Sept-2023,3.0,1.0,3.0,
+104001006F8B8300,tstorm-ana22/pre,2.0,4.0,2.0,Tana
+104001006F8C8F00,Morocco-Earthquake-Sept-2023,4.0,1.0,4.0,
+10400100701CF700,central-us-tornadoes21/post,3.0,2.0,0.0,
+10400100703E5500,Hurricane-Ian-9-26-2022,1.0,3.0,1.0,
+10400100713EFE00,Morocco-Earthquake-Sept-2023,4.0,1.0,4.0,
+10400100717B4F00,Morocco-Earthquake-Sept-2023,4.0,1.0,3.0,
+10400100718A2000,tonga-volcano21,1.0,2.0,2.0,
+1040010071BF1100,tstorm-ana22/post,2.0,3.0,1.0,Riverside city
+1040010071C26C00,tonga-volcano21,0.0,2.0,2.0,
+104001007200F800,tstorm-megi22/pre,1.0,3.0,3.0,
+1040010072119400,ecuador-flooding22/post,3.0,1.0,2.0,
+1040010072119400,tstorm-ana22/pre,3.0,2.0,3.0,
+1040010072528400,Hurricane-Ian-9-26-2022,3.0,3.0,4.0,
+10400100726B9900,tstorm-ana22/post,3.0,2.0,1.0,
+104001007270EE00,ecuador-flooding22/post,2.0,1.0,3.0,Cute tho
+104001007270EE00,Mananjary,2.0,2.0,3.0,
+104001007270EE00,tstorm-ana22/post,1.0,2.0,2.0,
+104001007289BC00,central-us-tornadoes21/post,4.0,1.0,0.0,
+1040010072A1EF00,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+1040010072C90800,tonga-volcano21,1.0,3.0,2.0,
+1040010073381800,India-Floods-Oct-2023,4.0,2.0,4.0,Great color
+1040010073394C00,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+1040010073396500,volcano-indonesia21,3.0,2.0,1.0,
+10400100733A0300,louisiana-tornadoes22/pre,2.0,4.0,4.0,Port-ish
+10400100733E5D00,tstorm-ana22/post,1.0,2.0,2.0,
+10400100733E6D00,Morocco-Earthquake-Sept-2023,3.0,1.0,4.0,
+1040010073509D00,pakistan-flooding22,2.0,3.0,4.0,
+1040010073586A00,Hurricane-Fiona-9-19-2022,2.0,2.0,2.0,Discont
+10400100735AA800,Hurricane-Fiona-9-19-2022,2.0,2.0,2.0,Discont
+1040010073665D00,louisiana-tornadoes22/post,0.0,3.0,4.0,Lots of lake
+10400100737B8400,afghanistan-earthquake22,4.0,1.0,4.0,Snow & shadow
+10400100739AD300,Hurricane-Fiona-9-19-2022,2.0,2.0,2.0,Discont
+1040010073D77D00,Gambia-flooding-8-11-2022,2.0,4.0,4.0,Dusty
+1040010074035100,Hurricane-Ian-9-26-2022,2.0,3.0,4.0,
+104001007469C700,Morocco-Earthquake-Sept-2023,4.0,1.0,2.0,
+10400100746E5800,Morocco-Earthquake-Sept-2023,3.0,2.0,2.0,
+104001007487BA00,Sudan-flooding-8-22-2022,2.0,2.0,4.0,Lake in dry szn
+10400100749D2600,louisiana-tornadoes22/post,2.0,3.0,4.0,
+1040010074CCEA00,Hurricane-Ian-9-26-2022,2.0,2.0,4.0,Autumnal GA
+104001007525ED00,brazil-flooding22/post,2.0,1.0,2.0,
+1040010075302700,Hurricane-Ian-9-26-2022,1.0,3.0,4.0,
+1040010075532700,pakistan-flooding22,4.0,1.0,4.0,
+1040010075635E00,Hurricane-Ian-9-26-2022,1.0,2.0,4.0,
+1040010075753100,brazil-flooding22/post,2.0,2.0,3.0,
+10400100757D1800,Hurricane-Ian-9-26-2022,2.0,3.0,4.0,
+1040010075B43400,Hurricane-Ian-9-26-2022,2.0,3.0,2.0,
+104001007602E200,southafrica-flooding22,2.0,4.0,4.0,
+1040010076369100,pakistan-flooding22,2.0,2.0,4.0,
+104001007648B800,tstorm-megi22/pre,0.0,1.0,2.0,
+1040010076566100,southafrica-flooding22,2.0,4.0,4.0,Bright water
+1040010076599E00,Hurricane-Ian-9-26-2022,3.0,2.0,2.0,
+1040010076AFB000,Hurricane-Ian-9-26-2022,2.0,3.0,3.0,
+10400100770EF000,southafrica-flooding22,1.0,4.0,4.0,Port
+1040010077137900,Kahramanmaras-turkey-earthquake-23,3.0,3.0,4.0,
+10400100772CEF00,Morocco-Earthquake-Sept-2023,3.0,1.0,4.0,
+1040010077338D00,Hurricane-Idalia-Florida-Aug23,3.0,2.0,3.0,
+10400100773A4D00,Brazil-Flooding-May24,0.0,2.0,4.0,
+10400100773C0E00,Brazil-Flooding-May24,4.0,4.0,4.0,
+1040010077468F00,afghanistan-earthquake22,4.0,0.0,3.0,Same-day overlaps
+1040010077691A00,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10400100777CAA00,afghanistan-earthquake22,4.0,1.0,4.0,
+10400100779DDF00,afghanistan-earthquake22,4.0,1.0,4.0,
+1040010077A6E200,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+1040010077B01400,afghanistan-earthquake22,4.0,0.0,3.0,
+1040010077B81A00,HurricaneHelene-Oct24,3.0,3.0,3.0,Tallahassee burbs
+1040010077D58800,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,
+1040010078184300,Hurricane-Ian-9-26-2022,4.0,2.0,2.0,
+104001007838B900,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10400100797DAC00,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,
+104001007A2B9F00,pakistan-flooding22,4.0,1.0,4.0,
+104001007A2F5600,Hurricane-Fiona-9-19-2022,2.0,4.0,2.0,
+104001007A43AE00,Hurricane-Fiona-9-19-2022,2.0,4.0,4.0,Halifax; autumnal
+104001007A565700,Gambia-flooding-8-11-2022,2.0,4.0,2.0,Nice under clouds
+104001007A5E4D00,Hurricane-Ian-9-26-2022,3.0,3.0,2.0,
+104001007A692300,Morocco-Earthquake-Sept-2023,3.0,1.0,3.0,
+104001007A83F800,Hurricane-Ian-9-26-2022,3.0,2.0,2.0,
+104001007ABC4D00,Sudan-flooding-8-22-2022,2.0,4.0,4.0,
+104001007B07CD00,pakistan-flooding22,3.0,2.0,4.0,
+104001007B174D00,pakistan-flooding22,3.0,2.0,4.0,
+104001007B1A7600,Gambia-flooding-8-11-2022,1.0,3.0,1.0,Weird edge
+104001007B2A1300,Hurricane-Fiona-9-19-2022,3.0,3.0,2.0,
+104001007B3DC100,pakistan-flooding22,2.0,2.0,4.0,
+104001007B76A400,Morocco-Earthquake-Sept-2023,3.0,2.0,2.0,
+104001007B8FCA00,pakistan-flooding22,3.0,2.0,4.0,
+104001007BA40D00,Hurricane-Ian-9-26-2022,2.0,3.0,4.0,
+104001007BB6D600,Sudan-flooding-8-22-2022,2.0,4.0,4.0,City
+104001007BC29000,Hurricane-Ian-9-26-2022,4.0,2.0,2.0,
+104001007C700900,Hurricane-Ian-9-26-2022,1.0,2.0,2.0,
+104001007C806A00,Gambia-flooding-8-11-2022,2.0,4.0,2.0,
+104001007C86B200,New-Zealand-Flooding23,2.0,3.0,3.0,
+104001007C941100,pakistan-flooding22,4.0,2.0,4.0,
+104001007CADF600,pakistan-flooding22,3.0,3.0,4.0,
+104001007CADFA00,pakistan-flooding22,2.0,2.0,4.0,Quick stereo pair
+104001007D13B200,Belize-Wildfires-June24,4.0,2.0,3.0,
+104001007D498500,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+104001007D711B00,pakistan-flooding22,3.0,3.0,4.0,
+104001007D777200,Hurricane-Ian-9-26-2022,0.0,4.0,3.0,
+104001007DAE2D00,Kahramanmaras-turkey-earthquake-23,3.0,4.0,4.0,
+104001007DBE8A00,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+104001007DC4B900,Hurricane-Ian-9-26-2022,1.0,2.0,4.0,Autumnal; bright/windy water
+104001007E549C00,Nepal-Floods-Sept-2024,3.0,4.0,4.0,E Kat
+104001007E564300,Kahramanmaras-turkey-earthquake-23,3.0,4.0,4.0,Crispy
+104001007EBB7C00,BayofBengal-Cyclone-Mocha-May-23,1.0,3.0,4.0,
+104001007F3A4600,Morocco-Earthquake-Sept-2023,3.0,2.0,2.0,
+104001007F8F6300,Brazil-Flooding-May24,1.0,4.0,4.0,
+104001007FD1DF00,Morocco-Earthquake-Sept-2023,3.0,2.0,2.0,
+1040010080453800,Kahramanmaras-turkey-earthquake-23,2.0,1.0,4.0,Snowy and rugged
+1040010080457D00,Brazil-Flooding-May24,3.0,3.0,3.0,
+104001008058CD00,Kahramanmaras-turkey-earthquake-23,4.0,3.0,4.0,Tiny
+1040010080859100,Hurricane-Idalia-Florida-Aug23,2.0,1.0,4.0,
+1040010080895500,Kahramanmaras-turkey-earthquake-23,3.0,2.0,4.0,Snowy; color casts?
+10400100808F6100,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+1040010081181200,Hurricane-Idalia-Florida-Aug23,2.0,1.0,4.0,
+1040010081581C00,Hurricane-Idalia-Florida-Aug23,2.0,2.0,4.0,
+104001008209EE00,Kahramanmaras-turkey-earthquake-23,3.0,2.0,4.0,
+104001008216D000,BayofBengal-Cyclone-Mocha-May-23,2.0,2.0,3.0,
+1040010082388600,Kahramanmaras-turkey-earthquake-23,2.0,1.0,2.0,
+1040010082530900,Kahramanmaras-turkey-earthquake-23,3.0,2.0,4.0,
+1040010082651500,Kahramanmaras-turkey-earthquake-23,3.0,2.0,1.0,
+1040010082661F00,Kahramanmaras-turkey-earthquake-23,3.0,2.0,3.0,Dust?
+1040010082698700,Kahramanmaras-turkey-earthquake-23,3.0,2.0,2.0,
+1040010082988200,BayofBengal-Cyclone-Mocha-May-23,2.0,1.0,2.0,Good LULC
+1040010082990000,Kahramanmaras-turkey-earthquake-23,4.0,1.0,0.0,Gruesome diag
+1040010082B2FB00,Kahramanmaras-turkey-earthquake-23,3.0,2.0,4.0,
+1040010082B6D600,Kahramanmaras-turkey-earthquake-23,3.0,1.0,2.0,
+1040010082B85E00,Kahramanmaras-turkey-earthquake-23,3.0,3.0,3.0,Pretty tho
+104001008314FC00,Kahramanmaras-turkey-earthquake-23,3.0,3.0,3.0,
+1040010083278E00,Kahramanmaras-turkey-earthquake-23,4.0,2.0,4.0,Pretty
+1040010083289000,Morocco-Earthquake-Sept-2023,3.0,1.0,2.0,
+1040010083A86600,Morocco-Earthquake-Sept-2023,4.0,1.0,4.0,
+1040010084614200,Kalehe-DRC-Flooding-5-8-23,1.0,2.0,2.0,
+1040010084646C00,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+10400100846B5A00,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+1040010084B2E200,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+1040010084CB6D00,HurricaneHelene-Oct24,3.0,3.0,4.0,Lousiville e side
+1040010084D7A300,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+1040010084D7A300,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10400100850EE800,Morocco-Earthquake-Sept-2023,3.0,1.0,3.0,
+1040010085132700,Nepal-Floods-Sept-2024,3.0,4.0,3.75,C Kat (light haze)
+10400100855F5100,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+1040010085BBD400,Morocco-Earthquake-Sept-2023,2.0,2.0,4.0,Reservoir
+104001008621CE00,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10400100864E9900,PNG-Landslide-June24,3.0,3.0,4.0,Slight haze in S
+1040010086B46A00,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+1040010087AB7E00,Libya-Floods-Sept-2023,3.0,3.0,4.0,
+1040010087BB6100,Brazil-Flooding-May24,3.0,2.0,4.0,
+1040010087BCDB00,Morocco-Earthquake-Sept-2023,3.0,1.0,4.0,V v clean stereo pair
+1040010088356D00,NWT-Canada-Aug-23,3.0,2.0,0.0,
+1040010088419100,Morocco-Earthquake-Sept-2023,2.0,1.0,2.0,
+104001008884A400,Belize-Wildfires-June24,3.0,1.0,2.0,Tiny dam
+1040010088864800,Morocco-Earthquake-Sept-2023,4.0,2.0,3.0,
+104001008892A500,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+104001008892B200,NWT-Canada-Aug-23,3.0,2.0,0.0,
+10400100889ABF00,Morocco-Earthquake-Sept-2023,3.0,1.0,4.0,V v clean stereo pair
+1040010088B8BC00,Brazil-Flooding-May24,3.0,1.0,4.0,Pretty lil bend
+1040010089157600,Brazil-Flooding-May24,4.0,2.0,4.0,
+104001008931FF00,shovi-georgia-landslide-8Aug23,3.0,2.0,2.0,
+1040010089696600,Brazil-Flooding-May24,4.0,2.0,4.0,
+104001008A509B00,Japan-Earthquake-Jan-2024,3.0,3.0,4.0,
+104001008A5FB500,Brazil-Flooding-May24,3.0,2.0,4.0,
+104001008A726E00,HurricaneHelene-Oct24,0.0,2.0,4.0,Carrabelle
+104001008A72B900,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+104001008A8DAA00,NWT-Canada-Aug-23,2.0,3.0,0.0,
+104001008A8E9800,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+104001008B282A00,Libya-Floods-Sept-2023,2.0,3.0,4.0,
+104001008B463900,NWT-Canada-Aug-23,2.0,4.0,4.0,
+104001008B75BB00,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+104001008BAC6F00,Libya-Floods-Sept-2023,2.0,3.0,3.0,
+104001008D1B6800,HurricaneHelene-Oct24,1.0,2.0,4.0,Carabelle burbs
+104001008D76A900,Japan-Earthquake-Jan-2024,3.0,3.0,4.0,City & rice
+104001008E063C00,Kenya-Flooding-May24,3.0,4.0,3.75,Tiny clouds at bottom ^_^
+104001009035CC00,HurricaneHelene-Oct24,3.0,3.0,4.0,Spruce Pine
+10400100905FFC00,Belize-Wildfires-June24,4.0,1.0,4.0,Huge
+1040010091A74400,Brazil-Flooding-May24,4.0,4.0,4.0,
+1040010092953300,HurricaneMilton-Oct24,1.0,4.0,4.0,
+1040010095519A00,Nepal-Floods-Sept-2024,3.0,4.0,4.0,E Kat (tiny smoke)
+1040010096411F00,Cyclone-Chido-Dec15,1.0,4.0,2.0,
+1040010096551700,Brazil-Flooding-May24,3.0,4.0,3.0,S PA
+104001009697E900,Brazil-Flooding-May24,3.0,2.0,2.0,
+1040010096BE6900,Brazil-Flooding-May24,4.0,2.0,4.0,
+104001009713BA00,Cyclone-Chido-Dec15,1.0,2.0,3.0,
+1040010097231700,Cyclone-Chido-Dec15,1.0,3.0,4.0,
+10400100976D6C00,HurricaneHelene-Oct24,0.0,2.0,3.0,Port Saint Joe (overlapping)
+1040010097D1F500,HurricaneMilton-Oct24,0.0,4.0,3.0,
+1040010098764700,Cyclone-Chido-Dec15,1.0,3.0,4.0,
+10400100987A4A00,Cyclone-Chido-Dec15,1.0,4.0,3.75,
+104001009990E600,Cyclone-Chido-Dec15,3.0,2.0,2.0,Weird one (clipped?)
+1040010099B49500,Cyclone-Chido-Dec15,3.0,2.0,3.0,
+1040010099BADE00,Cyclone-Chido-Dec15,1.0,4.0,2.0,
+104001009A5AE000,HurricaneHelene-Oct24,3.0,2.0,3.0,Woodruff. Quarries and industry.
+104001009ABAB800,Cyclone-Chido-Dec15,2.0,2.0,2.0,Zone edge?
+104001009B1D0C00,Cyclone-Chido-Dec15,1.0,2.0,2.0,
+104001009B46BA00,HurricaneHelene-Oct24,3.0,2.0,2.0,Boone
+104001009B6E9600,HurricaneHelene-Oct24,1.0,2.0,2.0,Carrabelle
+104001009BD3C900,Cyclone-Chido-Dec15,0.0,3.0,3.0,
+104001009C0CE600,HurricaneHelene-Oct24,3.0,2.0,2.0,Westminster SC
+104001009C44FF00,HurricaneHelene-Oct24,3.0,2.0,2.0,Bakersville
+104001009C4AC400,HurricaneMilton-Oct24,1.0,4.0,3.0,
+104001009C64B300,WildFires-LosAngeles-Jan-2025,4.0,4.0,2.0,Huge flames and so on
+104001009C8C2600,HurricaneHelene-Oct24,3.0,3.0,2.0,Forest City
+104001009C902400,HurricaneMilton-Oct24,0.0,3.0,3.0,
+104001009CA31F00,HurricaneMilton-Oct24,1.0,4.0,2.0,
+104001009CD41800,Vanuatu-Earthquake-Dec17,1.0,2.0,2.0,
+104001009D358600,HurricaneHelene-Oct24,3.0,1.0,2.0,Newland
+104001009DA43500,HurricaneHelene-Oct24,1.0,2.0,3.0,Port Saint Joe (overlapping)
+104001009F2ED400,WildFires-LosAngeles-Jan-2025,4.0,3.0,4.0,Super (like SUPER) tiny
+104001009F585500,HurricaneHelene-Oct24,3.0,2.0,3.0,Burnsville. Mines. (Pair.)
+104001009F6F0800,Cyclone-Chido-Dec15,0.0,2.0,4.0,
+104001009F982A00,WildFires-LosAngeles-Jan-2025,3.0,4.0,3.0,
+10400100A069A700,WildFires-LosAngeles-Jan-2025,4.0,4.0,4.0,Deep smoke shadows
+10400100A06B8000,WildFires-LosAngeles-Jan-2025,3.0,3.0,4.0,
+10400100A07CE400,WildFires-LosAngeles-Jan-2025,4.0,4.0,4.0,
+10400100A0AEFE00,WildFires-LosAngeles-Jan-2025,4.0,2.0,2.0,Tiny
+10400100A0B73800,WildFires-LosAngeles-Jan-2025,2.0,3.0,4.0,
+10400100A0BAD600,WildFires-LosAngeles-Jan-2025,3.0,4.0,4.0,
+10400100A0BD9A00,WildFires-LosAngeles-Jan-2025,4.0,4.0,4.0,Tiny
+10400100A1028F00,WildFires-LosAngeles-Jan-2025,4.0,4.0,4.0,
+10400100A1349500,WildFires-LosAngeles-Jan-2025,4.0,2.0,2.0,Huge flames
+10400100A14A8300,WildFires-LosAngeles-Jan-2025,3.0,4.0,4.0,
+10400100A17B5900,WildFires-LosAngeles-Jan-2025,4.0,4.0,4.0,Exquisite
+10400100A17E8600,WildFires-LosAngeles-Jan-2025,4.0,4.0,4.0,The Rose Parade?!
+10400100A194FA00,WildFires-LosAngeles-Jan-2025,4.0,4.0,4.0,Tiny
+10400100A1989500,WildFires-LosAngeles-Jan-2025,4.0,4.0,2.0,
+10400100A1AFE700,WildFires-LosAngeles-Jan-2025,3.0,4.0,4.0,
+10400100A1B60B00,WildFires-LosAngeles-Jan-2025,3.0,4.0,4.0,
+10400100A20D9300,WildFires-LosAngeles-Jan-2025,3.0,4.0,3.5,Light smoke haze + tiny clouds
+10400100A24E1900,WildFires-LosAngeles-Jan-2025,4.0,4.0,2.0,Huge flames
+10400100A2561F00,WildFires-LosAngeles-Jan-2025,4.0,4.0,4.0,
+10400100A26E9900,WildFires-LosAngeles-Jan-2025,4.0,4.0,4.0,
+1040050039DC5C00,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+1040050039DC5D00,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+104005003ADC5C00,Emilia-Romagna-Italy-flooding-may23,4.0,1.0,2.0,3.5? Autumnal
+1040050044DCCC00,Morocco-Earthquake-Sept-2023,3.0,1.0,3.0,
+1040050046DBE200,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+1040050046DBE300,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+1040050046DBE400,Morocco-Earthquake-Sept-2023,3.0,3.0,3.0,
+1040050047DBF700,Morocco-Earthquake-Sept-2023,4.0,1.0,2.0,
+1040050047DBF800,Morocco-Earthquake-Sept-2023,3.0,2.0,2.0,
+1040050047DC6400,Morocco-Earthquake-Sept-2023,3.0,1.0,3.0,
+1040050047DCAA00,Morocco-Earthquake-Sept-2023,3.0,1.0,2.0,
+1040050047DCAB00,Morocco-Earthquake-Sept-2023,4.0,1.0,2.0,
+1040050048DC6400,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+104005004ADBF200,Morocco-Earthquake-Sept-2023,3.0,2.0,1.0,Dusty
+104005004FDCBC00,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+1040050050DCE200,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+1040050051DC3900,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+1040050052DCC800,Morocco-Earthquake-Sept-2023,4.0,2.0,3.0,
+1040050052DCCA00,Morocco-Earthquake-Sept-2023,3.0,3.0,3.0,
+1040050053DC5600,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+1040050057DC8500,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+1050010007D50700,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,Nice big one
+105001000A76A200,shovi-georgia-landslide-8Aug23,3.0,2.0,4.0,
+105001000B8E2F00,Hurricane-Maria-PuertoRico-Oct-2017,2.0,3.0,2.0,
+105001000C60ED00,Hurricane-Maria-PuertoRico-Oct-2017,2.0,3.0,2.0,
+105001000C7F2100,Hurricane-Idalia-Florida-Aug23,2.0,2.0,3.0,
+105001000F069300,Hurricane-Idalia-Florida-Aug23,2.0,2.0,4.0,
+10500100164C2D00,volcano-indonesia21,2.0,2.0,3.0,Gorgeous
+1050010019B44B00,volcano-indonesia21,2.0,2.0,4.0,
+105001001F17C100,cyclone-emnati22,1.0,2.0,2.0,
+105001001FD01100,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+1050010020279B00,texas-tornadoes22/pre,3.0,2.0,4.0,
+1050010020676300,Morocco-Earthquake-Sept-2023,3.0,1.0,4.0,
+1050010022985600,tstorm-ana22/pre,3.0,4.0,3.0,Blantyre
+1050010023470D00,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+10500100244DA100,louisiana-tornadoes22/pre,2.0,4.0,2.0,
+1050010024A3CE00,tstorm-ana22/pre,2.0,2.0,4.0,Live fire; coast
+1050010024AB9700,tstorm-megi22/pre,4.0,1.0,1.0,
+105001002541B600,tstorm-ana22/pre,3.0,1.0,3.0,Pretty tho
+105001002591D500,Hurricane-Ian-9-26-2022,3.0,2.0,2.0,Contrails
+1050010025AD0200,tstorm-ana22/pre,3.0,2.0,4.0,
+10500100260A5800,tstorm-megi22/pre,1.0,2.0,1.0,
+105001002673ED00,tstorm-megi22/pre,0.0,2.0,2.0,
+105001002708C700,volcano-indonesia21,3.0,2.0,2.0,
+10500100274A7C00,Hurricane-Ian-9-26-2022,3.0,3.0,2.0,
+105001002757D500,Hurricane-Ian-9-26-2022,3.0,3.0,3.0,
+1050010027670000,tstorm-megi22/pre,2.0,2.0,2.0,
+1050010027682F00,tstorm-ana22/pre,1.0,2.0,4.0,Beautiful coast
+10500100276D1B00,tstorm-ana22/pre,3.0,1.0,3.0,Dusty
+1050010027B8E700,tstorm-ana22/pre,2.0,1.0,3.0,
+1050010027D71900,Hurricane-Idalia-Florida-Aug23,2.0,2.0,2.0,
+1050010028418B00,tstorm-ana22/pre,2.0,2.0,3.0,Live fire
+10500100289B7E00,cyclone-emnati22,0.0,2.0,2.0,
+10500100289B7E00,tstorm-ana22/pre,0.0,2.0,3.0,
+1050010028AC8900,volcano-indonesia21,3.0,2.0,1.0,
+1050010028AE6C00,Hurricane-Ian-9-26-2022,2.0,3.0,4.0,
+1050010028B99200,Hurricane-Ian-9-26-2022,2.0,3.0,4.0,
+1050010028C48D00,kentucky-flooding-7-29-2022,3.0,1.0,3.0,Autumnal
+1050010028D0D500,tstorm-megi22/pre,2.0,4.0,3.0,
+105001002908EA00,Hurricane-Ian-9-26-2022,3.0,2.0,4.0,
+10500100295B2900,tonga-volcano21,0.0,1.0,0.0,
+10500100295DD600,ghana-explosion22,4.0,2.0,2.0,
+105001002974C700,ghana-explosion22,4.0,3.0,2.0,Heavy haze
+105001002998D400,afghanistan-earthquake22,4.0,1.0,4.0,SDO
+1050010029A68300,Hurricane-Ian-9-26-2022,3.0,2.0,4.0,
+1050010029BC3700,tstorm-ana22/post,2.0,3.0,1.0,
+105001002A0D5C00,Hurricane-Ian-9-26-2022,3.0,2.0,4.0,
+105001002A31C400,cyclone-emnati22,0.0,2.0,2.0,
+105001002A491800,Hurricane-Ian-9-26-2022,2.0,3.0,2.0,
+105001002A491900,Hurricane-Ian-9-26-2022,2.0,3.0,2.0,
+105001002A647F00,tstorm-megi22/pre,1.0,3.0,3.0,
+105001002A97E200,Sudan-flooding-8-22-2022,2.0,2.0,4.0,
+105001002A9CF000,texas-tornadoes22/pre,3.0,3.0,3.0,
+105001002A9CF100,texas-tornadoes22/post,3.0,2.0,4.0,
+105001002AA15500,louisiana-tornadoes22/post,2.0,4.0,4.0,Core Nola
+105001002B1CF100,southafrica-flooding22,1.0,2.0,1.0,Coal port
+105001002B1CF200,southafrica-flooding22,3.0,2.0,1.0,
+105001002B253D00,tstorm-megi22/post,3.0,1.0,1.0,
+105001002B2C3300,southafrica-flooding22,1.0,3.0,3.0,Real pretty tho
+105001002B3D7E00,HurricaneHelene-Oct24,3.0,4.0,3.0,Tallahassee
+105001002B445D00,southafrica-flooding22,1.0,3.0,4.0,
+105001002B614B00,pakistan-flooding22,2.0,2.0,3.0,
+105001002B70AB00,pakistan-flooding22,2.0,2.0,3.0,
+105001002BD68F00,Gambia-flooding-8-11-2022,1.0,4.0,4.0,Tiny point
+105001002BD72900,Hurricane-Fiona-9-19-2022,2.0,3.0,2.0,
+105001002C5F6600,Hurricane-Fiona-9-19-2022,2.0,3.0,4.0,
+105001002C8C5600,yellowstone-flooding22,3.0,1.0,3.0,Smoke?
+105001002C9F5C00,Hurricane-Ian-9-26-2022,1.0,1.0,3.0,
+105001002CB61600,afghanistan-earthquake22,4.0,0.0,4.0,
+105001002CB9D600,afghanistan-earthquake22,4.0,3.0,1.0,Bangladesh!
+105001002CBAFE00,Morocco-Earthquake-Sept-2023,4.0,0.0,1.0,Terrible!
+105001002D0A8100,Hurricane-Ian-9-26-2022,3.0,2.0,2.0,
+105001002D3C0200,McDougallCreekWildfire-BC-Canada-Aug-23,1.0,3.0,4.0,
+105001002D409800,Hurricane-Ian-9-26-2022,2.0,3.0,2.0,
+105001002D832D00,pakistan-flooding22,3.0,2.0,3.0,
+105001002D8BCC00,Hurricane-Ian-9-26-2022,4.0,2.0,3.0,
+105001002D912700,kentucky-flooding-7-29-2022,3.0,1.0,1.0,
+105001002DA58500,kentucky-flooding-7-29-2022,3.0,1.0,2.0,
+105001002DAB2F00,kentucky-flooding-7-29-2022,2.0,1.0,2.0,
+105001002E402600,SmokeHouseCreek-Wildfires-Texas-Mar24,3.0,2.0,3.0,
+105001002E48BA00,Sudan-flooding-8-22-2022,2.0,2.0,3.0,
+105001002E827C00,Sudan-flooding-8-22-2022,2.0,2.0,3.0,Late in wet szn
+105001002EA2FA00,Indonesia-Earthquake22,3.0,3.0,3.0,
+105001002ED01C00,Hurricane-Fiona-9-19-2022,1.0,4.0,2.0,Grand Turk
+105001002F010400,Hurricane-Fiona-9-19-2022,2.0,4.0,4.0,Halifax
+105001002F010700,Hurricane-Fiona-9-19-2022,2.0,3.0,2.0,
+105001002F010900,Hurricane-Fiona-9-19-2022,2.0,3.0,2.0,
+105001002F064B00,Hurricane-Fiona-9-19-2022,2.0,2.0,2.0,
+105001002F064C00,Hurricane-Fiona-9-19-2022,3.0,2.0,2.0,
+105001002F19B100,Hurricane-Ian-9-26-2022,2.0,3.0,3.0,Diag
+105001002F19B200,Hurricane-Ian-9-26-2022,2.0,3.0,3.0,Diag
+105001002F19B300,Hurricane-Ian-9-26-2022,1.0,4.0,2.0,Diag
+105001002F299F00,SmokeHouseCreek-Wildfires-Texas-Mar24,3.0,1.0,4.0,
+105001002FC38300,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+1050010031340400,Brazil-Flooding-May24,3.0,3.0,4.0,
+1050010031762F00,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+1050010031904200,Morocco-Earthquake-Sept-2023,3.0,3.0,4.0,
+1050010032B2A600,Emilia-Romagna-Italy-flooding-may23,4.0,3.0,4.0,
+10500100330E1800,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,Noor
+105001003344F500,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+1050010033B4E800,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+1050010033C95B00,Emilia-Romagna-Italy-flooding-may23,4.0,2.0,2.0,
+1050010034136200,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+105001003590C300,Maui-Hawaii-fires-Aug-23,3.0,2.0,3.0,
+10500100363D0900,Libya-Floods-Sept-2023,1.0,3.0,3.0,Turbid
+10500100363D0A00,Libya-Floods-Sept-2023,4.0,3.0,3.0,
+10500100364AF200,Libya-Floods-Sept-2023,0.0,3.0,4.0,
+1050010036A0EC00,India-Floods-Oct-2023,3.0,0.0,3.0,Glacial
+1050010036C23400,SmokeHouseCreek-Wildfires-Texas-Mar24,3.0,2.0,4.0,
+10500100371C7600,Nepal-Earthquake-Apr-2015,3.0,2.0,3.0,
+1050010038321E00,Japan-Earthquake-Jan-2024,3.0,4.0,3.0,City & small snow
+105001003861BB00,Nigeria-Floods-Sept-2024,3.0,4.0,4.0,Maiduguri
+1050010038C4D000,HurricaneMilton-Oct24,3.0,3.0,4.0,
+1050010038C4D000,HurricaneMilton-Oct24,3.0,3.0,4.0,
+1050010038C4D100,HurricaneMilton-Oct24,3.0,4.0,4.0,
+1050010038C4D200,HurricaneMilton-Oct24,2.0,4.0,4.0,
+1050010038C4D300,HurricaneMilton-Oct24,2.0,4.0,4.0,
+1050010039531300,SmokeHouseCreek-Wildfires-Texas-Mar24,3.0,2.0,4.0,
+1050010039576B00,Brazil-Flooding-May24,3.0,2.0,4.0,
+1050010039625500,SmokeHouseCreek-Wildfires-Texas-Mar24,3.0,1.0,2.0,Smoky
+1050010039625600,SmokeHouseCreek-Wildfires-Texas-Mar24,3.0,1.0,2.0,Smoky
+105001003A08F100,HurricaneHelene-Oct24,0.0,3.0,4.0,Cedar Key
+105001003AC84200,Brazil-Flooding-May24,3.0,2.0,4.0,
+105001003AC84300,Brazil-Flooding-May24,3.0,2.0,4.0,
+105001003AC84400,Brazil-Flooding-May24,3.0,2.0,4.0,
+105001003AC84500,Brazil-Flooding-May24,3.0,2.0,4.0,
+105001003AC84700,Brazil-Flooding-May24,3.0,2.0,4.0,Little town
+105001003ACFED00,Brazil-Flooding-May24,0.0,4.0,2.0,
+105001003B003900,Kenya-Flooding-May24,3.0,4.0,3.0,
+105001003B152100,Brazil-Flooding-May24,3.0,2.0,4.0,
+105001003B4A9000,PNG-Landslide-June24,3.0,3.0,3.0,
+105001003B701E00,Belize-Wildfires-June24,4.0,1.0,1.0,
+105001003B734D00,Cyclone-Chido-Dec15,0.0,2.0,2.0,
+105001003C07F000,Cyclone-Chido-Dec15,1.0,3.0,4.0,
+105001003DB33100,HurricaneHelene-Oct24,4.0,2.0,4.0,Logan NC
+105001003E0B4800,HurricaneHelene-Oct24,3.0,3.0,2.0,Spruce Pine
+105001003E0B4900,HurricaneHelene-Oct24,3.0,1.0,2.0,Erwin post
+105001003E1F0500,Nepal-Floods-Sept-2024,3.0,4.0,2.0,
+105001003E1F0600,Nepal-Floods-Sept-2024,3.0,4.0,2.0,
+105001003E2D2500,Vanuatu-Earthquake-Dec17,1.0,2.0,2.0,
+105001003E362500,HurricaneMilton-Oct24,1.0,4.0,2.0,
+105001003E84F500,Floods-Spain-Oct24,2.0,4.0,4.0,
+105001003EA31700,Floods-Spain-Oct24,4.0,1.0,2.0,
+105001003ECB4800,Floods-Spain-Oct24,2.0,4.0,4.0,Valencia
+105001003FC45900,WildFires-LosAngeles-Jan-2025,4.0,4.0,2.0,
+105001003FC45900,WildFires-LosAngeles-Jan-2025,4.0,4.0,2.0,
+1050010040277300,WildFires-LosAngeles-Jan-2025,4.0,4.0,3.0,Smoky
+1050010040277400,WildFires-LosAngeles-Jan-2025,4.0,1.0,4.0,
+1050010040277500,WildFires-LosAngeles-Jan-2025,3.0,4.0,4.0,Smoky
+105001004042BF00,WildFires-LosAngeles-Jan-2025,2.0,4.0,4.0,Santa Monica etc. (wow)
+10500100404AD000,WildFires-LosAngeles-Jan-2025,4.0,4.0,3.0,
+1050050003DD9101,Morocco-Earthquake-Sept-2023,2.0,2.0,3.0,
+1050050011DE7D00,Morocco-Earthquake-Sept-2023,3.0,3.0,3.0,Corner cloud?
+1050050012DE8B00,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+1050050025DE8F00,Morocco-Earthquake-Sept-2023,4.0,1.0,3.0,
+1050050027DE8400,Morocco-Earthquake-Sept-2023,3.0,2.0,2.0,
+105005002CDEA000,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+105005002DDEDA00,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+105005002DDEDB00,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+105005002EDEDB00,Morocco-Earthquake-Sept-2023,3.0,2.0,3.0,
+1050050030DE8900,Morocco-Earthquake-Sept-2023,3.0,1.0,3.0,
+1050050030DE8A00,Morocco-Earthquake-Sept-2023,3.0,1.0,3.0,
+1050050032DEAC00,Morocco-Earthquake-Sept-2023,3.0,1.0,2.0,
+1050050032DEAD00,Morocco-Earthquake-Sept-2023,3.0,1.0,2.0,
+1050050034DE8000,Morocco-Earthquake-Sept-2023,3.0,1.0,2.0,
+1050050034DEBD00,Morocco-Earthquake-Sept-2023,4.0,1.0,4.0,
+105005003BDD6000,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,Noor
+1050050044DE7E00,Kahramanmaras-turkey-earthquake-23,4.0,2.0,2.0,
+1050050044DE7F00,Kahramanmaras-turkey-earthquake-23,4.0,2.0,2.0,
+1050050044DEB300,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+1050050049DE9200,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+105005004ADE9C00,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+1050050050DE9100,Morocco-Earthquake-Sept-2023,3.0,2.0,4.0,
+1050050051DEC600,Morocco-Earthquake-Sept-2023,4.0,1.0,2.0,
+1050050054DE8B00,Morocco-Earthquake-Sept-2023,3.0,4.0,3.0,
+1050050055DE9300,Morocco-Earthquake-Sept-2023,4.0,1.0,2.0,
+1050050058DE8A00,Morocco-Earthquake-Sept-2023,4.0,2.0,4.0,
+1050050058DEA900,Libya-Floods-Sept-2023,3.0,3.0,4.0,
+1050050059DEBF00,Libya-Floods-Sept-2023,0.0,3.0,4.0,
+105005005ADE7C00,Libya-Floods-Sept-2023,1.0,2.0,4.0,
+105005005ADE9300,Morocco-Earthquake-Sept-2023,4.0,2.0,3.0,Dusty
+105005005BDEA700,Iceland-Volcano_Eruption-Dec-2023,1.0,2.0,3.0,
+1050050064DEAB00,Libya-Floods-Sept-2023,4.0,3.0,3.0,
+105005007BDD8F00,Morocco-Earthquake-Sept-2023,3.0,2.0,1.0,
+1050050090DE8700,Floods-Spain-Oct24,2.0,4.0,2.0,
+10500500F0DD9700,Kahramanmaras-turkey-earthquake-23,4.0,2.0,4.0,
+10500500F1DD6800,Morocco-Earthquake-Sept-2023,3.0,1.0,4.0,
+10500500F3DD9500,Morocco-Earthquake-Sept-2023,3.0,2.0,2.0,
+10503F0006FE4B00,Maui-Hawaii-fires-Aug-23,2.0,2.0,2.0,
+10504100013A2F00,shovi-georgia-landslide-8Aug23,3.0,2.0,3.0,Alpine
+1050410012230300,Morocco-Earthquake-Sept-2023,4.0,1.0,4.0,
+1050410012C31100,Emilia-Romagna-Italy-flooding-may23,4.0,4.0,4.0,
