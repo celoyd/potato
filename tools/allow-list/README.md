@@ -49,7 +49,7 @@ Depending on your interests, desire to avoid water and clouds, and so on, you wi
 
 The one big gotcha is to make sure you’re filtering for WV-{2,3} satellites (assuming that’s what you want). Their CIDs start with 103 and 104, which looks like a typo but is not. My impression from public information as of 2025-02-03 is that the Legion series will have a very similar sensor to the WV-{2,3} generation and its CIDs will start with 2, but I could easily have misunderstood or missed something.
 
-A formula that I’ve used is illustrated below. For each CID _i_ of _n_ CIDs, it can be thought of as the product $w\times l\times s$ of three adjusted versions of the rating rubrics,
+A formula that I’ve used is the product $w\times l\times s$ of three adjusted versions of the rating rubrics,
 
 ```math
 \begin{gathered}
@@ -59,7 +59,7 @@ s = max(0, \mathrm{seeing} - 3)
 \end{gathered}
 ```
 
-All three values get scaled into the unit range: water and LULC by division, seeing by submerging it so that only values that started in the range 3..4 matter. Water and LULC are both nonlinearly scaled, but oppositely: the square root on water makes it superlinear, because a rating of say 3 is still good for my purposes; LULC selects more strictly, as ratings of about 2 and under add very little to the mix. Because this is a product, seeing ending up at 0 for most CIDs means that most CIDs have a score of 0.
+All three values are thus scaled into the unit range: water and LULC by division, seeing by shifting it so that only values that started in the range 3..4 are counted. Water and LULC are also nonlinearly scaled, but oppositely: the square root on water makes it superlinear, because a rating of say 3 is still good for my purposes; LULC selects more strictly, as ratings of about 2 and under add very little to the mix. Because this is a product, seeing (or rather _s_) ending up at 0 for most CIDs means that most CIDs have a score of 0.
 
 
 ## Using the CSV (applying formulas to the ratings)
@@ -86,7 +86,7 @@ order by score desc
 limit 10;
 ```
 
-This shows us the top-ranked CIDs (which score 1, because there are some CIDs that have 5 water, 5 LULC, and 5 seeing, which with scaling is 1×1×1). We could also do something like this:
+This shows us the top-ranked CIDs (which score 1, because there are some CIDs that have 4 water, 4 LULC, and 4 seeing, which with scaling is 1×1×1). We could also do something like this:
 
 ```sql
 copy 
@@ -96,22 +96,23 @@ copy
      from ratings)
   select cid
   from ranked
-  where cid[:3] in ('103',
-                    '104')
+  where cid[:3] in ('103', '104')
     and score > 0.225
   order by score desc)
 to 'new-allow-list.txt' (header false);
 ```
 
-We can use this new file with `train.py`. There’s nothing particularly special about the 0.225 cutoff; it just happens to put the bar roughly where I think it’s sensible. You could also use a `limit`, for example, although I’d be surprised if you were chipping every single scene in the Open Data Program, so it probably only makes sense if you’re also selecting for the `event`s you have at hand.
+We can use this new file with `train.py`. The 0.225 cutoff is ad-hoc and not special. You could also use a `limit`, for example, although I’d be surprised if you were chipping every single scene in the Open Data Program, so it probably only makes sense if you’re also selecting for the `event`s you have at hand.
 
 
 ## Reflections and regrets
 
 Given a time machine, here’s what I would tell myself before doing this:
 
-- CIDs are coarser than the idea being applied; they aren’t the right unit of analysis. There are several really beautiful collects disqualified by a few big clouds in one corner (this is basically what seeing=3 means). The best way is probably something like a very simple polygon-drawing tool to make an “allow polygon” attached to each CID, such that ARD tiles that fall entirely within the polygon are accepted. Maybe the output CSV is a list of quadkeys or maybe it’s CIDs and geojson polygons. Maybe it makes more sense to do deny polygons instead, or maybe the chipper should actually use the polygons to do its own in-tile masking. Any of these would certainly add complexity, but I think they could probably increase the useful information by something like 1/3 on the same data.
+- CIDs are coarser than the idea being applied; they aren’t the right unit of analysis. There are several really beautiful collects disqualified by a few big clouds in one corner (this is basically what seeing=3 means). The best way is probably something like a very simple polygon-drawing tool to make an “allow polygon” attached to each CID, such that ARD tiles that fall entirely within the polygon are accepted. Maybe the output CSV is a list of quadkeys or maybe it’s CIDs and geojson polygons. Maybe it makes more sense to do deny polygons instead, or maybe the chipper should actually use the polygons to do in-tile masking. Any of these would certainly add complexity, but I think they could probably increase the useful information by something like 1/3 on the same data.
 
-- My ratings definitely drifted over time; for example, I think I got less strict about what could go in the lowest-water class as I went along. I never felt like I knew whether I wanted to call a LULC 5, partly because some CIDs have some really dense urban fabric and then also cattle fields at the other end – see previous point. I don’t regret cutting corners on proper methodology for human ratings in this case simply because rating 1,000 large images was hard enough and I’d rather do it badly than not do it.
+- I imagine my ratings drifted over time; for example, I think I got less strict about what could go in water=4 as I went along. I never felt like I knew whether I wanted to call a LULC 4, partly because some CIDs have some really dense urban fabric and then also cattle fields at the other end – see previous point. I don’t regret cutting corners on proper methodology for human ratings in this case simply because rating a thousand large images was hard enough and I’d rather do it badly than not do it.
 
 - The landcover dimension should probably be two dimensions, one for landcover complexity or rarity and the other for visible human influence. This is tricky; they’re entangled ideas. Possibly a better way to slice it is a landcover dimension of some kind and a personal preference dimension that’s a completely subjective weighting.
+
+- There is room for much more sophistication here. The question is only whether it’s worth the effort. For example, we could record which chips have the highest loss and weight more toward their CIDs (or quadkeys); we could use Maxar’s metadata – or standard indexes or a separate neural network – to rate things more objectively; we could try to crowdsource a nice cross-checking multiplayer rating system; we could do a lot of things. What makes sense depends on the error budget of the project as a whole (which I have not tried to calculate), on whether anyone else in the world is interested enough in this to work on it, and on whether this particular dataset will continue as the best available.
