@@ -133,6 +133,8 @@ Given a time machine, here’s what I would tell myself before doing this:
 
 - The landcover dimension should probably be two dimensions, one for landcover complexity or rarity and the other for visible human influence. This is tricky; they’re entangled ideas. Possibly a better way to slice it is a landcover dimension of some kind and a personal preference dimension that’s a completely subjective weighting.
 
+- There are also imaginable dimensions for noise (related to which sensor it is, to lighting, and to intensity of atmo, I think) and terrain correction artifacts. You wouldn’t want to predict terrain correction from off-nadir angle alone because it depends on the actual terrain, on the quality of the terrain model, and on the quality of the tiedown. 
+
 - Ratings should probably be a 7 point scale; 5 gets a little constricting. Arguably this is really about the first point again. Maybe I should just use decimals more.
 
 - There is room for much more sophistication here. The question is only whether it’s worth the effort. For example, we could record which chips have the highest loss and weight more toward their CIDs (or quadkeys); we could use Maxar’s metadata – or standard indexes or a separate neural network – to rate things more objectively; we could try to crowdsource a nice cross-checking multiplayer rating system; we could do a lot of things. What makes sense depends on the error budget of the project as a whole (which I have not tried to calculate), on whether anyone else in the world is interested enough in this to work on it, and on whether this particular dataset will continue as the best available.
