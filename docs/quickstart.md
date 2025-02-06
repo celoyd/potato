@@ -11,29 +11,27 @@ with the focus on getting results as quickly as possible without skipping any cr
 
 ### Python environment setup
 
-The following works on a recent Ubuntu system. Readers who prefer some other way of doing things (e.g., a different operating system or a different python environment system) are entrusted with making the appropriate translations for themselves.
-
-[Install pip](https://pip.pypa.io/en/stable/installation/) and create a new virtual environment. This code is tested with python 3.12, so I’ll specify that.
+The following works on a recent Ubuntu system with [uv](https://github.com/astral-sh/uv). Readers who prefer some other way of doing things (e.g., regular pip/virtualenv on macOS, or conda on NetBSD) are entrusted to make the translations. All that matters is that we have an environment with `python 3.12` (used for development – others may actually work) and the packages in the requirements file.
 
 ```bash
 
 # create a new virtual environment
-virtualenv ~/potato -p python3.12
+uv venv --python 3.12
 
 # enter it
-source ~/potato/bin/activate
+source .venv/bin/activate
 
 # populate it
-pip install -r requirements.txt
+uv pip sync requirements.txt
 ```
-
-### Device selection
 
 ### Finding a device
 
-You should decide up front which hardware [backend](https://pytorch.org/docs/stable/backends.html) (“device”) to use. The safest choice, because it’s available on any machine, is `cpu` – the model will run on the main processor. For hardware acceleration, figure out the brand of the best GPU on your machine. If it’s AMD or Nvidia, use the `cuda` backend. If it’s Apple, use `mps`. Beyond that, you will have to figure it out yourself. The key thing is that `cpu` is enough for testing (but not training, unless you are extremely patient), and that this quickstart will use `cuda`, because it happens to be my best option, so think of it as a variable to be replaced if you need to.
+Decide which hardware [backend](https://pytorch.org/docs/stable/backends.html) to run the model on. The safest choice is `cpu`: the model will run on the main processor. This works on any machine but is slow. For hardware acceleration, figure out the brand of the best GPU on your machine. If it’s AMD or Nvidia, use the `cuda` backend. If it’s Apple, use `mps`. Beyond that, you will have to figure it out yourself. If you have multiple GPUs, you may want something like `cuda:1`. If you get stuck, `cpu` is enough for testing (but not training, unless you’re extraordinarily patient).
 
-The device selection is something you remember and use as a flag, not a global configuration option. This is to help you mix devices. I often train on my GPU with a physical batch size set to nearly fill its RAM. Testing on the GPU is then impossible; it’s maxed out. So I test on the CPU without interrupting training.
+The device selection is something you remember and use as a flag, not a global configuration option. This is to help you mix devices. I often want to test while I’m training, but training intentionally maxes out the GPU’s memory, so at these times I test on the CPU.
+
+This quickstart will use `cuda`, my best option, so when you see it, think of it as a variable to be replaced with yours.
 
 ## Pansharpening
 
@@ -41,126 +39,86 @@ Here we will combine a panchromatic image and a multispectral image to make an R
 
 ### Download pansharpening inputs
 
-To find sample input data, I went to [the Maxar Open Data Program landing page](https://registry.opendata.aws/maxar-open-data/), clicked the STAC Browser link, and navigated among many other good choices to [here](https://radiantearth.github.io/stac-browser/#/external/maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahramanmaras-turkey-earthquake-23/ard/37/031133102033/2022-07-20/10300100D6740900.json?.language=en), which shows direct TIFF links in the Assets section. We need the panchromatic and multispectral images. (We could do this all directly off the network, but for clarity, here we’ll actually download the files.)
+To find sample input data, I went to [the Maxar Open Data Program landing page](https://registry.opendata.aws/maxar-open-data/), clicked the STAC Browser link, and navigated among many other good choices to [here](https://stacindex.org/catalogs/maxar-open-data-catalog-ard-format#/item/aCtvMLE92XskBWQbvt9J3vsA7EgRSdJ15SD3LJA6JS6f5SAxD/4dKymbGqAdScTepcQsBdACXvFvWipUToM2xs4gbaKtavizTRjBNSoaWKYELhidUbN2hF3DhyD1jwqeqhcZs1BuxpzChBDkqEB43meyRhi4D3YSy/5utsGWgkk8Rmyft4fhmmxhnoUPK96JjztCbzDmqpoMsS34t1fsuwh3R85msyGVfHd1fYvjV5yChWzjUf6mvpqnzhsFxT1Ws3iAcu?si=2#13/-1.288302/36.820695), which shows direct TIFF links in the Assets section. We need the panchromatic and multispectral images. (We could in principle do everything directly off the network, but for clarity, here we’ll actually download the files.)
 
-A sidebar if you’re thinking of other inputs: Potato expects data that looks like WorldView-2 or -3 bands in Maxar’s ARD format. In short, the images are pixel-aligned at a factor of 4 (not simply georeferenced), the multispectral image has 8 bands as documented for the WV-2/3 sensor, and the DNs are reflectance mapped from 0..1 to 1..10,000 in `uint16`. Anything with _approximately_ those spectral bands, where the values are _approximately_ 10k reflectance, is likely to _approximately_ work. But the design input for the model (with the weights shipped in this repo) is Maxar’s ARD.
+<details>
+  <summary>Sidebar: using other data</summary>
+
+Potato expects data that looks like WorldView-2 or -3 bands in Maxar’s ARD format. The images are pixel-aligned at a factor of 4 (not simply both georeferenced), the multispectral image has 8 bands as documented for the WV-{2,3} sensor, and the DNs are reflectance, mapped from 0..1 to 1..10,000 in `uint16`. Anything with _approximately_ those spectral bands, where the values are _approximately_ 10k reflectance, is likely to _approximately_ work. But the design input for the model (with the weights shipped in this repo) is ARD.
+</details>
 
 We use a {} expansion to make this slightly more legible with the long and very similar URIs:
 
 ```bash
-curl -O "https://maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahramanmaras-turkey-earthquake-23/ard/37/031133102033/2022-07-20/10300100D6740900-{pan,ms}.tif"
+curl -O "https://maxar-opendata.s3.amazonaws.com/events/Kenya-Flooding-May24/ard/37/211111023311/2023-11-30/104001008E063C00-{pan,ms}.tif"
 ```
 
 We now have the two TIFF files:
 
 ```console
-user@host:~/potato $ du -h 10300100D6740900-*
-102M  10300100D6740900-ms.tif
-199M  10300100D6740900-pan.tif
+user@host:~/potato $ du -h 104001008E063C00-*
+295M  104001008E063C00-ms.tif
+561M  104001008E063C00-pan.tif
 ```
 
 ### Pansharpening
 
 Let’s go for it:
 
-```bash python demo.py --device=cuda 10300100D6740900-{pan,ms}.tif -w sessions/yukon-gold/49-gen.pt 10300100D6740900-ps.tiff
+```bash
+python demo.py --device=cuda 104001008E063C00-{pan,ms}.tif -w sessions/bintje/377-gen.pt 104001008E063C00-ps.tiff
 ```
 
-You should see either some kind of reasonably helpful error or a progress bar. On my 1070 (a GPU released in 2016), it takes 8 seconds; on the CPU alone (i.e., with `--device=cpu`), it takes 90 seconds. We now have a big output file:
+We should see either some kind of reasonably helpful error or a progress bar. On my 1070 (a GPU released in 2016), it takes 26 seconds; on my CPU alone (i.e., with `--device=cpu`), it takes about 5 minutes. We now and have a big, pansharpened output file:
 
 ```console
-user@host:~/potato $ du -h 10300100D6740900-ps.tiff
-483M  10300100D6740900-ps.tiff
+user@host:~/potato $ du -h 104001008E063C00-ps.tiff
+1.4G  104001008E063C00-ps.tiff
 ```
 
-This is a reasonably ordinary RGB TIFF – other than its substantial size of nearly 100 megapixels – that should be readable by most image libraries, photo editing software, and so on. (It does use zstd compression, which is still considered “the new one”, but libtiff has supported it [since 2018](http://libtiff.maptools.org/v4.0.10.html) and it’s really good, so make your own choices.)
+This is a reasonably ordinary RGB TIFF and should be readable by image libraries, photo editing software, and so on. (It does use zstd compression, which is still considered “the new one”, but libtiff has supported it [since 2018](http://libtiff.maptools.org/v4.0.10.html) and it’s really good. If necessary, replace `zstd` with `deflate` in the `demo.py` line that reads `"compress": "zstd",`.)
 
-It’s also a geotiff, meaning it’s in a defined projection, which can make some cautious tools complain that it has unknown tags. This should be harmless. For example, if we use the [ImageMagick](https://imagemagick.org/index.php) tool `convert` to crop out a section, we get warnings:
+Output is relatively low-contrast. This is intentional. In short, it makes it easier to represent extreme colors correctly if we keep most colors near the middle of the range. Just turn the contrast up.
+
+It’s also a geotiff, meaning it’s in a defined projection. This allows for a wide range of interesting experiments (and, of course, the sort of work you would do to use the imagery seriously to construct a web or static map). For example, it can be reprojected, matched to other geotiffs (such as the default pansharpening, at the same address but ending in `-visual.tif`), and mixed with other data in tools like QGIS:
+
+![The image overlaid on OSM](images/Wakulima/overlay.png)
+
+_Pansharpened image translucently overlaid on [OSM](https://www.openstreetmap.org) (© [OpenStreetMap contributors](https://www.openstreetmap.org/copyright)). This is confusing and unpleasant, yet possible and accurate._
+
+The main cost of being a geotiff is that some cautious non-geospatial tools will complain about the geotags. This should be harmless. For example, if we use the [ImageMagick](https://imagemagick.org/index.php) tool `convert` to crop out a section, we get warnings:
 
 ```console
-user@host:~/potato $ convert 10300100D6740900-ps.tiff -crop 512x512+8200+9150 Yeşilvadi.png
+user@host:~/potato $ convert 104001008E063C00-ps.tiff -crop 768x512+12000+8000 Wakulima-market.png
 convert-im6.q16: Unknown field with tag 33550 (0x830e) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/905.
 convert-im6.q16: Unknown field with tag 33922 (0x8482) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/905.
 convert-im6.q16: Unknown field with tag 34735 (0x87af) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/905.
 convert-im6.q16: Unknown field with tag 34737 (0x87b1) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/905.
+convert-im6.q16: Unknown field with tag 42113 (0xa481) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/905.
 ```
 
-These are safely ignored; we get the image we should:
+These are safely ignored, and we get the image we should:
 
-TK Yeşilvadi crop
+![Wakulima market, looking under-contrasty](images/Wakulima/Wakulima-market.jpeg)
 
-If we add some contrast with `convert`, like this:
+If we add some contrast with `convert`, for example with a channelwise auto-level:
 
 ```bash
-10300100D6740900-ps.tiff -crop 512x512+8200+9150 -sigmoidal-contrast 20x50% Yeşilvadi-pretty.png
+convert Wakulima-market.png -channel R,G,B -normalize +channel Wakulima-market-contrast.png
 ```
 
 We get a nicer image:
 
-TK Yeşilvadi-pretty
+![Wakulima market, looking nicer](images/Wakulima/Wakulima-market-normed.jpeg)
 
-And that’s the pansharpening demo. To familiarize yourself with the process a little more, you might try it on other images from the Maxar Open Data Program.
+And that’s the pansharpening demo. To familiarize yourself with the process a little more, you might try it on other images from the Maxar Open Data Program, and you might try postprocessing the outputs a little further (with some gamma, for example).
 
-## Bonus geotiff tricks
-
-Let’s do some spatial things for the readers who want to see how fun that can be. Suppose we want to compare Potato’s output to Maxar’s default pansharpening. We could use [QGIS](https://www.qgis.org/), [`rio`](https://rasterio.readthedocs.io/en/stable/cli.html), or other tools, but for this example let’s try `gdalwarp` (from the GDAL package).
-
-First we’ll use [geojson.io](https://geojson.io) to draw a box around the corner of Yeşilvadi Park that’s visible in the image. Copy and paste the JSON (in the sidebar on the right) into a file named `box.json`, or use mine:
-
-```bash
-cat << EOF > box.json
-{
-  "type": "FeatureCollection",
-  "features": [{
-    "type": "Feature",
-    "properties": {},
-    "geometry": {
-      "type": "Polygon",
-      "coordinates": [[
-        [37.418, 37.035],
-        [37.422, 37.035],
-        [37.422, 37.037],
-        [37.418, 37.037],
-        [37.418, 37.035]
-      ]]
-    }
-  }]
-}
-EOF
-```
-
-I now regret using this region for an example because it happens to be near the curve where longitude = latitude, so we see an implausible number of 37s, but that’s how it goes sometimes. We have to check the resolution of Potato’s output (which is also the resolution of the original pan image), because Maxar’s pansharpening gets upsampled for the ARD format, so we’ll want to downsample it for comparison. We can do that like so:
-
-```bash
-gdalinfo 10300100D6740900-ps.tiff
-```
-
-There’s a lot of output but the line we want is `Pixel Size = (0.549265922249793,-0.549265922249793)`.
-
-Now we need the bit of knowledge about Maxar’s ARD format that the official pansharpened image will have the same name as the `-pan.tif` and `-ms.tif` but with `-visual.tif`. Knowing this, we can use `gdalwarp` to punch out the shape of our box on the corner of Yeşilvadi Park. The tooling knows how to use the network, so we can give it an HTTPS URI instead of a filename, but we’ll need to tell it the resolution to resample to, and what resampling method to use (we’ll go with [Lanczos](https://en.wikipedia.org/wiki/Lanczos_resampling), for sharpness – it’s debatable whether that’s the best choice but this is just a demo). This looks like:
-
-```bash 
-gdalwarp -cutline box.json -crop_to_cutline -r Lanczos -tr 0.5493 0.5493 https://maxar-opendata.s3.dualstack.us-west-2.amazonaws.com/events/Kahramanmaras-turkey-earthquake-23/ard/37/031133102033/2022-07-20/10300100D6740900-visual.tif Maxar-Yeşilvadi.tiff
-
-# same except source and destination:
-gdalwarp -cutline box.json -crop_to_cutline -r Lanczos -tr 0.5493 0.5493 10300100D6740900-ps.tif potato-Yeşilvadi.tiff
-```
-
-Now, although they started at different resolutions, we have pixel-aligned images. Maxar’s:
-
-TK
-
-And Potato’s:
-
-TK
-
-Now we can zoom in and compare how they render the blue bike lanes along some of the park paths, for example. 
 
 ## Training quickstart
 
 Training itself is done with `train.py`, but setting up the data for it to use is a relatively involved process, called chipping, which takes up most of this tutorial.
 
-We will use [`aws-cli`](https://github.com/aws/aws-cli). In principle it’s all possible using the HTTPS API endpoints, but `aws s3 sync` is so handy.
+We will use [`aws-cli`](https://github.com/aws/aws-cli). In principle it’s all possible using the HTTPS API endpoints, but `aws s3 sync` makes things simpler.
 
 ### Source data and directory setup
 
@@ -195,7 +153,7 @@ aws s3 sync s3://maxar-opendata/events/Emilia-Romagna-Italy-flooding-may23/ard/ 
 
 ## Chipping
 
-A _chip_ is jargon for a small image, often a sample pulled out of a larger image.
+A _chip_ is jargon for a small image pulled out of a larger image.
 
 The chipping process copies chips out of collections of images and resamples them into training pairs. The main arguments to the chipper are the path of an ARD (the tiled delivery package for an image) and the path of a directory in which to put training pairs of chips (as [`.pt` files](https://pytorch.org/docs/stable/generated/torch.save.html)).
 
