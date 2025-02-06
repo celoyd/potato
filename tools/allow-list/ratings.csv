@@ -96,7 +96,7 @@ cid,event,water,lulc,seeing,notes
 10300100BC53C500,central-us-tornadoes21/pre,3.0,2.0,4.0,Big diag
 10300100BC6D6100,southafrica-flooding22/pre,4.0,3.0,4.0,Interesting ag
 10300100BC8ABD00,central-us-tornadoes21/pre,3.0,2.0,4.0,
-10300100BCA36900,southafrica-flooding22/pre,4.0,5.0,4.0,Pietermaritzburg green season
+10300100BCA36900,southafrica-flooding22/pre,4.0,4.0,4.0,Pietermaritzburg green season
 10300100BDB94F00,southafrica-flooding22/pre,1.0,4.0,4.0,Margate
 10300100BE5F3800,southafrica-flooding22/pre,2.0,3.0,3.0,Richards Bay
 10300100BEB36500,volcano-indonesia21,3.0,2.0,2.0,
@@ -237,7 +237,7 @@ cid,event,water,lulc,seeing,notes
 10300100D0636800,Hurricane-Ian-9-26-2022,4.0,1.0,4.0,Autumnal & small fires
 10300100D0751B00,southafrica-flooding22,3.0,3.0,4.0,Lovely
 10300100D08F3B00,brazil-flooding22/pre,2.0,2.0,4.0,Port; noisy
-10300100D0911600,southafrica-flooding22/pre,2.0,5.0,1.0,Durban
+10300100D0911600,southafrica-flooding22/pre,2.0,4.0,1.0,Durban
 10300100D0939200,Nepal-Floods-Sept-2024,3.0,2.0,3.75,Tiny tiny cloud
 10300100D0965E00,Hurricane-Ian-9-26-2022,2.0,3.0,4.0,Big and good
 10300100D0B98600,southafrica-flooding22/pre,4.0,2.0,3.0,Small
@@ -959,7 +959,7 @@ cid,event,water,lulc,seeing,notes
 10500100296C8700,southafrica-flooding22/pre,1.0,1.0,2.0,
 105001002974C700,ghana-explosion22,4.0,3.0,2.0,Heavy haze
 105001002980EC00,southafrica-flooding22/pre,2.0,2.0,3.0,
-1050010029893F00,tstorm-ana22/post,2.0,5.0,1.0,Tana (bug in VRT creation?)
+1050010029893F00,tstorm-ana22/post,2.0,4.0,1.0,Tana (bug in VRT creation?)
 10500100298D6A00,southafrica-flooding22/pre,3.0,2.0,2.0,
 105001002998D400,afghanistan-earthquake22,4.0,1.0,4.0,SDO
 1050010029A68300,Hurricane-Ian-9-26-2022,3.0,2.0,4.0,
@@ -999,7 +999,7 @@ cid,event,water,lulc,seeing,notes
 105001002D912700,kentucky-flooding-7-29-2022,3.0,1.0,1.0,
 105001002DA58500,kentucky-flooding-7-29-2022,3.0,1.0,2.0,
 105001002DAB2F00,kentucky-flooding-7-29-2022,2.0,1.0,2.0,
-105001002DCAC300,pakistan-flooding22,2.0,5.0,2.0,Karachi
+105001002DCAC300,pakistan-flooding22,2.0,4.0,2.0,Karachi
 105001002E402600,SmokeHouseCreek-Wildfires-Texas-Mar24,3.0,2.0,3.0,
 105001002E48BA00,Sudan-flooding-8-22-2022,2.0,2.0,3.0,
 105001002E6C8E00,pakistan-flooding22,4.0,2.0,4.0,
