@@ -20,33 +20,33 @@ This was done mostly by parsing the constituent CID names out of ARD metadata an
 
 ### Water
 
-Percentages are loose guidelines. I only referred to them when I was feeling stumped.
+The percentages at the end are the rounded proportion of WV-{2,3} CIDs that I gave the rating.
 
-0. Mostly water.
-1. Large amounts of water (20 to 50% of surface).
-2. Water is obvious at thumbnail scale (5 to 20%).
-3. Large rivers, medium reservoirs, or small lakes (1 to 5%). Typical inland in wet to moderate climates.
-4. Only small waterways, agricultural ponds, home pools, and similar (< 1%). Typical inland in dry climates.
+0. Mostly water. (I gave 5% of WV-{2,3} CIDs this rating.)
+1. Extensive water – more than about 1/5 of the surface but less than half. (12%.)
+2. Water is obvious at thumbnail scale; big lakes, chunks of ocean, and so on. (19%.)
+3. Large rivers, medium reservoirs, or small lakes. Typical inland in wet to moderate climates. (43%.)
+4. Only small waterways, agricultural ponds, home pools, and similar. Typical inland in dry climates. (21%.)
 
 ### LULC complexity
 
 This dimension combines diversity of landcover with human influence on landcover: basically, is the visible land surface going to be relatively valuable for training a pansharpener that will be used mainly on cities?
 
-0. Zero to very rare buildings, clearings, farms, and other clear human traces; monotonous or barren landcover.
-1. Hamlets and local primary industry; unremarkable landcover. Rural areas, most forests, and mechanized farms.
-2. Villages and towns, or more than half the land area is obviously human-influenced; interesting landcover. Exurbs and farmland, or some especially interesting natural landscapes.
-3. At least moderate urbanization or locally intensive agriculture/industry; richly interesting landcover. Suburbs and midsized cities.
-4. City cores and large industrial zones; XKCD 1472. Sometimes I might promote a 3 with especially good vibes.
+0. Zero to very rare buildings, clearings, farms, and other clear human traces; monotonous or barren landcover. (I gave 2% of WV-{2,3} CIDs this rating.)
+1. Hamlets and local primary industry; unremarkable landcover. Rural areas, most forests, and mechanized farms. (16%.)
+2. Villages and towns, or more than half the land area is obviously human-influenced; interesting landcover. Exurbs and farmland, or some especially interesting natural landscapes. (42%.)
+3. At least moderate urbanization or locally intensive agriculture/industry; richly interesting landcover. Suburbs and midsized cities. (25%.)
+4. City cores and large industrial zones; XKCD 1472. Sometimes I might promote a 3 with especially good vibes. (15%.)
 
 ### Seeing
 
 This is in [the astronomical sense](https://en.wikipedia.org/wiki/Astronomical_seeing): how well can we see things? Here it’s almost entirely about clouds. The levels are:
 
-0. No ground is fully visible, or virtually none. Rejected at first glance.
-1. Severe problems, but some areas could plausibly be useful for something.
-2. Many clouds but also substantial clear areas. Would be reasonably useful given perfect cloud detection.
-3. Some visible clouds that would be easy to manually cut out.
-4. Perfect up to tiny wisps of fog and minor anthropogenic clouds like vapor from power stations.
+0. No ground is fully visible, or virtually none. Rejected at first glance. (I gave 1% of WV-{2,3} CIDs this rating.)
+1. Severe problems, but some areas could plausibly be useful for something. (4%.)
+2. Many clouds but also substantial clear areas. Would be reasonably useful given perfect cloud detection. (22%.)
+3. Some visible clouds that would be easy to manually cut out. (25%.)
+4. Perfect up to tiny wisps of fog and minor anthropogenic clouds like vapor from power stations. (48%.)
 
 Seeing is the only dimension where I sometimes used fractional numbers. CIDs that were nearly but not quite cloud-free would occasionally get a 3.75 or something.
 
