@@ -75,7 +75,18 @@ The ratings are delivered as a CSV that should be easy to import to your databas
 
 ```sql
 -- for clarity, we load the CSV as a table
-create table ratings as select(*) from read_csv('ratings.csv', auto_detect=true);
+create table ratings as select(*) from 
+  read_csv(
+    'ratings.csv',
+    header=true,
+    columns = {
+      'cid': 'varchar',
+      'event': 'varchar',
+      'water': 'real',
+      'lulc': 'real',
+      'seeing': 'real',
+      'notes': 'varchar'
+    });
 
 -- I used a free SQL formatting service but it
 -- came out all messed up like this ¯\_(ツ)_/¯
@@ -116,10 +127,12 @@ We can use this new file with `chip.py`. The 0.225 cutoff is ad-hoc and not spec
 
 Given a time machine, here’s what I would tell myself before doing this:
 
-- CIDs are coarser than the idea being applied; they aren’t the right unit of analysis. There are several really beautiful collects disqualified by a few big clouds in one corner (this is basically what seeing=3 means). The best way is probably something like a very simple polygon-drawing tool to make an “allow polygon” attached to each CID, such that ARD tiles that fall entirely within the polygon are accepted. Maybe the output CSV is a list of quadkeys or maybe it’s CIDs and geojson polygons. Maybe it makes more sense to do deny polygons instead, or maybe the chipper should actually use the polygons to do in-tile masking. Any of these would certainly add complexity, but I think they could probably increase the useful information by something like 1/3 on the same data.
+- CIDs are coarser than the idea being applied; they aren’t the right unit of analysis. There are several really beautiful collects disqualified by a few big clouds in one corner (this is basically what seeing=3 means). Is the LULC dimension about the average or the best LULC in the collect? The best way forward is probably something like a very simple polygon-drawing tool to make an _allow polygon_ attached to each CID. Then every ARD tile that falls entirely within the polygon is accepted. Or maybe it’s a deny polygon. Maybe the output is a list of tiles, or maybe the chipper should receive the polygon and do in-tile masking. Any of these would certainly add complexity, but I think they could probably increase the useful information by something like 1/3 on the same data.
 
 - I imagine my ratings drifted over time; for example, I think I got less strict about what could go in water=4 as I went along. I never felt like I knew whether I wanted to call a LULC 4, partly because some CIDs have some really dense urban fabric and then also cattle fields at the other end – see previous point. I don’t regret cutting corners on proper methodology for human ratings in this case simply because rating a thousand large images was hard enough and I’d rather do it badly than not do it.
 
 - The landcover dimension should probably be two dimensions, one for landcover complexity or rarity and the other for visible human influence. This is tricky; they’re entangled ideas. Possibly a better way to slice it is a landcover dimension of some kind and a personal preference dimension that’s a completely subjective weighting.
+
+- Ratings should probably be a 7 point scale; 5 gets a little constricting. Arguably this is really about the first point again. Maybe I should just use decimals more.
 
 - There is room for much more sophistication here. The question is only whether it’s worth the effort. For example, we could record which chips have the highest loss and weight more toward their CIDs (or quadkeys); we could use Maxar’s metadata – or standard indexes or a separate neural network – to rate things more objectively; we could try to crowdsource a nice cross-checking multiplayer rating system; we could do a lot of things. What makes sense depends on the error budget of the project as a whole (which I have not tried to calculate), on whether anyone else in the world is interested enough in this to work on it, and on whether this particular dataset will continue as the best available.
