@@ -79,4 +79,4 @@ for n in range(len(colors.keys())):
 
     pack = torch.cat([pile(pan.unsqueeze(0), 4), mul])
     xy = (pack, y)
-    torch.save(xy, f"synthetics/{n}.pt")
+    torch.save(xy, f"colors/{n}.pt")
