@@ -1,0 +1,6 @@
+torch
+torchvision
+tensorboardX
+tqdm
+einops
+rasterio[s3]
