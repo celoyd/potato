@@ -174,6 +174,7 @@ Many of the largest changes are to colors at the blue end of the spectrum. For e
 
 <details>
 	<summary>Vectorscope visualization</summary>
+
 We can also explore these color characteristics with a _vectorscope_, a visualization used in film grading to see pixels projected onto the chroma plane of a luma/chroma colorspace. Here is a vectorscope visualization of Maxar’s image:
 
 ![Vectorscope of Maxar’s image](docs/images/Nola/mv.png)
@@ -188,7 +189,8 @@ It is more telling that Potato’s output shows more middle blues in an image th
 
 In general, Potato’s vectorscopes – here and elsewhere – show a more filled-in use of the color space. This is because it uses more spectral information. 
 
-Standard pansharpening is working in a color space with 3 primaries (the blue, green, and red bands). Potato is working in a color space with 6 primaries (the deep blue, blue, green, yellow, red, and red-edge bands), which gives it a wider gamut – and also, at least ideally, some redundancy with which to spot certain kinds of artifacts.
+Standard pansharpening is working in a color space with 3 primaries (blue, green, and red bands). Potato is working in a color space with 6 primaries (deep blue, blue, green, yellow, red, and deep red bands), which gives it a wider gamut. It’s like a painter with more base colors in the palette. This is discussed further in the [deeper documentation](docs/features.md#all-band-color-conversion).
+
 </details>
 
 ### Motion artifact comparison
@@ -213,11 +215,13 @@ Please see [the docs directory](/docs) for a quickstart guide and lengthy discus
 
 ### Licensing and data credit
 
-Potato is licensed [CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/deed.en).
+Potato’s original work, including all its code, is distributed under the [Creative Commons Attribution–Noncommercial license](https://creativecommons.org/licenses/by-nc/4.0/deed.en).
 
-All satellite imagery data in this repository, except as otherwise credited, is derived from data copyright © Maxar Technologies, licensed [CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/deed.en) via [the Maxar Open Data Program](https://registry.opendata.aws/maxar-open-data/) (see further links there), adapted and modified as described in the accompanying text.
+> [!IMPORTANT]
+> All satellite imagery in this repository, except as otherwise credited, is derived from data copyright © Maxar Technologies, under the [Creative Commons Attribution–Noncommercial license](https://creativecommons.org/licenses/by-nc/4.0/deed.en), via [the Maxar Open Data Program](https://registry.opendata.aws/maxar-open-data/) (see further links there), adapted and modified as described in the accompanying text. Please alert me to any errors or oversights in citation.
 
-I avidly support Maxar’s Open Data Program. I hope to advance its humanitarian goals by making more people aware of it and its usefulness. Moreover, I hope that Potato is of service specifically to people developing fast, lightweight processing pipelines to make use of that resource. My interest in citing this data properly is therefore not only a legal obligation; it’s also real enthusiasm. So if you notice errors or shortcomings in any credit in this repo, please let me know. As I see it, we have been given broad rights to millions of dollars worth of top-tier data, and the only cost is proper attribution. I am beyond happy to pay that price in full.
+I am a keen supporter of the Open Data Program. In previous work I’ve seen it used to save lives, which tends to inspire respect. I hope to further its humanitarian goals by introducing it to more people. The highest success I can imagine for Potato would be to contribute something – even inspiration – to the more widespread, more efficient, and more effective use of this and similar data for disaster response.
+
 
 ### Thanks
 
