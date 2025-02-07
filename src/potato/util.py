@@ -1,7 +1,6 @@
 from einops import rearrange
 import torch
 from torch import nn
-from einops.layers.torch import Rearrange
 
 
 def cheap_half(x):
@@ -28,6 +27,8 @@ def tile(x, factor):
 
 """
 As-layers approach (required by JIT):
+
+from einops.layers.torch import Rearrange
 
 class Tiler(nn.Module):
     def __init__(self, f):
