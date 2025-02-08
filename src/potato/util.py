@@ -1,7 +1,5 @@
 from einops import rearrange
 import torch
-from torch import nn
-
 
 def cheap_half(x):
     # Fast 2× downsample
@@ -29,6 +27,7 @@ def tile(x, factor):
 As-layers approach (required by JIT):
 
 from einops.layers.torch import Rearrange
+from torch import nn
 
 class Tiler(nn.Module):
     def __init__(self, f):
