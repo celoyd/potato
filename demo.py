@@ -177,7 +177,7 @@ def pansharpen(panpath, mulpath, dstpath, weights, compile, device, overwrite):
                 pan_pixels_shape = pan_pixels.shape
 
                 if np.all(pan_pixels == 0) and np.all(mul_pixels == 0):
-                    blank = torch.ones((3, pan_pixels_shape[-2], pan_pixels_shape[-1]))
+                    blank = torch.zeros((3, pan_pixels_shape[-2], pan_pixels_shape[-1]))
                     dstfile.write(blank, window=w)
                     return
 
