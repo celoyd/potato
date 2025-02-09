@@ -15,6 +15,7 @@ from torch.utils.data import Dataset
 import click
 import logging
 from pyproj import Transformer
+from tqdm import tqdm
 
 phi = (1 + 5**0.5) / 2
 
@@ -270,6 +271,7 @@ def make_chips(ard_dir, chip_dir, count, accept_cids, starting_from):
     failed = 0
     n = starting_from
 
+    pbar = tqdm(total=count)
     while completed < count:
         try:
             x, y, path, coords = chipper[n]
@@ -277,9 +279,11 @@ def make_chips(ard_dir, chip_dir, count, accept_cids, starting_from):
             torch.save((x, y), dst)
             logging.info(f"{dst} at {coords} from {path}")
             completed += 1
+            pbar.update(1)
         except TooManyNulls:
             failed += 1
         n += 1
+    pbar.close()
 
     logging.info(f"Fishined {completed} chips. There were {failed} failures.")
 
