@@ -211,7 +211,7 @@ def pansharpen(panpath, mulpath, dstpath, weights, compile, device, overwrite):
             windows = [w for i, w in dstfile.block_windows()]
 
             with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-                _ = list(
+                list(
                     tqdm(
                         executor.map(process, windows),
                         total=len(windows),
