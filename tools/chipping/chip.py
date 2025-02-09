@@ -311,7 +311,7 @@ def link_chips(srcs, dst):
 
         n = int(p * len(all_paths) * phi) % len(all_paths)
 
-        pt = Path(all_paths[n])
+        pt = Path(all_paths[n]).resolve()
         link = Path(dst / f"{p}.pt")
 
         try:
