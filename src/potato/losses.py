@@ -1,5 +1,8 @@
 import torch
 
+# Not tested with float16
+epsilon = 1e-9
+
 
 def oklab_saturation(x):
     return torch.sqrt(x[:, 1] * x[:, 1] + x[:, 2] * x[:, 2])
@@ -39,22 +42,25 @@ def ΔEOK(y, ŷ, c_weight=1.0, h_weight=1.0):
 
     ΔL = L1 - L2
 
-    C1 = torch.sqrt(torch.square(a1) + torch.square(b1) + 1e-6)
-    C2 = torch.sqrt(torch.square(a2) + torch.square(b2) + 1e-6)
+    C1 = torch.nan_to_num(torch.sqrt(torch.square(a1) + torch.square(b1)))
+    C2 = torch.nan_to_num(torch.sqrt(torch.square(a2) + torch.square(b2)))
 
     ΔC = C1 - C2
 
     Δa = a1 - a2
     Δb = b1 - b2
 
-    ΔH = torch.sqrt(torch.square(Δa) + torch.square(Δb) - torch.square(ΔC) + 1e-6)
+    ΔH = torch.nan_to_num(
+        torch.sqrt(torch.square(Δa) + torch.square(Δb) - torch.square(ΔC))
+    )
 
     return (
-        torch.sqrt(
-            torch.square(ΔL)
-            + torch.square(ΔC * c_weight)
-            + torch.square(ΔH * h_weight)
-            + 1e-6
+        torch.nan_to_num(
+            torch.sqrt(
+                torch.square(ΔL)
+                + torch.square(ΔC * c_weight)
+                + torch.square(ΔH * h_weight)
+            )
         ).mean()
         * 50.0
     )  # 50 is a JND – see ΔEuOK’s comment
