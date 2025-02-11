@@ -1,8 +1,5 @@
 import torch
 
-# Not tested with float16
-epsilon = 1e-9
-
 
 def oklab_saturation(x):
     return torch.sqrt(x[:, 1] * x[:, 1] + x[:, 2] * x[:, 2])
