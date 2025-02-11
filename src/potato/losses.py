@@ -105,10 +105,13 @@ def rfft_texture_loss(y, ŷ):
 
     diff = torch.mean(torch.abs(yfft - ŷfft) * mask)
 
-    return diff
+    # The 1/4 scaling here is totally unprincipled
+    return diff/4
 
 
 def rfft_saturation_loss(y, ŷ):
     y_sat = oklab_saturation(y)
     ŷ_sat = oklab_saturation(ŷ)
-    return rfft_texture_loss(y_sat, ŷ_sat)
+
+    # The 1/4 scaling here is also totally unprincipled
+    return rfft_texture_loss(y_sat, ŷ_sat)/4
