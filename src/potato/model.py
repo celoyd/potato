@@ -104,17 +104,17 @@ class Potato(nn.Module):
 
         mul = x[:, 16:]
 
-        q = torch.cat((oklab, mul, pan_quarter), dim=1)
+        q = torch.cat((pan_quarter, mul, oklab), dim=1)
         q = self.bq(q)
         q = self.eq(q)
 
         h = self.zoom(q)
-        h = torch.cat((h, pan_half, oklab_half), dim=1)
+        h = torch.cat((pan_half, h, oklab_half), dim=1)
         h = self.bh(h)
         h = self.eh(h)
 
         f = self.zoom(h)
-        f = torch.cat((f, pan_full, oklab_full, pan_detail), dim=1)
+        f = torch.cat((pan_full, pan_detail, f, oklab_full), dim=1)
         f = self.f(f)
 
         return cheap_sharp + f
