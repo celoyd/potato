@@ -238,7 +238,7 @@ def train(
         ok_loss = ΔEOK(y, ŷ)
         s_loss = rfft_saturation_loss(y, ŷ)
         t_loss = rfft_texture_loss(y, ŷ)
-        return ok_loss + s_loss + t_loss
+        return ok_loss**2 + s_loss + t_loss
 
     if compile:
         net_loss = torch.compile(net_loss)
