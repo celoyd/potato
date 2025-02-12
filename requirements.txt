@@ -1,4 +1,5 @@
 pytest
+pyproj
 torch
 torchvision
 tensorboardX
