@@ -46,7 +46,7 @@ def test_rfft_texture_loss_of_small_change_is_small(random_oklabish_image):
     assert (delta > epsilon) and (delta < 3)
 
 
-def test_rfft_texture_lossof_large_change_is_large(random_oklabish_image):
+def test_rfft_texture_loss_of_large_change_is_large(random_oklabish_image):
     very_different = torch.rot90(random_oklabish_image.clone(), dims=(-1, -2))
     delta = losses.rfft_texture_loss(random_oklabish_image, very_different).item()
 
