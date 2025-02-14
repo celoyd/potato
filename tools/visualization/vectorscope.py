@@ -1,5 +1,5 @@
 """
-oklab-vectorscope.py input.image output.image
+oklab-vectorscope.py input.image output.tiff
 Plot a vectorscope of the input sRGB image in Oklab color space.
 
 There are many different ways to do vectorscopes, for example
