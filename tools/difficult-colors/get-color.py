@@ -19,4 +19,6 @@ with rasterio.open(pan_path) as pan:
 with rasterio.open(mul_path) as mul:
     mul_patch = mul.read(window=mul_window)
 
-print((float(pan_patch.mean()), list(int(x) for x in mul_patch.flatten())))
+reflectances = [pan_patch.mean().item(), *list(int(x) for x in mul_patch.flatten())]
+
+print(",".join(str(r) for r in reflectances))
