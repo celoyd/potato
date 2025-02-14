@@ -45,8 +45,8 @@ with rasterio.open(argv[1]) as src:
 
         oklab = r_to_l(pixels / src_max).numpy()
 
-        a = ((oklab[0, 1] * 2 * vs_side) + vs_side / 2).astype(np.uint16)
-        b = ((oklab[0, 2] * 2 * vs_side) + vs_side / 2).astype(np.uint16)
+        a = ((oklab[0, 1] * 1.5 * vs_side) + vs_side / 2).astype(np.uint16)
+        b = ((oklab[0, 2] * 1.5 * vs_side) + vs_side / 2).astype(np.uint16)
 
         a_valid = (a >= 0) & (a < vs_side)
         b_valid = (b >= 0) & (b < vs_side)
