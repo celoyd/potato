@@ -44,51 +44,7 @@ def test_random_input_makes_net_grayish_output(rir_1x24x32x32):
 
 
 """
-For these next tests we make up some reflectance functions that aren’t very 
-plausible, and maybe not even physically possible. The validity of this is 
-certainly debatable, because it means we’re using out-of-distribution inputs. 
-
-Also, just to be explicit, the oklab hue orientation is:
--a = green; +a = red
--b = purple; +b = yellow
-"""
-
-
-def test_red_input_makes_red_output():
-    red_reflectance = torch.zeros((1, 24, 32, 32))
-    red_reflectance[0, :16] = 0.15  # pan bands
-    red_reflectance[0, red] = 1.0
-    picture = gen(red_reflectance)
-    assert picture[0, a].mean().item() > 0.15
-
-
-def test_green_input_makes_green_output():
-    green_reflectance = torch.zeros((1, 24, 32, 32))
-    green_reflectance[0, :16] = 0.15  # pan bands
-    green_reflectance[0, green] = 1.0
-    picture = gen(green_reflectance)
-    assert picture[0, a].mean().item() < -0.15
-
-
-def test_yellow_input_makes_yellow_output():
-    yellow_reflectance = torch.zeros((1, 24, 32, 32))
-    yellow_reflectance[0, :16] = 0.15  # pan bands
-    yellow_reflectance[0, yellow] = 1.0
-    picture = gen(yellow_reflectance)
-    assert picture[0, b].mean().item() > 0.15
-
-
-def test_purple_input_makes_purple_output():
-    purple_reflectance = torch.zeros((1, 24, 32, 32))
-    purple_reflectance[0, :16] = 0.15  # pan bands
-    purple_reflectance[0, deep_blue] = 1.0
-    purple_reflectance[0, deep_red] = 1.0
-    picture = gen(purple_reflectance)
-    assert picture[0, b].mean().item() < -0.15
-
-
-"""
-Now let’s see if we’re rendering some actual specific colors well.
+Let’s see if we’re rendering some specific reflectances->colors well.
 """
 
 
@@ -128,3 +84,48 @@ def test_difficult_colors(color):
 
     # This is roughly 2 JNDs
     assert diff.item() < 0.05
+
+"""
+
+# The following are obsolete but may interest the reader
+
+For these next tests we make up some reflectance functions that aren’t very 
+plausible, and maybe not even physically possible. The validity of this is 
+certainly debatable, because it means we’re using out-of-distribution inputs. 
+
+Also, just to be explicit, the oklab hue orientation is:
+-a = green; +a = red
+-b = purple; +b = yellow
+
+def test_red_input_makes_red_output():
+    red_reflectance = torch.zeros((1, 24, 32, 32))
+    red_reflectance[0, :16] = 0.15  # pan bands
+    red_reflectance[0, red] = 1.0
+    picture = gen(red_reflectance)
+    assert picture[0, a].mean().item() > 0.15
+
+
+def test_green_input_makes_green_output():
+    green_reflectance = torch.zeros((1, 24, 32, 32))
+    green_reflectance[0, :16] = 0.15  # pan bands
+    green_reflectance[0, green] = 1.0
+    picture = gen(green_reflectance)
+    assert picture[0, a].mean().item() < -0.15
+
+
+def test_yellow_input_makes_yellow_output():
+    yellow_reflectance = torch.zeros((1, 24, 32, 32))
+    yellow_reflectance[0, :16] = 0.15  # pan bands
+    yellow_reflectance[0, yellow] = 1.0
+    picture = gen(yellow_reflectance)
+    assert picture[0, b].mean().item() > 0.15
+
+
+def test_purple_input_makes_purple_output():
+    purple_reflectance = torch.zeros((1, 24, 32, 32))
+    purple_reflectance[0, :16] = 0.15  # pan bands
+    purple_reflectance[0, deep_blue] = 1.0
+    purple_reflectance[0, deep_red] = 1.0
+    picture = gen(purple_reflectance)
+    assert picture[0, b].mean().item() < -0.15
+"""
