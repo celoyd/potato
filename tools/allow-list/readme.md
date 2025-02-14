@@ -4,16 +4,16 @@ A CID is a Maxar _catalog ID_, which names a single collect (i.e., one single co
 
 This directory contains:
 
-- [ratings.csv](ratings.csv), a CSV containing every CID (collect) in the Maxar Open Data Program and its subjective rating, by me, on several quality axes described below. You can use it to replicate:
-- [allow-list.csv](allow-list.csv), about 200 of the CIDs that rank highest in a combined quality metric defined below. The CSV filename suffix is only by courtesy; it’s simply one CID per line. This is useful as input for `chip.py`.
+- [ratings.csv](ratings.csv), a CSV containing every CID in the Maxar Open Data Program and its subjective rating (I’m the subject) on several quality axes described below. You can use it to replicate:
+- [allow-list.csv](allow-list.csv), about 200 of the CIDs that rank highest in a combined quality metric defined below. The CSV filename suffix is only by courtesy; it’s simply one CID per line. This can be used as the argument for `chip.py --allow-list`.
 
 ## Introduction
 
 The manual CID evaluation was an odd idea that turned out to work well enough to keep. If I’d realized I would have to explain it I probably wouldn’t have tried it. Now I publish all this in the hope rather than the expectation that others will find it useful.
 
-Each CID is rated under three rubrics, listed below. The scores are 0 for worst possible quality under a given rubric and 4 for best possible. The scores are subjective and poorly distributed; they still turned out to be useful. (See the last section of this page for some further reflections.) There’s also a notes field where I put things I knew I might want to find later.
+Each CID is rated under three rubrics, listed below. The scores are 0 for worst possible quality under a given rubric through 4 for best possible. The scores are subjective and poorly distributed; they still turned out to be useful. (See the last section of this page for some further reflections.) There’s also a notes field where I put things I knew I might want to refer to later.
 
-This was done mostly by parsing the constituent CID names out of ARD metadata and assembling VRTs that I’d look at in QGIS. This had various small problems, such as VRTs not working with multiple projections, so CIDs on UTM boundaries got split.
+This was done mostly by parsing the constituent CID names out of ARD metadata and assembling VRTs that I’d look at in QGIS. This had various small problems: for example, VRTs can’t include multiple projections, so CIDs on UTM boundaries got split.
 
 
 ## Rubrics (columns or dimensions)
@@ -34,7 +34,7 @@ This dimension combines diversity of landcover with human influence on landcover
 
 0. Zero to very rare buildings, clearings, farms, and other clear human traces; monotonous or barren landcover. (I gave 2% of WV-{2,3} CIDs this rating.)
 1. Hamlets and local primary industry; unremarkable landcover. Rural areas, most forests, and mechanized farms. (16%.)
-2. Villages and towns, or more than half the land area is obviously human-influenced; interesting landcover. Exurbs and farmland, or some especially interesting natural landscapes. (42%.)
+2. Villages and towns, or more than half the land area is obviously human-influenced; interesting landcover. Exurbs and farmland, and some especially interesting natural landscapes. (42%.)
 3. At least moderate urbanization or locally intensive agriculture/industry; richly interesting landcover. Suburbs and midsized cities. (25%.)
 4. City cores and large industrial zones; XKCD 1472. Sometimes I might promote a 3 with especially good vibes. (15%.)
 
@@ -44,7 +44,7 @@ This is in [the astronomical sense](https://en.wikipedia.org/wiki/Astronomical_s
 
 0. No ground is fully visible, or virtually none. Rejected at first glance. (I gave 1% of WV-{2,3} CIDs this rating.)
 1. Severe problems, but some areas could plausibly be useful for something. (4%.)
-2. Many clouds but also substantial clear areas. Would be reasonably useful given perfect cloud detection. (22%.)
+2. Many clouds but also substantial clear areas. Would clearly be useful given perfect cloud masking. (22%.)
 3. Some visible clouds that would be easy to manually cut out. (25%.)
 4. Perfect up to tiny wisps of fog and minor anthropogenic clouds like vapor from power stations. (48%.)
 
@@ -54,7 +54,7 @@ Seeing is the only dimension where I sometimes used fractional numbers. CIDs tha
 
 Depending on your interests, desire to avoid water and clouds, and so on, you will of course want to make your own weighting formula. The dimensions are designed so that you can add, average, or multiply them, with positive weights, and select the highest scores as the best images. It may also be helpful to add nonlinearity, because there’s no absolute scale defined here; in some dimension, for some purpose, you may consider a 2 much more or much less than half as good as a 4.
 
-The one big gotcha is to make sure you’re filtering for WV-{2,3} satellites (assuming that’s what you want). Their CIDs start with 103 and 104, which looks like a typo but is not. My impression from public information as of 2025-02-03 is that the Legion series will have a very similar sensor to the WV-{2,3} generation and its CIDs will start with 2, but I could easily have misunderstood or missed something.
+The one big gotcha is to make sure you’re filtering for WV-{2,3} satellites (assuming that’s what you want). Their CIDs start with 103 and 104, which looks like a typo but is not. My impression from public information as of 2025-02-03 is that the Legion series has a very similar sensor to the WV-{2,3} generation and its CIDs will start with 2, but I could easily have misunderstood or missed something.
 
 A formula that I’ve used is the product $w\times l\times s$ of three adjusted versions of the rating rubrics,
 
@@ -66,7 +66,7 @@ s = max(0, \mathrm{seeing} - 3)
 \end{gathered}
 ```
 
-All three values are thus scaled into the unit range: water and LULC by division, seeing by shifting it so that only values that started in the range 3..4 are counted. Water and LULC are also nonlinearly scaled, but oppositely: the square root on water makes it superlinear, because a rating of say 3 is still good for my purposes; LULC selects more strictly, as ratings of about 2 and under add very little to the mix. Because this is a product, seeing (or rather _s_) ending up at 0 for most CIDs means that most CIDs have a score of 0.
+All three values are thus scaled into the unit range: water and LULC by division, seeing by shifting it so that only values that started above 3 are counted. Water and LULC are also nonlinearly scaled, but oppositely: the square root on water makes it superlinear, because a rating of say 3 is still good for my purposes; LULC selects more strictly, as ratings of about 2 and under add very little to the mix. Because this is a product, seeing (or rather _s_) ending up at 0 for most CIDs means that most CIDs have a score of 0.
 
 
 ## Using the CSV (applying formulas to the ratings)
@@ -75,7 +75,7 @@ The ratings are delivered as a CSV that should be easy to import to your databas
 
 ```sql
 -- for clarity, we load the CSV as a table
-create table ratings as select(*) from 
+create table cids as select(*) from 
   read_csv(
     'ratings.csv',
     header=true,
@@ -88,46 +88,45 @@ create table ratings as select(*) from
       'notes': 'varchar'
     });
 
--- I used a free SQL formatting service but it
--- came out all messed up like this ¯\_(ツ)_/¯
-with ranked as
-  (select cid,
-     -- see section above for commentary on this particular formula
-     pow(water/4, 0.5) * pow(lulc/4, 2) * greatest(0, (seeing - 3)) as score
-   from ratings)
-select cid,
-       round(score, 3)
-from ranked
-where cid[:3] in ('103',
-                  '104')
-order by score desc
-limit 10;
+-- add a column for ratings (see above for notes on formula)
+alter table cids add column score real default 0.0;
+update cids
+  set score = round(
+    pow(water/4, 0.5) * pow(lulc/4, 2) * greatest(0, (seeing - 3)),
+    3
+  )
+  where cid[:3] in ('103', '104');
 ```
 
-This shows us the top-ranked CIDs (which score 1, because there are some CIDs that have 4 water, 4 LULC, and 4 seeing, which with scaling is 1×1×1). We could also do something like this:
+We can now run something like:
+
+```sql
+select cid, score from cids order by score desc limit 10;
+```
+
+To see the top-rated CIDs. They score 1 because there are some CIDs that have 4 water, 4 LULC, and 4 seeing, which with scaling is 1×1×1).
+
+Now we can, for example, adjust the score formula (updating its column), and eventually write out a new allow list:
 
 ```sql
 copy 
   (with ranked as
-    (select cid,
-            pow(water/4, 0.5) * pow(lulc/4, 2) * greatest(0, (seeing - 3)) as score
-     from ratings)
+    (select cid, score from cids)
   select cid
   from ranked
-  where cid[:3] in ('103', '104')
-    and score > 0.225
+  where score > 0.225
   order by score desc)
 to 'new-allow-list.csv' (header false);
 ```
 
-We can use this new file with `chip.py`. The 0.225 cutoff is ad-hoc and not special. You could also use a `limit`, for example, although I’d be surprised if you were chipping every single scene in the Open Data Program, so it probably only makes sense if you’re also selecting for the `event`s you have at hand.
+This new file will work with `chip.py`. The 0.225 cutoff is not special; it’s as specific to my tastes and purposes as the score formula is.
 
 
 ## Reflections and regrets
 
 Given a time machine, here’s what I would tell myself before doing this:
 
-- CIDs are coarser than the idea being applied; they aren’t the right unit of analysis. There are several really beautiful collects disqualified by a few big clouds in one corner (this is basically what seeing=3 means). Is the LULC dimension about the average or the best LULC in the collect? The best way forward is probably something like a very simple polygon-drawing tool to make an _allow polygon_ attached to each CID. Then every ARD tile that falls entirely within the polygon is accepted. Or maybe it’s a deny polygon. Maybe the output is a list of tiles, or maybe the chipper should receive the polygon and do in-tile masking. Any of these would certainly add complexity, but I think they could probably increase the useful information by something like 1/3 on the same data.
+- CIDs are coarser than the idea being applied; they aren’t the right unit of analysis. There are several really beautiful collects disqualified by a few big clouds in one corner (this is basically what seeing=3 means). Is the LULC dimension about the average or the best LULC in the collect? The best way forward is probably something like a very simple polygon-drawing tool to make an _allow polygon_ attached to each CID. Then every ARD tile that falls entirely within the polygon is allowed. Or maybe it’s a deny polygon. Maybe the output is a list of tiles, or maybe the chipper should receive the polygon and do in-tile masking. Any of these would certainly add complexity, but I think they could probably increase the useful information by something like 1/3 on the same data.
 
 - I imagine my ratings drifted over time; for example, I think I got less strict about what could go in water=4 as I went along. I never felt like I knew whether I wanted to call a LULC 4, partly because some CIDs have some really dense urban fabric and then also cattle fields at the other end – see previous point. I don’t regret cutting corners on proper methodology for human ratings in this case simply because rating a thousand large images was hard enough and I’d rather do it badly than not do it.
 
