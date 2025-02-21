@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader, Dataset
 from potato.model import Potato
 from potato.util import tile, pile
 from potato.augmentations import HaloMaker, WV23Misaligner
-from potato.losses import rfft_texture_loss, rfft_saturation_loss, ΔEOK
+from potato.losses import ΔEOK, detail_loss, sat_detail_loss
 
 from tensorboardX import SummaryWriter
 
@@ -211,8 +211,7 @@ def train(
 
     # Set up the model and optimizer so we can load their weights.
     gen = Potato(48).to(device)
-    # gen = torch.jit.script(gen)
-    opt = torch.optim.AdamW(gen.parameters(), lr)
+    opt = torch.optim.AdamW(gen.parameters(), lr, weight_decay=0.025)
 
     sesh = Session(session, load_from, dir=checkpoints)
 
@@ -234,11 +233,21 @@ def train(
     mul_halo = HaloMaker(8, device=device)
     misalignment = WV23Misaligner(side_length=128, device=device, weight_power=2.0)
 
+    physical_per_logical = logical_batch_size // physical_batch_size
+    if physical_per_logical < 1:
+        raise ValueError(
+            "Physical batch size cannot be smaller than logical batch size."
+        )
+
     def net_loss(y, ŷ):
-        ok_loss = ΔEOK(y, ŷ)
-        s_loss = rfft_saturation_loss(y, ŷ)
-        t_loss = rfft_texture_loss(y, ŷ)
-        return ok_loss**2 + s_loss + t_loss
+        ok_loss = ΔEOK(y, ŷ) * 1
+        deet_loss = detail_loss(y, ŷ)
+        sat_loss = sat_detail_loss(y, ŷ)
+        return (
+            ok_loss
+            + deet_loss
+            + sat_loss
+        )
 
     if compile:
         net_loss = torch.compile(net_loss)
@@ -265,12 +274,14 @@ def train(
         print(f"The next checkpoint will go in {sesh.get_next_paths()[0]}, and so on.")
         print("Training starts at " + datetime.datetime.now().isoformat() + ".\n")
 
-    for physical_epoch in range(epochs):
+    for epoch in range(epochs):
         batch_counter = 0
 
         with tqdm(trainloader, unit="b", mininterval=2) as progress:
             # Training part of epoch
+            loss = 0.0
             loss_history = []
+            progress.set_postfix(l="...")
 
             for x, y in progress:
                 progress.set_description(f"Ep {sesh.logical_epoch}")
@@ -281,11 +292,6 @@ def train(
                 pan = x[:, :16]
                 mul = x[:, 16:]
 
-                # pan = pan + torch.normal(0, 0.0005, pan.shape, device=x.device)
-                # pan = pan * torch.normal(1, 0.001, pan.shape, device=x.device)
-                # mul = mul + torch.normal(0, 0.001, mul.shape, device=x.device)
-                # mul = mul * torch.normal(1, 0.0025, mul.shape, device=x.device)
-
                 pan = pile(pan_halo(tile(pan, 4), mean=0.25, std=0.1), 4)
                 mul = misalignment(mul, amt=1.0)
                 mul = mul_halo(mul, mean=1.0, std=0.75)
@@ -295,20 +301,21 @@ def train(
 
                 ŷ = gen(x)
 
-                loss = net_loss(y, ŷ)
-
-                loss.backward()
+                loss = net_loss(y, ŷ) / physical_per_logical
                 loss_history.append(float(loss.item()))
-
-                progress.set_postfix(
-                    avg=f"{float(torch.mean(torch.tensor(loss_history))):.3f}",
-                )
+                loss.backward()
 
                 batch_counter += 1
-                if batch_counter >= (logical_batch_size / physical_batch_size):
+                if batch_counter >= physical_per_logical:
                     opt.step()
                     opt.zero_grad(set_to_none=True)
                     batch_counter = 0
+
+                    if len(loss_history) > 1:
+                        loss_std, loss_mean = torch.std_mean(
+                            torch.tensor(loss_history) * physical_per_logical
+                        )
+                        progress.set_postfix(l=f"{loss_mean:.3f}±{loss_std:.3f}")
 
             log.add_scalars(
                 "loss",
