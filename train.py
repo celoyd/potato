@@ -243,11 +243,7 @@ def train(
         ok_loss = ΔEOK(y, ŷ) * 1
         deet_loss = detail_loss(y, ŷ)
         sat_loss = sat_detail_loss(y, ŷ)
-        return (
-            ok_loss
-            + deet_loss
-            + sat_loss
-        )
+        return ok_loss + deet_loss + sat_loss
 
     if compile:
         net_loss = torch.compile(net_loss)
