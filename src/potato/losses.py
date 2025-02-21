@@ -1,14 +1,17 @@
 import torch
-from potato.util import cheap_half
+
 
 def remap(t, a, b, x, y):
     return x + (t - a) * (y - x) / (b - a)
 
+
 def oklab_saturation(x):
     return torch.sqrt(torch.square(x[:, 1]) + torch.square(x[:, 2]))
 
+
 def sat_loss(y, ŷ):
     return (oklab_saturation(y) - oklab_saturation(ŷ)).abs().mean()
+
 
 def ΔEOK(y, ŷ, ab_weight=2.0):
     """
@@ -29,6 +32,7 @@ def ΔEOK(y, ŷ, ab_weight=2.0):
         * (torch.square(y[:, 1] - ŷ[:, 1]) + torch.square(y[:, 2] - ŷ[:, 2]))
     ).sqrt().mean() * 50
 
+
 def detail_loss(y, ŷ):
     dev = y.device
 
@@ -37,8 +41,8 @@ def detail_loss(y, ŷ):
 
     h, w = fty.shape[-2:]
 
-    fty = fty.roll(h//2, 0)
-    ftŷ = ftŷ.roll(h//2, 0)
+    fty = fty.roll(h // 2, 0)
+    ftŷ = ftŷ.roll(h // 2, 0)
 
     u, v = torch.meshgrid(
         torch.arange(h, device=dev) / h,
@@ -47,10 +51,11 @@ def detail_loss(y, ŷ):
     )
 
     dist = torch.sqrt(torch.square(u) + torch.square(v))
-    mask = remap(dist, 6/16, 7/16, 0, 1).clip(0, 1)
+    mask = remap(dist, 6 / 16, 7 / 16, 0, 1).clip(0, 1)
 
-    diff = (mask*fty - mask*ftŷ)
+    diff = mask * fty - mask * ftŷ
     return diff.abs().mean()
+
 
 def sat_detail_loss(y, ŷ):
     return detail_loss(oklab_saturation(y), oklab_saturation(ŷ))
