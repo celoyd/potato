@@ -240,7 +240,7 @@ def train(
         )
 
     def net_loss(y, ŷ):
-        ok_loss = ΔEOK(y, ŷ) * 1
+        ok_loss = ΔEOK(y, ŷ) * 2
         deet_loss = detail_loss(y, ŷ)
         sat_loss = sat_detail_loss(y, ŷ)
         return ok_loss + deet_loss + sat_loss
@@ -289,7 +289,7 @@ def train(
                 mul = x[:, 16:]
 
                 pan = pile(pan_halo(tile(pan, 4), mean=0.25, std=0.1), 4)
-                mul = misalignment(mul, amt=1.0)
+                mul = misalignment(mul, amt=0.5)
                 mul = mul_halo(mul, mean=1.0, std=0.75)
 
                 x[:, :16] = pan
