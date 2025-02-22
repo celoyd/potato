@@ -71,7 +71,7 @@ All three values are thus scaled into the unit range: water and LULC by division
 
 ## Using the CSV (applying formulas to the ratings)
 
-The ratings are delivered as a CSV that should be easy to import to your database, dataframe notebook, or spreadsheet app. On the CLI, I’ve heard good things about [csvkit](https://csvkit.readthedocs.io/en/latest/), but here I’ll use [duckdb](https://duckdb.org/):
+The ratings are delivered as a CSV that should be easy to import to your database, dataframe notebook, or spreadsheet app. On the CLI, I’ve heard good things about [csvkit](https://csvkit.readthedocs.io/en/latest/), but here I’ll use [duckdb](https://duckdb.org/). Run it in this folder and you can do this:
 
 ```sql
 -- for clarity, we load the CSV as a table
