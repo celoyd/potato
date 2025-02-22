@@ -57,6 +57,11 @@ class WV23Misaligner(Module):
         # non-square input will raise in forward()
         self.side_length = side_length
 
+        # ratio of the ship side to the small_noise side
+        self.small_noise_factor = 4
+        self.small_noise_side = side_length // self.small_noise_factor
+        self.small_noise_shape = (2, self.small_noise_side, self.small_noise_side)
+
         # layout of the WV-2 and -3 sensors
         self.upper_bands = [6, 4, 2, 1]
         self.lower_bands = [5, 3, 0, 7]
@@ -73,19 +78,17 @@ class WV23Misaligner(Module):
         v = self.grid[..., 0]
         u = self.grid[..., 1]
         self.center_weight = ((1 - torch.sqrt(u**2 + v**2)) ** weight_power).clamp(0, 1)
-        self.small_noise_shape = (2, side_length // 8, side_length // 8)
 
     def forward(self, x, amt):
+        # amt is a std denominated in mul pixels
+
         self.check_shape(x.shape)
 
         res = torch.zeros_like(x)
 
         N = x.shape[0]
 
-        # FIXME: make this in terms of pixels (absolute, not relative to side)
-        amt = amt / self.side_length
-
-        small_noise = torch.normal(0, amt, self.small_noise_shape, device=self.device)
+        small_noise = torch.normal(0, amt/self.small_noise_side, self.small_noise_shape, device=self.device)
 
         noise = resize(
             small_noise,
