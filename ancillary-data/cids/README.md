@@ -1,6 +1,6 @@
 # CID evaluations for allow list creation
 
-Here we filter useful training images out of the Maxar Open Data Program dataset. The techniques presented may be useful in thinking about other datasets as well.
+Here we filter useful training images out of the Maxar Open Data Program dataset.
 
 A CID is a Maxar _catalog ID_, which names a single collect (i.e., one single contiguous image as seen by the satellite, but generally multiple tiled images as delivered in ARD). A CID looks like `10300100DF069700`.
 
@@ -122,7 +122,7 @@ copy
 to 'new-allow-list.csv' (header false);
 ```
 
-This new file will work with `chip.py`. The 0.225 cutoff is not special; it’s as specific to my tastes and purposes as the score formula is.
+This new file will work with `potato make-chips`. The 0.225 cutoff is not special; it’s as specific to my tastes and purposes as the score formula is.
 
 
 ## Reflections and regrets
@@ -140,4 +140,3 @@ Given a time machine, here’s what I would tell myself before doing this:
 - Ratings should probably be a 7 point scale; 5 gets a little constricting. Maybe I should just use decimals more.
 
 - There is room for much more sophistication here. The question is only whether it’s worth the effort. For example, we could record which chips have the highest quality and weight more toward their CIDs (or quadkeys); we could use Maxar’s metadata – or standard indexes or a separate neural network – to rate things more objectively; we could try to crowdsource a nice cross-checking multiplayer rating system; we could do a lot of things. What makes sense depends on the error budget of the project as a whole (which I have not tried to calculate), on whether anyone else in the world is interested enough in this to work on it, and on whether this particular dataset will continue as the best available.
-
