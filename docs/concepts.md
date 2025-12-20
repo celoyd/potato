@@ -6,17 +6,20 @@ This is the main documentation for the techniques that are distinctive to Potato
 
 ## Contents
 
-- Major features
-  - No conditional data normalization
-    - Two kinds of data
-    - Three kinds of pansharpening
-      - The clockwise path: traditional pansharpening
-      - The widdershins path: en vogue pansharpening
-      - The diagonal path: Potato’s approach
-    - Mapping the conceptual space around pansharpening
-  - All-band color conversion
-  - Band misalignment and psf injection
-- Minor features
+- [Major features](https://github.com/celoyd/potato/blob/main/docs/concepts.md#major-features)
+  - [No conditional data normalization](https://github.com/celoyd/potato/blob/main/docs/concepts.md#no-conditional-data-normalization)
+    - [Two kinds of data](https://github.com/celoyd/potato/blob/main/docs/concepts.md#two-kinds-of-data)
+    - [Three kinds of pansharpening](https://github.com/celoyd/potato/blob/main/docs/concepts.md#three-kinds-of-pansharpening)
+      - [The clockwise path: traditional pansharpening](https://github.com/celoyd/potato/blob/main/docs/concepts.md#the-clockwise-path-traditional-pansharpening)
+      - [The widdershins path: en vogue pansharpening](https://github.com/celoyd/potato/blob/main/docs/concepts.md#the-widdershins-path-en-vogue-pansharpening)
+      - [The diagonal path: Potato’s approach](https://github.com/celoyd/potato/blob/main/docs/concepts.md#the-diagonal-path-potatos-approach)
+      - [Notes on the pansharpening paths](https://github.com/celoyd/potato/blob/main/docs/concepts.md#notes-on-the-pansharpening-paths)
+  - [All-band color conversion](https://github.com/celoyd/potato/blob/main/docs/concepts.md#all-band-color-conversion)
+    - [Other advantages of all-band pansharpening](https://github.com/celoyd/potato/blob/main/docs/concepts.md#other-advantages-of-all-band-pansharpening)
+  - [Point spread functions and band misalignment](https://github.com/celoyd/potato/blob/main/docs/concepts.md#point-spread-functions-and-band-misalignment)
+    - [Point spread functions](https://github.com/celoyd/potato/blob/main/docs/concepts.md#point-spread-functions)
+    - [Band misalignment](https://github.com/celoyd/potato/blob/main/docs/concepts.md#band-misalignment)
+- [Minor features](https://github.com/celoyd/potato/blob/main/docs/concepts.md#minor-features)
 
 # Major features
 
@@ -429,7 +432,7 @@ We also inject some point-spread function noise by sampling images from the shar
 In all of this, the panchromatic band’s data is untouched, save for modest sharpness/softness noise. The aim is for the model to learn to use the pan band as the positional reference that anchors multispectral misalignments.
 
 
-## Appendix: Minor techniques
+## Minor features
 
 A number of techniques used in Potato are worth noting without fully exploring:
 
