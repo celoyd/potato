@@ -1,0 +1,43 @@
+[project]
+name = "potato"
+version = "0"
+dependencies = [
+	"pyproj",
+	"torch==2.7.1",
+	"tqdm",
+	"einops",
+	"rasterio[s3]",
+	"aim"
+]
+requires-python = ">3.10"
+
+[project.optional-dependencies]
+notebook = [
+    "black[jupyter]",
+    "jupyterlab",
+    "matplotlib",
+]
+
+[dependency-groups]
+dev = [
+	"pytest"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[project.scripts]
+potato = "potato.cli:cli"
+
+[tool.pylint.TYPECHECK]
+signature-mutators = [
+	"click.decorators.option",
+	"click.decorators.argument"
+]
+disable = [
+	"non-ascii-name",
+	"non-ascii-module-import"
+]
+
+[tool.ruff]
+lint.select = ["D", "E", "F", "I", "B"]

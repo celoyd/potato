@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: potato
+Version: 0
+Requires-Python: >3.10
+Requires-Dist: pyproj
+Requires-Dist: torch==2.7.1
+Requires-Dist: tqdm
+Requires-Dist: einops
+Requires-Dist: rasterio[s3]
+Requires-Dist: aim
+Provides-Extra: notebook
+Requires-Dist: black[jupyter]; extra == "notebook"
+Requires-Dist: jupyterlab; extra == "notebook"
+Requires-Dist: matplotlib; extra == "notebook"

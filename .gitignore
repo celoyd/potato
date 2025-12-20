@@ -1,0 +1,6 @@
+.aim
+chips
+docs/images/diagrams/src
+.ipynb_checkpoints/
+__pycache__
+*.ipynb
