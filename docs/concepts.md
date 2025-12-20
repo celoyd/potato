@@ -1,4 +1,4 @@
-# Potato’s main features
+# Potato’s main concepts
 
 This is the main documentation for the techniques that are distinctive to Potato. Welcome to the fun part, if this is your idea of fun.
 
@@ -155,12 +155,12 @@ This approach is, I believe, a strength of Potato’s _design_ compared to its p
 
 The most important point in all this is that Potato is using _all visible bands_ to generate a color. This is an improvement on systems that map RGB bands directly to RGB channels because the colors are more accurate (for example, it gives us a virtual red primary that should closely match the red primary of your monitor) and because the colors are more complete (for example, the standard 3-band method applied to the WV-2/3 sensor is not able to record yellow light). In other words, the gamut of this method is more correctly aligned with output gamuts, and is larger.
 
-To make a comparison of color conversion methods, we can run the demo script (using an image of Cianjur, West Java):
+To make a comparison of color conversion methods, we can use an image of Cianjur, West Java:
 
 ```bash
-python tools/visualization/color_conversion_demo.py \
+potato mul-to-rgb \
   https://maxar-opendata.s3.amazonaws.com/events/Indonesia-Earthquake22/ard/48/300020121333/2022-01-04/10300100CB626A00-ms.tif \
-  naïve_color.tiff fancy_color.tiff
+  --standard naïve_color.tiff --potato fancy_color.tiff
 ```
 
 The images are too large to look at in full detail here, so we crop to the area around the [Cisarua Leather factory](https://cisarualeather.com/) at latitude -6.843, longitude 107.14. Here it is with the bands-as-channels approach:
@@ -279,7 +279,7 @@ python slitscan.py frames c1000 c1000.png
 If we look at this as an attempt at an accurate map, instead of as an off-label use of a video meant as a video, it has many shortcomings. One is its aspect ratio. The _y_ dimension (up and down on the screen) and the _x_ dimension have different scales. To make it roughly conformal, we will arbitrarily squeeze the image, here using ImageMagick’s `convert` utility:
 
 ```sh
-convert -filter Box -resize 100%x20% c1000.png c1000-flat.png
+magick -filter Box -resize 100%x20% c1000.png c1000-flat.png
 ```
 
 ![](images/band-misalignment/drone_column_1000_flat.jpeg)
@@ -307,9 +307,9 @@ $ montage -mode concatenate -filter Box -resize 100%x20% -tile 1x c1{0,1,2}00.pn
 The images are offset, which we are about to correct, and other differences will become more obvious. To more clearly emulate the satellite’s setup, let’s look at only one band (or channel) per slitscan – imagining that each one is a different detector sub-array. Also, we can measure the _x_ axis offset between bands, using the left foot of the M as a reference, at about 16 pixels, so we can align them by placing them in a slightly wider image (using [gravity](https://www.rubblewebs.co.uk/imagemagick/notes/gravity.php)).
 
 ```
-$ convert -size 832x1080 xc:black \( c1000.png -channel R -separate \) -gravity west -composite -filter triangle -resize 100%x20% red_l1.png
-$ convert -size 832x1080 xc:black \( c1100.png -channel G -separate \) -gravity center -composite -filter triangle -resize 100%x20% green_l1.png
-$ convert -size 832x1080 xc:black \( c1200.png -channel B -separate \) -gravity east -composite -filter triangle -resize 100%x20% blue_l1.png
+$ magick -size 832x1080 xc:black \( c1000.png -channel R -separate \) -gravity west -composite -filter triangle -resize 100%x20% red_l1.png
+$ magick -size 832x1080 xc:black \( c1100.png -channel G -separate \) -gravity center -composite -filter triangle -resize 100%x20% green_l1.png
+$ magick -size 832x1080 xc:black \( c1200.png -channel B -separate \) -gravity east -composite -filter triangle -resize 100%x20% blue_l1.png
 
 $ montage -mode concatenate -tile 1x {red,green,blue}_l1.png band-comparison.png
 ```
@@ -319,7 +319,7 @@ $ montage -mode concatenate -tile 1x {red,green,blue}_l1.png band-comparison.png
 Merged into an RGB image:
 
 ```sh
-$ convert {red,green,blue}_l1.png -combine rgb_l1.png
+$ magick {red,green,blue}_l1.png -combine rgb_l1.png
 ```
 
 ![](images/band-misalignment/rgb_l1.jpeg)
