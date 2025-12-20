@@ -6,6 +6,10 @@
 
 _A crop from Maxar collect 104001006F8B8300 ([CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/)) as processed by Maxar (left) and Potato (right). The image shows [the cinnabar and white lighthouses](https://kanatah.sub.jp/lh/lh1121.php#0000) on the breakwaters of Takaya, Japan._
 
+## Quickstart
+
+To run the code ASAP, go to the [quickstart guide](docs/quickstart.md).
+
 ## Introduction
 
 Pansharpening is an image fusion task in satellite image processing, used on most of the satellite imagery on commercial maps. It’s illustrated below.
