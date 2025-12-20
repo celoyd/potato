@@ -10,7 +10,7 @@ _These instructions duplicate the ones in [the CLI reference](cli.md)_.
 
 Here you will install a virtual environment with Potato the library, its dependencies, and `potato` the command-line tool.
 
-These instructions use the [uv](https://docs.astral.sh/uv/)’s management tool, which I warmly recommend. However, all that’s important is that you end up in a virtual environment with the dependencies named in `pyproject.toml`.
+These instructions use the [uv](https://docs.astral.sh/uv/) management tool, which I warmly recommend. However, all that’s important is that you end up in a virtual environment with the dependencies named in `pyproject.toml`.
 
 With `uv`, do this in the top directory of this repo:
 
