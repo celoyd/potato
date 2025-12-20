@@ -444,7 +444,7 @@ A number of techniques used in Potato are worth noting without fully exploring:
 
 **Synthetic chips.** I noted colors in outputs that the model rendered poorly or that were associated with artifacts. These were – as one would guess – mainly unusual and artificial colors, like bright paint on shipping containers. Often, the output contained distortions that I took to be a form of scale-dependence. For example, in one common case, [a blue roof would have well-rendered edges, but its center would have color and texture distortions](https://github.com/celoyd/potato/issues/51). I interpreted this as the model struggling because it had never seen more than a few pixels of such blue together, and was significantly out of distribution. To address this, Potato includes a synthetic chip generation utility called [difficult-colors](https://github.com/celoyd/potato/tree/main/tools/difficult-colors). This approach can be understood as a form of hard negative mining. The (visible projections of) the synthetic chips look like this:
 
-![A synthetic tile](images/difficult-colors/0.png)
+![A synthetic tile](images/fake-chips/0.png)
 
 The goal is to present the model with mixtures and sharp boundaries between different difficult colors, in complex and realistic enough patterns that it does not learn to recognize synthetic tiles as their own distribution. I think this level of complexity probably barely suffices, and a larger model would need a more subtle approach. Mixing these into the usual data at a rate of about 1/32 seems to be about right.
 
