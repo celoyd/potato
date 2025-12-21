@@ -325,3 +325,7 @@ Do the carbon math. Make ethically cautious but socially adventurous choices. Tr
 ## Contributing
 
 Potato is basically a personal project, intended as a one-and-done demonstration, not as a continually improving pansharpening package. It’s born in bug-fix–only mode. Feel free to file an [issue](https://github.com/celoyd/potato/issues) to point out an error, propose a fix, or ask a question, but ideas for bold new features are unlikely to interest me here; mine are going in other (as yet unreleased) projects. I warmly encourage new work that builds on Potato in license-respecting ways. The whole point of this project is to get more people doing better work on pansharpening, and if Potato is a useful foundation or even a productive annoyance to you, I’m happy.
+
+----
+
+This work is licensed under a [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).
