@@ -16,7 +16,9 @@ b_to_l = color.BandsToOklab()
 
 gen = model.Potato(48)
 gen.eval()
-gen.load_state_dict(torch.load("sessions/latest.pt", weights_only=True, map_location="cpu"))
+gen.load_state_dict(
+    torch.load("sessions/latest.pt", weights_only=True, map_location="cpu")
+)
 
 
 def difficult_colors():
