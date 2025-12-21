@@ -24,7 +24,7 @@ The project as a whole makes the argument that pansharpening should focus narrow
 
 The larger argument is that pansharpening’s design and data issues are more complex than the literature generally represents, but conversely, that up-front attention to these issues can substantially lower the apply-time computational cost of pansharpening at a given quality level. Or, more bluntly, pansharpening is relatively easy if you think about what you’re doing.
 
-Potato is a small convolutional neural network, with fewer than 50k parameters. This is smaller than the smallest of the widely cited deep learning–based pansharpening models, and two orders of magnitude smaller than some research models. One Potato checkpoint file, as uncompressed float32s, is only slightly larger on disk than the JPEG at the top of this page is.
+Potato is a small convolutional neural network, with fewer than 50k parameters. This is smaller than the smallest of the widely cited deep learning–based pansharpening models, and two orders of magnitude smaller than some research models. One Potato checkpoint file, as uncompressed float32s, is less than 1/3 the size on disk of the monochrome image you’ll see next as you scroll down.
 
 **If this is too technical**, I hope you will find [the deeper documentation](docs) more readable, because it has illustrations and analogies. **If this is not technical enough**, I hope that you _also_ find [the deeper documentation](docs) useful, because it goes into far more detail about assumptions and methods.
 
