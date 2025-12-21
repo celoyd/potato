@@ -204,7 +204,7 @@ I think we can call it settled that the processing everyone’s using, across im
 
 But what is the roof’s actual color? 
 
-We may refer [in-situ drone videos](https://www.youtube.com/watch?v=MLdckjstF3I#t=3m10s) or [Google’s own Street View product](https://maps.app.goo.gl/T9Dvrsg8HLY4YNsy9). It is indeed blue, as we would expect that type of roof to be.
+We can refer to [in-situ drone videos](https://www.youtube.com/watch?v=MLdckjstF3I#t=3m10s) or [Google’s own Street View product](https://maps.app.goo.gl/T9Dvrsg8HLY4YNsy9). It is indeed blue, as we would expect that type of roof to be.
 
 I encourage skeptics to storm off and find their own examples. That’s what I’d do. Please find other lilac-in-commercial-imagery roofs in Manila, New Orleans, Colombo, Los Angeles, et alibi, and compare them to non-satellite sources. Here and there you will certainly find an actually lilac roof. I concede that there are some such roofs in the world. But I contend hat you will also find blue roofs consistently mis-rendered in satellite imagery.
 

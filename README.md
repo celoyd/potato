@@ -30,7 +30,7 @@ Potato is a small convolutional neural network, with fewer than 50k parameters. 
 
 ## About this readme
 
-This page introduces Potato to a sophisticated layperson – someone comfortable with terms like _pixel_ and _neural network_ but not _Wald’s protocol_ or _hard negative mining_. More specialized readers, or laypeople who enjoy immersion, may prefer [the deeper documentation’s table of contents)](docs), including [the quickstart](docs/quickstart.md), [the conceptual overview](docs/concepts.md), and [the command reference](docs/cli.md). Installing and running Potato is covered there.
+This page introduces Potato to a sophisticated layperson – someone comfortable with terms like _pixel_ and _neural network_ but not _Wald’s protocol_ or _hard negative mining_. More specialized readers, or laypeople who enjoy immersion, may prefer [the deeper documentation’s table of contents](docs) (including [the quickstart](docs/quickstart.md), [the conceptual overview](docs/concepts.md), and [the command reference](docs/cli.md)). Installing and running Potato is covered there.
 
 Contents of this readme:
 
