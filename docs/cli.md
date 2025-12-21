@@ -154,9 +154,9 @@ The training data for Potato is a pair of panchromatic and multispectral data (a
 - The training sample is the pair of (P₁, M₂) as the input (_x_) and M₁ as the target (_y_).
 - Training on this (P₁, M₂) → M₁₁ mapping, we hope, trains the pansharpener to be actually applied at full resolution as a (P₀, M₁) → M₀ mapping, where M₀ is multispectral data at the resolution of the panchromatic data.
 
-Potato’s only modification to this traditional process is to add an extra downsampling, so that our chips are actually (P₂, M₃) -> M₃. This has the disadvantage of moving further from the real data distribution in terms of scale, but the advantage of suppressing sensor artifacts. See the [conceptual documentation](concepts.md) for more.
+Potato’s only modification to this traditional process is to add an extra downsampling, so that our chips are actually (P₂, M₃) -> M₃. This has the disadvantage of moving further from the real data distribution in terms of spatial scale, but the advantage of suppressing sensor artifacts. See the [conceptual documentation](concepts.md) for more.
 
-Potato defines the chip size as 512×512 for P₁/M₁ and 128×128 for M₂, which entails that we actually read 1024×1024 data from multispectral images and 2048×2048 data from panchromatic images. Given that the receptive field of Potato is only about 28×28, this is larger than it strictly needs to be. It has, however, sufficed. (A cynic might claim that when I say “Potato defines…” I mean that I hard-coded it and don’t want to do the work of parameterizing it. Ridiculous.)
+Potato defines the chip size as 512×512 for P₁/M₁ and 128×128 for M₂. Given that the receptive field of Potato is only about 28×28, this is larger than it strictly needs to be. It has, however, sufficed. (A cynic might claim that when I say “Potato defines…” I mean that I hard-coded it and don’t want to do the work of parameterizing it. Ridiculous.)
 
 Maxar’s analysis-ready-data format, or ARD, is a remarkably well-designed way of delivering multiple raw satellite images as a kind of meta-bundle. It essentially represents some given area (polygon on Earth) as recorded in some set of satellite observations (catalog identities, or CIDs), each given as a pair of panchromatic and multispectral TIFFs in roughly 5 km × 5 km tiles, in units of reflectance, i.e., atmospherically corrected.
 
