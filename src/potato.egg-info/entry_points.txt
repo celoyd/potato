@@ -1,2 +1,0 @@
-[console_scripts]
-potato = potato.cli:cli
