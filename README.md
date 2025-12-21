@@ -280,7 +280,9 @@ Stephan Hügel (@urschrei) started me talking publicly about pansharpening – n
 
 Peter Richardson (@meetar) took an interest in Potato when it was some borderline unrunnable code and sketchy, conflicting ideas for a wavelet-based pansharpener called Ripple. He was pulled away after a few sessions of analysis and brainstorming, but his contributions were crucial. For example, when I told him some ideas for the bands-to-XYZ matrix, he firmly advised the straightforward optimization option. It’s plain in retrospect that he was exactly right. That guidance alone probably saved 20 hours of dispiriting tinkering with something baroque. Without his help, Potato might have deliquesced back into one-offs and what-ifs.
 
-Although I am grateful for help, blame for Potato’s problems falls only on me.
+Potato shares little with the approach in [_Pansharpening by Convolutional Neural Networks in the Full Resolution Framework_](https://openremotesensing.net/wp-content/uploads/2022/07/Pansharpening_by_Convolutional_Neural_Networks_in_the_Full_Resolution_Framework.pdf), by Matteo Ciotola and others, yet that paper has shaped my thinking ever since I read and re-read it on a holiday weekend in 2022 instead of playing Wingspan with my friends. It shook loose many of my ideas about pansharpening and demonstrated the creativity enabled by a principled approach.
+
+Although I am grateful for all help and inspiration, blame for Potato’s problems is only on me.
 
 
 ## Environmental effects
