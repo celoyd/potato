@@ -1,6 +1,6 @@
 # CID evaluations for allow list creation
 
-Here we filter useful training images out of the Maxar Open Data Program dataset.
+Here we filter useful training images out of the Maxar Open Data Program dataset. The techniques presented may be useful in thinking about other datasets as well.
 
 A CID is a Maxar _catalog ID_, which names a single collect (i.e., one single contiguous image as seen by the satellite, but generally multiple tiled images as delivered in ARD). A CID looks like `10300100DF069700`.
 
@@ -22,7 +22,7 @@ This was done mostly by parsing the constituent CID names out of ARD metadata an
 
 ### Water
 
-The percentages at the end are the rounded proportion of WV-{2,3} CIDs that I gave the rating.
+The percentages at the end are the rounded proportion of WV-{2,3} CIDs that I gave the rating, last time I bothered to check.
 
 0. Mostly water. (I gave ~5% of WV-{2,3} CIDs this rating.)
 1. Extensive water – more than about 1/5 of the surface but less than half. (12%.)
@@ -62,7 +62,7 @@ A formula that I’ve used is the product $w \times l \times s$ of three adjuste
 
 ```math
 \begin{align*}
-w &= \left(\frac{\mathrm{water}}{4}\right)^{1/2} \\
+w &= \left(\frac{\mathrm{water}}{4}\right)^\frac{1}{2} \\
 l &= \left(\frac{\mathrm{LULC}}{4}\right)^2 \\
 s &= max(0, \mathrm{seeing} - 3)
 \end{align*}
@@ -101,7 +101,7 @@ update cids
   where cid[:3] in ('103', '104');
 ```
 
-We can now run something like:
+To check that this worked, we might run something like:
 
 ```sql
 select cid, score from cids order by score desc limit 10;
@@ -109,7 +109,9 @@ select cid, score from cids order by score desc limit 10;
 
 To see the top-rated CIDs. They have score 1 because there are some CIDs that have 4 water, 4 LULC, and 4 seeing, which with scaling is 1×1×1).
 
-Now we can, for example, adjust the score formula (updating its column), and eventually write out a new allow list:
+Now we can, for example, adjust the score formula. (Or perhaps we’re just adding some ratings to the allow-list, and need make no changes other than running the new data through.)
+
+To write out a new allow list:
 
 ```sql
 copy 
@@ -122,14 +124,14 @@ copy
 to 'new-allow-list.csv' (header false);
 ```
 
-This new file will work with `potato make-chips`. The 0.225 cutoff is not special; it’s as specific to my tastes and purposes as the score formula is.
+This new file will work with `chip.py`. The 0.225 cutoff is not special; it’s as specific to my tastes and purposes as the score formula is. The scores are of course very skewed; the values at quantiles 0.5, 0.75, 0.9, and 0.95 are 0, 0.178, 0.49, and 0.7.
 
 
 ## Reflections and regrets
 
 Given a time machine, here’s what I would tell myself before doing this:
 
-- CIDs are coarser than the idea being applied; they aren’t the right unit of analysis. There are several really beautiful collects disqualified by a few big clouds in one corner (this is basically what seeing=3 means). Is the LULC dimension about the average or the best LULC in the collect? The best way forward is probably something like a very simple polygon-drawing tool to make an _allow polygon_ attached to each CID. Then every ARD tile that falls entirely within the polygon is allowed. Or maybe it’s a deny polygon. Maybe the output is a list of tiles, or maybe the chipper should receive the polygon and do in-tile masking. Any of these would certainly add complexity, but I think they could probably increase the useful information by something like 1/3 on the same data.
+- CIDs are coarser than the idea being applied; they aren’t the right unit of analysis. There are several really beautiful collects disqualified by a few big clouds in one corner (this is basically what seeing=3 means). Is the LULC dimension about the average or the best LULC in the collect? A way forward might be something like a very simple polygon-drawing tool to make an _allow polygon_ attached to each CID. Then every ARD tile that falls entirely within the polygon is allowed. Or maybe it’s a deny polygon. Maybe the output is a list of tiles, or maybe the chipper should receive the polygon and do in-tile masking. Any of these would certainly add complexity, but I think they could probably increase the useful information by something like 1/3 on the same data.
 
 - I imagine my ratings drifted over time; for example, I think I got less strict about what could go in water=4 as I went along. I never felt like I knew whether I wanted to call a LULC 4, partly because some CIDs have some really dense urban fabric and then also cattle fields at the other end – see previous point. I don’t regret cutting corners on proper methodology for human ratings in this case simply because rating a thousand large images was hard enough and I’d rather do it badly than not do it.
 
@@ -140,3 +142,4 @@ Given a time machine, here’s what I would tell myself before doing this:
 - Ratings should probably be a 7 point scale; 5 gets a little constricting. Maybe I should just use decimals more.
 
 - There is room for much more sophistication here. The question is only whether it’s worth the effort. For example, we could record which chips have the highest quality and weight more toward their CIDs (or quadkeys); we could use Maxar’s metadata – or standard indexes or a separate neural network – to rate things more objectively; we could try to crowdsource a nice cross-checking multiplayer rating system; we could do a lot of things. What makes sense depends on the error budget of the project as a whole (which I have not tried to calculate), on whether anyone else in the world is interested enough in this to work on it, and on whether this particular dataset will continue as the best available.
+
