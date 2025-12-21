@@ -100,7 +100,9 @@ def two_different_reflectances(reflectances):
     "-i",
     "--reflectance-file",
     required=True,
-    help="Path to CSV of reflectances (try ancillary-data/fake-chips/reflectances.csv).",
+    help=(
+        "Path to CSV of reflectances (try ancillary-data/fake-chips/reflectances.csv)."
+    ),
 )
 @click.option(
     "-o",
