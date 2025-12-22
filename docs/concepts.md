@@ -352,7 +352,10 @@ So why not use a surface (or “canopy”) model instead of a terrain model? Tha
 
 Clouds are another example. They are often high above the ground,<sup>[citation needed]</sup> and they are notoriously transient. There is likely no more precise source of truth for what a given cloud looked like at a given moment than the image we are looking at while wondering. If we imagine trying to correctly place the cloud above the longtiude and latitude where it actually was (filling the now-exposed Earth surface pixels with what?), that’s only a more extreme version of trying to reconcile the three slightly different images of a tall building. Or consider the artist James Bridle’s [rainbow planes](https://www.youtube.com/watch?app=desktop&v=eD8r9LjcwAc) – aircraft present most of the challenges of clouds plus high speed.
 
-Thank you for attending this sidebar on the causes of band misalignment.
+Here ends the sidebar on the the causes of band misalignment. Thank you for your time.
+
+----
+
 </details>
 
 To see band misalignment caused both by height and by motion, let’s look at an image of tall buildings by a highway. We’ll use [the Bahria Icon Tower](https://en.wikipedia.org/wiki/Bahria_Icon_Tower), in Karachi, in Maxar 10300100D404DA00 (2022-06-24). (I’ll be resampling and brightening these images arbitrarily for clarity of visualization. It was a dusty day in Karachi.)
@@ -402,6 +405,10 @@ It’s not a perfect approximation because M₁ does not look exactly like M₀.
 The first of these examples would hold even for pansharpening ideally sampled data of real scenes, the third would hold even for real images of completely artificial test patterns, and the second concerns both real features and real sensors.
 
 The argument here is not against Wald’s protocol but for careful contemplation of its consequences. The paper that popularized it is a key contribution to the painfully sparse theory of pansharpening; it is arguably the closest thing we have to a foundational text for conceptualizing what this is all about. The rarity of that kind of work is a shame for the field, which may be small but still deserves a serious theoretical literature. Without reflective conversations about what we’re doing, how we’re doing it, and what our results mean, pansharpening as applied and pansharpening as researched have diverged into two half-fields. The dysfunction is not absolute, but it is serious; probably about half the people taking pansharpening seriously are authors on [a single paper](https://ieeexplore.ieee.org/document/9844267). Mostly, on the research side we find deep learning techniques that proceed from the assumptions of aspatial imagery and fail severely on real data. On the applied side, equally partial in its grasp on what’s actually important and interesting in pansharpening, we have:
+
+_End of Wald’s protocol sidebar._
+
+----
 
 </details>
 
