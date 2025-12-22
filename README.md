@@ -8,15 +8,15 @@ _A crop from Maxar collect 104001006F8B8300 ([CC BY-NC](https://creativecommons.
 
 ## Quickstart
 
-To run the code ASAP, go to the [quickstart guide](docs/quickstart.md).
+To run the code ASAP, go to the [quickstart guide](docs/quickstart.md). It shows how to install this package, download some free data, and create a georeferenced pansharpened image on your computer in a few steps.
 
 ## Introduction
 
 Pansharpening is an image fusion task in satellite image processing, used on most of the satellite imagery on commercial maps. It’s illustrated below.
 
-Potato is a pansharpening research project. It contains a working pansharpener, documentation, and training infrastructure. Potato is free to use and adapt for noncommercial purposes.
+Potato is a pansharpening research project. It contains a working pansharpener, documentation, and training infrastructure. Potato is free to use and adapt for noncommercial purposes. It’s meant to be useful to people who need to process satellite imagery, but also interesting to others.
 
-The project as a whole makes the argument that pansharpening should focus narrowly on making accurate images for human viewers. <!-- (In fact, that pansharpening as preprocessing for algorithmic pipelines is a conceptual error.) --> This leads to the guiding ideas of Potato’s design, including that:
+The project as a whole makes the argument that pansharpening should focus narrowly on making accurate images for human viewers. <!-- (In fact, that pansharpening as preprocessing for algorithmic pipelines is a conceptual error.) --> This leads to some guiding ideas, including that:
 
 1. Pansharpening is a function from scene-referred data to a display-referred image. Therefore its input should not be normalized, and it should be evaluated in perceptual terms.
 2. The correct color output for a set of multispectral band responses is not the R, G, and B bands alone, taken as sRGB channels; it is the color of the light that was measured. To approximate this, Potato uses a fitted matrix that transforms the 5 visible multispectral bands in the source data to an [XYZ color](https://en.wikipedia.org/wiki/CIE_1931_color_space), then the equivalent [oklab color](https://bottosson.github.io/posts/oklab/). Potato is trained on this bands → oklab mapping, and its loss function is a pixelwise oklab ΔE.
@@ -30,7 +30,7 @@ Potato is a small convolutional neural network, with fewer than 50k parameters. 
 
 ## About this readme
 
-This page introduces Potato to a sophisticated layperson – someone comfortable with terms like _pixel_ and _neural network_ but not _Wald’s protocol_ or _hard negative mining_. More specialized readers, or laypeople who enjoy immersion, may prefer [the deeper documentation’s table of contents](docs) (including [the quickstart](docs/quickstart.md), [the conceptual overview](docs/concepts.md), and [the command reference](docs/cli.md)). Installing and running Potato is covered there.
+This page introduces Potato to a sophisticated layperson – someone comfortable with terms like _pixel_ and _neural network_ but not _Wald’s protocol_ or _hard negative mining_. More specialized readers, or lay readers who enjoy immersion, may prefer [the deeper documentation’s table of contents](docs) (including [the quickstart](docs/quickstart.md), [the conceptual overview](docs/concepts.md) (the opinionated part), and [the command reference](docs/cli.md)).
 
 Contents of this readme:
 
@@ -38,11 +38,11 @@ Contents of this readme:
 2. [About this readme](https://github.com/celoyd/potato/#about-this-readme) (you are here).
 3. [About pansharpening](https://github.com/celoyd/potato/#about-pansharpening): a sense of the problem we want to solve.
 4. [Comparisons](https://github.com/celoyd/potato/#comparisons): a list of various ways of comparing Potato’s output to other output.
-5. [Conceptual approach: why there are no benchmarks here](https://github.com/celoyd/potato/#conceptual-approach-why-there-are-no-benchmarks-here). There are three places in the project where we lay out what Potato is doing differently and why. The introduction gives a sketch, this section goes into more depth, and the real detail is in the [concepts document](docs/concepts.md).
+5. [Conceptual approach: why there are no benchmarks here](https://github.com/celoyd/potato/#conceptual-approach-why-there-are-no-benchmarks-here). The mid-length introduction to what Potato is doing differently and why. (The short version is above and the long one is in the [concepts document](docs/concepts.md).)
 6. [Technical approach and model architecture](https://github.com/celoyd/potato/#technical-approach-and-model-architecture). Model diagram.
 7. [Further documentation](https://github.com/celoyd/potato/#further-documentation). Reminds you once again that the fuller technical documentation is in [docs/](docs/).
-8. [Licensing, data credit, and thanks](https://github.com/celoyd/potato/#licensing-data-credit-and-thanks). 
-9. [Environmental effects](https://github.com/celoyd/potato/#environmental-effects).
+8. [Licensing, data credit, and thanks](https://github.com/celoyd/potato/#licensing-data-credit-and-thanks).
+9. [Environmental effects](https://github.com/celoyd/potato/#environmental-effects). Some carbon math.
 10. [Contributing](https://github.com/celoyd/potato/#contributing).
 
 Suggestions on making this file clearer are welcome (even if I don’t follow them).
@@ -271,6 +271,7 @@ Potato’s original work, including all its code, is distributed under the [Crea
 
 I am a keen supporter of the Maxar Open Data Program. It is an example of lifesaving philanthropy that I hope other satellite companies will follow. I hope to further its aims by introducing it to more people. The highest success for Potato would be to contribute in any way to the more widespread and effective use of satellite imagery for humanitarian ends.
 
+Maxar changed its name to Vantor after most of this documentation was written. However, the Maxar Open Data program still uses that name, Google Earth still credits its data as Maxar, etc., so I will save the name change for a future update. (In fairness, I still sometimes slip up and refer to Airbus’s imagery operation as Astrium, which it hasn’t been since 2013.)
 
 ### Thanks
 
