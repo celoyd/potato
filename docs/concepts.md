@@ -49,9 +49,9 @@ As with raw and cooked food, the value of input- and output-referred data is ent
 
 ### Three kinds of pansharpening
 
-We mostly follow notation in [Ciotola et al. 2022](https://openremotesensing.net/wp-content/uploads/2022/07/Pansharpening_by_Convolutional_Neural_Networks_in_the_Full_Resolution_Framework.pdf), where $P_0$ and $M_1$ are the original resolution panchromatic and multispectral images, and &phi; is a pansharpening function that goes from a pair of $P_n$ and $M_{n+1}$ to an estimate of the multispectral image at the resolution of the pan image $\widehat{M_n}$. We supply $\ast$ to mean _grading_ (or rendering, or visualizing), i.e., converting from scene-referred data to display-referred data.
+We mostly follow notation in [Ciotola and others (2022)](https://openremotesensing.net/wp-content/uploads/2022/07/Pansharpening_by_Convolutional_Neural_Networks_in_the_Full_Resolution_Framework.pdf), where $P_0$ and $M_1$ are the original resolution panchromatic and multispectral images, and &phi; is a pansharpening function that goes from a pair of $P_n$ and $M_{n+1}$ to an estimate of the multispectral image at the resolution of the pan image $\widehat{M_n}$. We supply $\ast$ to mean _grading_ (or rendering, or visualizing), i.e., converting from scene-referred data to display-referred data.
 
-We can draw, if we are careful not to believe it, this commutative diagram:
+We can draw this commutative diagram as long as we are careful not to believe it:
 
 ![Little pseudo-commuting diagram where we can grade and pansharpen in either order](images/diagrams/commuting.png)
 
@@ -86,9 +86,9 @@ The strengths of the clockwise methods in general are speed, because they will u
 
 #### The widdershins path: en vogue pansharpening
 
-The widdershins path takes pansharpening to have the function signature $P_0^\ast \times M_1^\ast \to \widehat{M_0}^\ast$. This is an operation from screen-referred images to a screen-referred image. It assumes that some kind of visualization or normalization was done before it runs.
+The widdershins path takes pansharpening to have the function signature $P_0^\ast \times M_1^\ast \to \widehat{M_0}^\ast$. This is an operation from display-referred images to a display-referred image. It assumes that some kind of visualization or normalization was done before it runs.
 
-This is the approach taken by much current pansharpening research, based on what I see on preprint servers. The screen-referencing done in this mode is sometimes explicitly conversion to a visible space, for example by clipping and gamma, but it may also be normalization, e.g., subtracting an input’s mean and dividing by its variance (z-scoring). Normalization is done because neural networks are known to train well with standard normal–distributed inputs. (In these cases, the data is output-referred, not screen-referred, but for our purposes here, it’s the same; what matters is that it’s no longer input/scene-referred.)
+This is the approach taken by much current pansharpening research, based on what I see on preprint servers. The display-referencing done in this mode is sometimes explicitly conversion to a visible space, for example by clipping and gamma, but it may also be normalization, e.g., subtracting an input’s mean and dividing by its variance (z-scoring). Normalization is done because neural networks are known to train well with standard normal–distributed inputs. (In these cases, the data is output-referred, not display-referred, but for our purposes here, it’s the same; what matters is that it’s no longer input/scene-referred.)
 
 In the domain of images that can be scraped from the surface web, and therefore make up the training data of most large image models, and therefore (one fears) in the whole universe of natural images for some researchers, normalization is clearly good. It’s also common sense to remove all but the RGB multispectral bands. This converts satellite image data to the familiar domain that standard image models address.
 
