@@ -1,6 +1,6 @@
 # Quickstart
 
-This quickstart will take you through the steps to pansharpen imagery with Potato. It assumes that you’re comfortable installing and using a python package on the command line, including fixing minor snags and cleaning up outright failures as they arise. It requires downloading most of a gigabyte of input data, so don’t save this to do offline. The examples use Ubuntu 24 with [uv](https://github.com/astral-sh/uv) and `zsh`; if you do things in other ways (e.g., vanilla `pip`/`virtualenv` on macOS with `bash`, or `conda` on Alpine with `fish`), you are entrusted to translate the examples.
+This quickstart will take you on the shortest path to pansharpen imagery with Potato. It assumes that you’re comfortable installing and using a python package on the command line, including fixing minor snags and cleaning up outright failures as they arise. It requires downloading several gigabytes of libraries and test data, so don’t save this to do offline. The examples use Ubuntu 24 with [uv](https://github.com/astral-sh/uv) and `zsh`; if you do things in other ways (e.g., vanilla `pip`/`virtualenv` on macOS with `bash`, or `conda` on Alpine with `fish`), you are entrusted to translate the examples.
 
 ## Preliminaries
 
@@ -44,7 +44,7 @@ If there are failures, make a reasonable effort to work out why, and if it’s n
 
 ### Selecting a device
 
-Decide which hardware [backend](https://pytorch.org/docs/stable/backends.html) to run Potato on. This will be something you remember and use as a flag to scripts. (It’s not a global configuration option because it’s convenient to use different backends at different times. For example, you can use `cpu` to test things while training is using all the `cuda` RAM.)
+Decide which hardware [backend](https://pytorch.org/docs/stable/backends.html) to run Potato on. This will be something you remember and use as a flag to scripts. (It’s not a global configuration option because it’s convenient to use different backends at different times. For example, you might use `cpu` to test things while training is using all the `cuda` RAM.)
 
 The safest but slowest choice is `cpu`: the model will use the main processor. Everything will work correctly, but it will be relatively slow. If you have a GPU or GPU-equivalent, figure out its brand. If it’s AMD or Nvidia, use the `cuda` backend; if it’s Apple (with an M series chip), use `mps`. For anything else, you’re on your own. To select a specific device, like the first of two Nvidia GPUs, use syntax like `cuda:0`.
 
