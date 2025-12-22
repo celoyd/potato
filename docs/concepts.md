@@ -154,7 +154,7 @@ Other than the actual pansharpener, the only trained element of all this is the 
 
 ![Diagram of the above](images/diagrams/mul_to_xyz.png)
 
-This approach is, I believe, a strength of Potato’s _design_ compared to its peers, but also one of its weaker areas in actual _implementation_. We use synthetic, randomly generated reflectance distributions, but it would be better to include mixtures from a spectral library to ensure that the conversion is optimized for realistic SPDs, for example. It’s also inefficiently coded; there are more analytic and faster ways to do it. Even with its flaws, the method appears to improve on the state of the art.
+This approach is, I believe, a strength of Potato’s _design_ compared to its peers, but also one of its weaker areas in actual _implementation_. We use synthetic, randomly generated reflectance distributions, but it would be better to include mixtures from a spectral library to ensure that the conversion is optimized for realistic SPDs, for example. (There’s overlap here with the synthetic chips approach.) It’s also inefficiently coded; there are more analytic and faster ways to do it. Even with its flaws, the method appears to improve on the state of the art.
 
 The most important point in all this is that Potato is using _all visible bands_ to generate a color. This is an improvement on systems that map RGB bands directly to RGB channels because the colors are more accurate (for example, it gives us a virtual red primary that should closely match the red primary of your monitor) and because the colors are more complete (for example, the standard 3-band method applied to the WV-2/3 sensor is not able to record yellow light). In other words, the gamut of this method is more correctly aligned with output gamuts, and is larger.
 
@@ -186,7 +186,7 @@ And this all-band image:
 
 There are several interesting differences, but most are relatively subtle, and we are here to talk about the big one: the violet/blue roof color. The three-band method shows unambiguously lilac roofs. The all-band method has them as sky blue.
 
-There are at least two testable claims here: that the three-band method is standard, and that it is less correct than the all-band method. I suggest the reader check some of the [various](https://maps.apple.com/frame?map=satellite&center=-6.843%2C107.14&span=0.006678323753437354%2C0.008749698382189308) [commercial](https://geojson.io/#map=17/-6.843/107.14) [imagery](https://www.bing.com/maps?v=2&cp=-6.843%7E107.14&style=h&lvl=17) [maps](https://www.google.com/maps/@-6.843,107.14,715m/) to confirm that – at least as I write this! – they all show shades of violet roofs.
+There are at least two testable claims here: that the three-band method is standard, and that it is less correct than the all-band method. I suggest the reader check some of the [various](https://maps.apple.com/frame?map=satellite&center=-6.843%2C107.14&span=0.006678323753437354%2C0.008749698382189308) [commercial](https://geojson.io/#map=17/-6.843/107.14) [imagery](https://www.bing.com/maps?v=2&cp=-6.843%7E107.14&style=h&lvl=17) [maps](https://www.google.com/maps/@-6.843,107.14,870m/data=!3m1!1e3) to confirm that – at least today, at the end of 2025 – they all show shades of violet roofs.
 
 We can also find examples with the history tool of the desktop version of Google Earth. Stepping back in the timeline from the current image to the first appearance of the roofs in question, in 2009, and skipping those badly obscured by clouds or their shadows, I find 36 distinct images (image credits: Airbus, Maxar, and Google, as given in each screenshot frame):
 
@@ -279,7 +279,7 @@ This is made with <a href="https://gist.github.com/celoyd/cd0a827b17eb7e75d2451b
 python slitscan.py frames c1000 c1000.png
 ```
 
-If we look at this as an attempt at an accurate map, instead of as an off-label use of a video meant as a video, it has many shortcomings. One is its aspect ratio. The _y_ dimension (up and down on the screen) and the _x_ dimension have different scales. To make it roughly conformal, we will arbitrarily squeeze the image, here using ImageMagick’s `convert` utility:
+If we look at this as an attempt at an accurate map, instead of as an off-label use of a video meant as a video, it has many shortcomings. One is its aspect ratio. The _y_ dimension (up and down on the screen) and the _x_ dimension have different scales. To make it roughly conformal, we will arbitrarily squeeze the image, here using ImageMagick:
 
 ```sh
 magick -filter Box -resize 100%x20% c1000.png c1000-flat.png
