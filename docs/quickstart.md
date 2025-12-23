@@ -36,7 +36,7 @@ Unless you’re in the kind of hurry where you can’t spare 5 seconds, run the 
 pytest
 ```
 
-Or , if you have `uv` and prefer not to stay in the virtual environment:
+Or, if you have `uv` and prefer not to stay in the virtual environment:
 
 ```bash
 uv run pytest
