@@ -82,7 +82,7 @@ I’ve adjusted the brightness and contrast of both images to roughly match them
 
 To see differences, try opening each in its own tab and flipping between them. There is no way to make a perfectly fair comparison, for example because the Maxar image has been lossily compressed and resampled back to nominal resolution. However, several of its shortcomings – dark water edges not present in the inputs, sensitivity to grainy noise, difficulty rendering blue hues – are not plausibly artifacts of those processing steps.
 
-Google Earth [also uses this collect](https://earth.google.com/web/@27.60326593,88.64660971,1610.66494177a,1045.83623347d,35y,0h,0t,0r/data=ChYqEAgBEgoyMDIyLTAzLTA3GAFCAggBQgIIAEoNCP___________wEQAA), and although its color treatment is much darker than Maxar’s, the general look of the pansharpening is similar.
+Google Earth [also uses this source image](https://earth.google.com/web/@27.60326593,88.64660971,1610.66494177a,1045.83623347d,35y,0h,0t,0r/data=ChYqEAgBEgoyMDIyLTAzLTA3GAFCAggBQgIIAEoNCP___________wEQAA), and although its color treatment is much darker than Maxar’s, the general look of the pansharpening is similar.
 
 ### Comparison with Google Earth’s pansharpening (Quito)
 
@@ -177,7 +177,7 @@ _Image source data: Maxar via PanCollection._
 
 ### Comparison with Maxar’s pansharpening (Port NOLA)
 
-Here is another 1:1 of Potato’s output with Maxar’s, this time with some more developed comparison tools. We are looking at the west bank of the Mississippi at river mile 100 – the West Riverside area of the Port of New Orleans (1040010073665D00, 2022-03-24), which we all know by its nickname: the [Coffee Gateway to the USA](https://stir-tea-coffee.com/features/coffee-gateway-to-the-usa/). Coffee Drive is in the top of the image, and the Silocaf building is the tall one in the northeast. The images are slightly shrunk for display in this readme; **please click through for full size**. Pansharpening is all about details, and you can’t see them clearly without clicking through.
+Here is another 1:1 of Potato’s output with Maxar’s, this time with some more developed comparison tools. We are looking at the west bank of the Mississippi at river mile 100 – the West Riverside area of the Port of New Orleans (1040010073665D00, 2022-03-24), better known as the [Coffee Gateway to the USA](https://stir-tea-coffee.com/features/coffee-gateway-to-the-usa/). Coffee Drive is in the top of the image, and the Silocaf building is the tall one in the northeast. The images are slightly shrunk for display in this readme; **please click through for full size**. Pansharpening is all about details, and you can’t see them clearly without clicking through.
 
 <details>
 <summary>Processing details</summary>
@@ -232,26 +232,34 @@ If you read papers on pansharpening or related topics, you are likely suspicious
 
 Potato’s argument, in this analogy, is that a large fraction of existing pansharpening research and practice is trying to run in work boots. Potato aims to be useful as a pansharpener, but in the bigger picture its goal is to demonstrate a fresh way of thinking about pansharpening as a problem and to inspire research in that direction.
 
-Specifically, Potato contends that pansharpening’s only audience is human perception, and therefore any accurate metric must be based on ΔE: distance in a perceptually uniform color space. Most pansharpeners (that make their intentions formal) are functions from pixels in units of radiance or reflectance to the same unit. The argument here is that the correct function signature for pansharpening is from radiance or reflectance to an approximately perceptually uniform color space. Potato specifically is from reflectance to [oklab](https://bottosson.github.io/posts/oklab/).
+Specifically, Potato contends that pansharpening’s only audience is human perception, and therefore any accurate metric must be based distance in a perceptually uniform color space. Most pansharpeners that make their intentions formal are functions from pixels in units of radiance or reflectance to the same unit, which are not perceptually uniform. Potato’s argument – in [the conceptual documentation](docs/concepts.md) – is that the correct function signature for pansharpening is from radiance or reflectance to a perceptually uniform color space. Or at least a practical approximation of one: Potato specifically is from reflectance to [oklab](https://bottosson.github.io/posts/oklab/).
 
-Given common input types, it’s possible to _show_ Potato’s outputs against other models’ outputs for the same input – see above. But the only correct comparison _metric_ in my opinion is ΔE or a textural metric based on it, which would be assuming the conclusion. Other pansharpeners aren’t trained on ΔE and (at least implicitly) their designers did not believe it’s the right evaluation function, so it’s not fair to them to take it as the figure of merit. In fact there are further layers to this, for example:
+Given common input types, it’s possible to _show_ Potato’s outputs against other models’ outputs for the same input – see above. But the only correct comparison _metric_ in my opinion is perceptual distance (ΔE) or a textural metric based on it, which would be assuming the conclusion. Other pansharpeners aren’t trained on ΔE and (at least implicitly) their designers did not believe it’s the right evaluation function, so it’s not fair to them to take it as the figure of merit. In fact there are further layers to this, for example:
 
 - Potato uses an 8:3 multispectral band:channel conversion (where most do 3:3 or 8:8), so we can’t even compare input RGB to output RGB, because they’re different RGBs. Doing 8:3 conversion on standard methods would again be evaluating them on a metric they aren’t trained for.
 - Conversely, Potato attains spectacular PSNR scores (~56) when judged on its sRGB output against its sRGB input simply because its output is relatively low-contrast when converted to sRGB directly out of oklab. This is basically meaningless.
 - Potato also emphasizes that the actual goal is full-size pansharpening, and full-size data includes artifacts that we cannot exactly reproduce at downsampled scales. Potato tries to account for these and others do not.
 
-This problem of fair comparison has troubled me as much as any technical issue in this project. In fact it has shaped the whole delivery: it’s why Potato is a heavily documented software package instead of an arxiv paper with a little companion repo. I was at a friend’s open science/open data cocktail party last week, and got to talking with someone in quantum computing. When she asked what I’m working on, I said this remote sensing image fusion task where I want to show that it’s easier than most papers seem to think _if_ you define it carefully and pay a lot of attention to the data. How’s it going?, she asked. I’ve cornered myself in a position where I want to present results _and_ to say that standard evaluation metrics are wrong, I said. As I said it I knew she would wince, and she did, and I thought about how I would be writing this paragraph.
+This problem of fair comparison has troubled me as much as any technical issue in the project. In fact it has shaped the whole delivery: it’s why Potato is a heavily documented software package instead of an arxiv paper with a little companion repo. I’ve cornered myself in a position where I want to present results _and_ to say that standard evaluation metrics are wrong. It’s awkward. It makes people I chat with at open data cocktail parties wince when I say it. It means that in some places, Potato is code with commentary explaining why it’s done that way, but in other places, maybe most places, it’s an argument about pansharpening that’s illustrated by code.
 
 
 ## Technical approach and model architecture
 
-Potato’s approach is based on adding convolutional blocks to a standard non-adaptive pansharpening method where a high-pass of the pan band is added to the upsampled multispectral image. This is a type of detail injection method, and is chosen to be as conventional as possible. The point of this design is to show that an elaborate or large network is not necessary to acceptable output.
+Potato’s approach is based on attaching convolutional blocks to a standard non-adaptive pansharpening method. (Specifically, where a high-pass of the pan band is added to the upsampled multispectral image. This is a member of the “detail injection” family.) The point of this simplicity is to show that an elaborate or large network is not necessary to acceptable output, and that the interesting parts of Potato are all in how it trains, and particularly how it handles its training data.
+
+This model diagram is trying to do the opposite of the model diagram in a typical pansharpening paper. It hopes to convince you that it is _not in any way_ clever, innovative, or worth thinking about.
 
 ![Design diagram](docs/images/diagrams/potato-architecture.png)
 
-In the west third of the architecture (pale orange), we extract high-pass detail from the panchromatic band. In the middle third (pale yellow), we construct an upsampled oklab image and add the high-passed pan details to its L channel. Together these implement a standard, low-complexity, non-learned pansharpening method, the output of which we call the cheap sharp. The east third (pale green) is the convolutional blocks, which have access to the intermediate values of the fixed process and, at the end, provide a delta to refine its final output.
+For completeness, not because it’s interesting: In the west third of the architecture (pale orange), we extract high-pass detail from the panchromatic band. In the middle third (pale yellow), we construct an upsampled oklab image and add the high-passed pan details to its L channel. Together these implement a standard, low-complexity, non-learned pansharpening method, the output of which we call the _cheap sharp_. The east third (pale green) is the convolutional blocks, which have access to the intermediate values of the fixed process and, at the end, provide a delta to refine its final output.
 
-The C block is a vanilla convolutional image processing block. The swish₄ function is a form of smoothed ReLU. Data is implicitly piled (space-to-depth transformed) where southward arrows cross the dotted lines indicating scales, and bilinearly upsampled where crossing northward. Underlined elements are concatenated into inputs for the blocks at their scales. (In the first draft of the diagram, there was an explicit arrow from each now-underlined item eastward to the input of the corresponding block, but this made for many confusingly crossing lines.) For example, the inputs to the mid-scale convolutional blocks are the once-piled pan, the once-upsampled oklab, and the once-upsampled output of the small blocks.
+The C block is a vanilla convolutional image processing block. The swish₄ function is a form of smoothed ReLU. Data is implicitly piled (space-to-depth transformed) where southward arrows cross the dotted lines indicating scales, and bilinearly upsampled where crossing northward. Underlined elements are concatenated into inputs for the blocks at their scales. (In the first draft of the diagram, there was an explicit arrow from each now-underlined item eastward to the input of the corresponding block, but this made for many confusingly crossing lines.)
+
+For example, the inputs to the mid-scale convolutional blocks are:
+
+1. the once-piled pan, 
+2. the once-upsampled oklab, and 
+3. the once-upsampled output of the small blocks.
 
 Potato can be understood as a U-net with its L half implemented as non-trainable operations. That half proposes a draft output, which the trainable J half adjusts in predictor–corrector style.
 
@@ -267,7 +275,7 @@ Please see [the docs directory](/docs) for a quickstart guide and lengthy discus
 Potato’s original work, including all its code, is distributed under the [Creative Commons Attribution–Noncommercial license](https://creativecommons.org/licenses/by-nc/4.0/deed.en).
 
 > [!IMPORTANT]
-> All satellite imagery in this repository, except as otherwise credited, is derived from data copyright © Maxar Technologies, under the [Creative Commons Attribution–Noncommercial license](https://creativecommons.org/licenses/by-nc/4.0/deed.en), via [the Maxar Open Data Program](https://registry.opendata.aws/maxar-open-data/) (see further information there), adapted and modified as described in the accompanying text. Please alert me to any errors or oversights in citation.
+> All satellite imagery in this repository, except as otherwise credited, is derived from data copyright © Vantor, a.k.a. Maxar Technologies, under the [Creative Commons Attribution–Noncommercial license](https://creativecommons.org/licenses/by-nc/4.0/deed.en), via [the Maxar Open Data Program](https://registry.opendata.aws/maxar-open-data/) (see further information there), adapted and modified as described in the accompanying text. Please alert me to any errors or oversights in citation.
 
 I am a keen supporter of the Maxar Open Data Program. It is an example of lifesaving philanthropy that I hope other satellite companies will follow. I hope to further its aims by introducing it to more people. The highest success for Potato would be to contribute in any way to the more widespread and effective use of satellite imagery for humanitarian ends.
 
@@ -275,7 +283,7 @@ Maxar changed its name to Vantor after most of this documentation was written. H
 
 ### Thanks
 
-Many people have taught me key skills, pointed me down useful paths, or at least listened politely to my aimless diatribes on this topic over the years. Some are Camilla Mahon, Bhavika Tekwani, Damon Burgett, Justin Pickard, Kevin Bullock, Kevin Wurster, Rahawa Haile, Robert Simmon, Virginia Ng, and Yoni Nachmany.
+Many people have taught me key skills, pointed me down useful paths, or at least listened politely to my aimless diatribes on this topic over the years. Some are Camilla Mahon, Bhavika Tekwani, Damon Burgett, Justin Pickard, Kevin Bullock, Kevin Wurster, Rahawa Haile, Robert Simmon, Virginia Ng, and Yoni Nachmany. The documentation benefited from notes from Mike Migurski and Max Fenton.
 
 Stephan Hügel (@urschrei) started me talking publicly about pansharpening – not just glaring at Jupyter notebooks – by eliciting a [pansharpening Long Telegram](https://gist.github.com/celoyd/5bb5417b24801e0446ad5977cc3581e4) in 2021. Potato is a development of that e-mail. And since then he has often had a thought-provoking question or a kind word at just the right time.
 
