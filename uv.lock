@@ -2404,6 +2404,7 @@ dependencies = [
     { name = "einops" },
     { name = "pyproj", version = "3.7.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "pyproj", version = "3.7.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "pytest" },
     { name = "rasterio", extra = ["s3"] },
     { name = "torch" },
     { name = "tqdm" },
@@ -2416,11 +2417,6 @@ notebook = [
     { name = "matplotlib" },
 ]
 
-[package.dev-dependencies]
-dev = [
-    { name = "pytest" },
-]
-
 [package.metadata]
 requires-dist = [
     { name = "aim" },
@@ -2429,14 +2425,12 @@ requires-dist = [
     { name = "jupyterlab", marker = "extra == 'notebook'" },
     { name = "matplotlib", marker = "extra == 'notebook'" },
     { name = "pyproj" },
+    { name = "pytest" },
     { name = "rasterio", extras = ["s3"] },
     { name = "torch", specifier = "==2.7.1" },
     { name = "tqdm" },
 ]
 provides-extras = ["notebook"]
-
-[package.metadata.requires-dev]
-dev = [{ name = "pytest" }]
 
 [[package]]
 name = "prometheus-client"
