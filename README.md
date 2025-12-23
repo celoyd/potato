@@ -78,7 +78,7 @@ Second, Potato’s output for the same data:
 
 ![Potato output](docs/images/Chungthang/potato.png)
 
-I’ve adjusted the brightness and contrast of both images to roughly match them. Those overall tones are not the focus here: we’re interested in the details. Pansharpened images can made brighter, more contrasty, or warmer, like any other images; what matters in pansharpening itself is the fine grain of sharpness and color detail.
+I’ve adjusted the brightness and contrast of both images to roughly match them. Those overall tones are not the focus here: we’re interested in the details. Pansharpened images can be made brighter, more contrasty, or warmer, like any other images; what matters in pansharpening itself is the fine grain of sharpness and color detail.
 
 To see differences, try opening each in its own tab and flipping between them. There is no way to make a perfectly fair comparison, for example because the Maxar image has been lossily compressed and resampled back to nominal resolution. However, several of its shortcomings – dark water edges not present in the inputs, sensitivity to grainy noise, difficulty rendering blue hues – are not plausibly artifacts of those processing steps.
 
