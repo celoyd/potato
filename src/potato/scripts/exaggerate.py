@@ -85,7 +85,6 @@ def cli(src_a_path, src_b_path, dst_a_path, dst_b_path, exaggeration, workers):
             rasterio.open(dst_a_path, "w", **profile) as dst_a,
             rasterio.open(dst_b_path, "w", **profile) as dst_b,
         ):
-            # actually overkill for rasterio, for what it’s worth
             src_a_lock = threading.Lock()
             src_b_lock = threading.Lock()
             dst_a_lock = threading.Lock()

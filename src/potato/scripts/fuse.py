@@ -162,8 +162,8 @@ def cli(
 
             sRGB = OklabTosRGB().to(device)
 
-            # Rasterio/GDAL would actually let us get away with far less
-            # locking, but you’d rather have it and not need it.
+            # Rasterio/GDAL would let us get away with less locking, but let’s
+            # do everything by the book here.
             read_lock = threading.Lock()
             device_lock = threading.Lock()
             write_lock = threading.Lock()

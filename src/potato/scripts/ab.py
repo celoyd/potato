@@ -54,7 +54,7 @@ def work(img, src_dtype, l_level):
     nargs=1,
     type=click.Path(file_okay=True, dir_okay=False),
     # Why can’t you just do click.Path(..., exists=False) and have that work?
-    # Great question. For the click team, not for me.
+    # Great question. For the click team.
     callback=(
         lambda _, __, p: (
             p if not Path(p).exists() else click.BadParameter(f"{p} already exists")

@@ -85,9 +85,6 @@ def cli(exaggeration, workers, src_a_path, src_b_path, dst_path):
         )
 
         with rasterio.open(dst_path, "w", **profile) as dst:
-            # As I traditionally note in this context, rasterio doesn’t really
-            # need all these locks. It’s just belt and suspenders. Maybe
-            # someone comes in and converts everything to imageio or whatever.
             src_a_lock = threading.Lock()
             src_b_lock = threading.Lock()
             dst_lock = threading.Lock()
