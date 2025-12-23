@@ -23,8 +23,8 @@ cd potato
 
 ```bash
 uv venv
-uv pip install -e .
 source .venv/bin/activate
+uv pip install -e .
 ```
 
 **If not using `uv`**, things depend on how your system python is set up. We need python 3.10, 3.11, or 3.12, so if you don’t have any of them, consider installing [pyenv](https://github.com/pyenv/pyenv) and doing `pyenv install 3.12.12`, for example. For most people, this will work:
@@ -95,7 +95,11 @@ Go for it (remembering to set your device):
 potato fuse --device=cuda 104001008E063C00-{pan,ms}.tif 104001008E063C00-ps.tiff
 ```
 
-Expect either some kind of reasonably helpful error or a progress bar. The M units in the progress bar are megapixels. On my 1070 (a GPU released in 2016), it takes a little under 30 seconds, and similarly on an M4 Macbook (`--device=mps`); on my CPU alone (`--device=cpu`), it takes 4–5 minutes. On my Raspberry Pi 3 model B (`--device=cpu --workers=1 --block-side=256`), it estimates about 3.5 hours. A fan may turn on, but all being well, you now have a big, pansharpened output file:
+Expect either some kind of reasonably helpful error or a progress bar. The M units in the progress bar are megapixels. 
+
+_Performance expectations_: On my 1070 (a GPU released in 2016), it takes a little under 30 seconds, and similarly on an M4 Macbook (`--device=mps`); on my CPU alone (`--device=cpu`), it takes 4–5 minutes; on a low-end EC2 instance (`--device=cpu`), 15 minutes. On my Raspberry Pi 3 model B (`--device=cpu --workers=1 --block-side=256`), 3.5 hours. On a Lambda Labs 1× A100, at about 30% GPU (presumably severely i/o-bound), 20 seconds.
+
+A fan may turn on, but all being well, you now have a big, pansharpened output file:
 
 ```console
 user@host:~/potato$ du -h 104001008E063C00-ps.tiff
