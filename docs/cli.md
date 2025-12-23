@@ -20,9 +20,16 @@ _These instructions duplicate the ones in [the quickstart](quickstart.md)_.
 
 Here you will install a virtual environment with Potato the library, its dependencies, and `potato` the command-line tool.
 
-These instructions use the [uv](https://docs.astral.sh/uv/) management tool, which I warmly recommend. However, all that’s important is that you end up in a virtual environment with the dependencies named in `pyproject.toml`.
+I recommend the [uv](https://docs.astral.sh/uv/) python package management tool because it correctly and transparently handles most common problems. However, all that’s important is that you end up in a virtual environment on python 3.10, 3.11, or 3.12 with the dependencies named in `pyproject.toml`.
 
-With `uv`, do this in the top directory of this repo:
+Clone the repo and step inside:
+
+```bash
+git clone https://github.com/celoyd/potato.git
+cd potato
+```
+
+**If using `uv`**, run this in the `potato` directory:
 
 ```bash
 uv venv
@@ -30,7 +37,7 @@ uv pip install -e .
 source .venv/bin/activate
 ```
 
-The standard venv installation depends on how your system python, if any, is set up (_this is a problem `uv` can avoid!_), but something like this is likely to work – possibly replacing `python3` with `python` for example:
+**If not using `uv`**, things depend on how your system python is set up. We need python 3.10, 3.11, or 3.12, so if you don’t have any of them, consider installing [pyenv](https://github.com/pyenv/pyenv) and doing `pyenv install 3.12.12`, for example. For most people, this will work:
 
 ```bash
 python3 -m venv .venv --prompt potato
@@ -38,7 +45,7 @@ source .venv/bin/activate
 pip install -e .
 ```
 
-This will download and install many packages.
+Whichever method you use, it will install a lot of packages.
 
 Unless you’re in the kind of hurry where you can’t spare 5 seconds, run the tests. If you’re in the virtual environment:
 
@@ -57,15 +64,13 @@ If there are failures, make a reasonable effort to work out why, and if it’s n
 
 ## General notes and conventions
 
-<!-- This guide follows [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) (the must/should one) but in lowercase. -->
-
-Some CLI arguments have long and short forms (`-w`/`--weights`), and I may occasionally slip up and document only one but show the other in an example. Refer to `potato <command> --help` or the code.
-
 All input data is assumed to be in the Maxar ARD format. Other data can work if it’s similar, but it may require knocking out some sanity checks in the code, and it is unlikely to get very good results. For example, since ARD is atmospherically corrected, images in TOA radiance – even scaled to keep the peak values near 10,000 – will likely be hazier than anything Potato saw in training (at least _my_ training). Please try it, but start with low expectations.
 
 Where any combination of panchromatic, multispectral, and pansharpened images are referred to together, it’s always in that order. (This applies to the code as well as the documentation.)
 
-Code is aggressively linted, but not type-hinted. Code coverage is fairly low overall, mostly because it would be painfully difficult to properly mock resources for things like `make-tiles`, but the core functions (like the model itself and the color conversions) are reasonably well-tested.
+Some CLI arguments have long and short forms (`-w`/`--weights`), and I may occasionally slip up and document only one but show the other in an example. Refer to `potato <command> --help` or the code.
+
+Code is linted, but not type-hinted. Code coverage is fairly low overall, mostly because it would be painfully difficult to properly mock resources for things like `make-tiles`, but the core functions (like the model itself and the color conversions) are reasonably well tested.
 
 ## Core functions
 

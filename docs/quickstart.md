@@ -10,9 +10,16 @@ _These instructions duplicate the ones in [the CLI reference](cli.md)_.
 
 Here you will install a virtual environment with Potato the library, its dependencies, and `potato` the command-line tool.
 
-These instructions use the [uv](https://docs.astral.sh/uv/) management tool, which I warmly recommend. However, all that’s important is that you end up in a virtual environment with the dependencies named in `pyproject.toml`.
+I recommend the [uv](https://docs.astral.sh/uv/) python package management tool because it correctly and transparently handles most common problems. However, all that’s important is that you end up in a virtual environment on python 3.10, 3.11, or 3.12 with the dependencies named in `pyproject.toml`.
 
-With `uv`, do this in the top directory of this repo:
+Clone the repo and step inside:
+
+```bash
+git clone https://github.com/celoyd/potato.git
+cd potato
+```
+
+**If using `uv`**, run this in the `potato` directory:
 
 ```bash
 uv venv
@@ -20,7 +27,7 @@ uv pip install -e .
 source .venv/bin/activate
 ```
 
-The standard venv installation depends on how your system python, if any, is set up (_this is a problem `uv` can avoid!_), but something like this is likely to work – possibly replacing `python3` with `python` for example:
+**If not using `uv`**, things depend on how your system python is set up. We need python 3.10, 3.11, or 3.12, so if you don’t have any of them, consider installing [pyenv](https://github.com/pyenv/pyenv) and doing `pyenv install 3.12.12`, for example. For most people, this will work:
 
 ```bash
 python3 -m venv .venv --prompt potato
@@ -28,7 +35,7 @@ source .venv/bin/activate
 pip install -e .
 ```
 
-This will download and install many packages.
+Whichever method you use, it will install a lot of packages.
 
 Unless you’re in the kind of hurry where you can’t spare 5 seconds, run the tests. If you’re in the virtual environment:
 
