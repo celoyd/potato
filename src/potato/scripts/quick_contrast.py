@@ -38,6 +38,8 @@ def hill_langmuir_smith(x, n, expo, red_corr, blue_corr):
     x[0] *= red_corr
     x[2] *= blue_corr
 
+    # Naturally all these little things would more optimally be calculated
+    # once instead of per-tile, but the cost is small.
     g0 = 0.5
     g1 = 0.5
     m0 = 1.5
@@ -75,7 +77,7 @@ def hill_langmuir_smith(x, n, expo, red_corr, blue_corr):
 )
 @click.option("--overwrite", default=False, is_flag=True, help="Overwrite destination.")
 def cli(src_path, dst_path, contrast, exposure, red, blue, workers, overwrite):
-    """Apply more contrast to an image."""
+    """Add contrast to an image."""
     with rasterio.open(src_path) as src:
         profile = src.profile
         if (profile["dtype"] != "uint16") or (profile["count"] != 3):
@@ -98,7 +100,6 @@ def cli(src_path, dst_path, contrast, exposure, red, blue, workers, overwrite):
             raise FileExistsError(dst_path)
 
         with rasterio.open(dst_path, "w", **profile) as dst:
-            # Not actually necessary, etc., etc.
             reading_lock = threading.Lock()
             writing_lock = threading.Lock()
 
