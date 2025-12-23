@@ -33,8 +33,8 @@ cd potato
 
 ```bash
 uv venv
-uv pip install -e .
 source .venv/bin/activate
+uv pip install -e .
 ```
 
 **If not using `uv`**, things depend on how your system python is set up. We need python 3.10, 3.11, or 3.12, so if you don’t have any of them, consider installing [pyenv](https://github.com/pyenv/pyenv) and doing `pyenv install 3.12.12`, for example. For most people, this will work:
