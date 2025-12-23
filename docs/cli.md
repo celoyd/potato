@@ -347,6 +347,7 @@ The positional argument is the **source** multispectral image.
 
 **`-w`** or **`--workers`** is the concurrency level. 
 
+
 ### `potato vectorscope`
 
 Make a vectorscope of the input image.
@@ -358,3 +359,16 @@ There are many styles of vectorscope with their own advantages and disadvantages
 The positional arguments are **source** and **destination**.
 
 **`-s`** or **`--size`** is the side length of the (square) vectorscope.
+
+
+### `potato quick-contrast`
+
+Given an sRGB image as produced by `fuse`, add some visually pleasing contrast. This is a basic form of Jed Smith’s [Hill-Langmuir–style tonescale](https://community.acescentral.com/t/output-transform-tone-scale/3498/177), with only _n_ and an exposure scale as free variables, plus color weights. The default values are meant to make something reasonably 1:1 comparable with Maxar’s `-visible.tif` images.
+
+The positional arguments are the **source** and **destination** images.
+
+**`-n`** or **`--contrast`** is the amount of contrast (default: 2). 1.5 would be relatively subtle; by 4 it would be getting silly.
+
+**`-e`** or **`--exposure`** multiplies linear sRGB values, so higher is brighter.
+
+**`--overwrite`** of course, and **`-w`** or **`--workers`** is the concurrency level. 
