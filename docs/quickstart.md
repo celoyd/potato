@@ -20,21 +20,23 @@ uv pip install -e .
 source .venv/bin/activate
 ```
 
-The standard venv installation depends on how your system python, if any, is set up (_this is a problem `uv` can avoid!_), but something like this is likely to work:
+The standard venv installation depends on how your system python, if any, is set up (_this is a problem `uv` can avoid!_), but something like this is likely to work – possibly replacing `python3` with `python` for example:
 
 ```bash
-python -m venv .venv
+python3 -m venv .venv --prompt potato
 source .venv/bin/activate
 pip install -e .
 ```
 
-Unless you’re in the kind of hurry where you can’t spare 5 seconds, run the tests. If you’re in the virtual environment (you see `(potato)` _with parentheses_ somewhere left of the prompt):
+This will download and install many packages.
+
+Unless you’re in the kind of hurry where you can’t spare 5 seconds, run the tests. If you’re in the virtual environment:
 
 ```bash
 pytest
 ```
 
-Otherwise:
+Or , if you have `uv` and prefer not to stay in the virtual environment:
 
 ```bash
 uv run pytest
