@@ -283,7 +283,7 @@ Maxar changed its name to Vantor after most of this documentation was written. H
 
 ### Thanks
 
-Many people have taught me key skills, pointed me down useful paths, or at least listened politely to my aimless diatribes on this topic over the years. Some are Camilla Mahon, Bhavika Tekwani, Damon Burgett, Justin Pickard, Kevin Bullock, Kevin Wurster, Rahawa Haile, Robert Simmon, Virginia Ng, and Yoni Nachmany. The documentation benefited from notes from Mike Migurski and Max Fenton.
+Many people have taught me key skills, pointed me down useful paths, or at least listened politely to my aimless diatribes on this topic over the years. Some are Camilla Mahon, Bhavika Tekwani, Damon Burgett, Justin Pickard, Kevin Bullock, Kevin Wurster, Rahawa Haile, Robert Simmon, Virginia Ng, and Yoni Nachmany. Marc Pfister does the tireless work of distributing the data Potato is trained on. This documentation benefited from notes from Mike Migurski and Max Fenton.
 
 Stephan Hügel (@urschrei) started me talking publicly about pansharpening – not just glaring at Jupyter notebooks – by eliciting a [pansharpening Long Telegram](https://gist.github.com/celoyd/5bb5417b24801e0446ad5977cc3581e4) in 2021. Potato is a development of that e-mail. And since then he has often had a thought-provoking question or a kind word at just the right time.
 
