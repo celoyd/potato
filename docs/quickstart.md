@@ -88,7 +88,7 @@ Go for it (remembering to set your device):
 potato fuse --device=cuda 104001008E063C00-{pan,ms}.tif 104001008E063C00-ps.tiff
 ```
 
-Expect either some kind of reasonably helpful error or a progress bar. The M units in the progress bar are megapixels. On my 1070 (a GPU released in 2016), it takes a little under 30 seconds; on my CPU alone (`--device=cpu`), it takes 4–5 minutes. A fan may turn on. All being well, you now have a big, pansharpened output file:
+Expect either some kind of reasonably helpful error or a progress bar. The M units in the progress bar are megapixels. On my 1070 (a GPU released in 2016), it takes a little under 30 seconds, and similarly on an M4 Macbook (`--device=mps`); on my CPU alone (`--device=cpu`), it takes 4–5 minutes. On my Raspberry Pi 3 model B (`--device=cpu --workers=1 --block-side=256`), it estimates about 3.5 hours. A fan may turn on, but all being well, you now have a big, pansharpened output file:
 
 ```console
 user@host:~/potato$ du -h 104001008E063C00-ps.tiff
@@ -97,7 +97,13 @@ user@host:~/potato$ du -h 104001008E063C00-ps.tiff
 
 This is a 16-bit lossless RGB TIFF, and should be readable by ordinary image libraries, photo editing software, and so on. (The most likely problem is that it uses the zstd compression mode, which is still “the new one”, but libtiff has supported it [since 2018](http://libtiff.maptools.org/v4.0.10.html). If it causes problems, search for `zstd` in `src/potato/scripts/fuse.py` and replace it with, say, `deflate` or `LZW`.)
 
-Your first impression of the image will likely be that it’s low-contrast. This is intended behavior. Low contrast makes it easy to represent extremes – the huge range of brightness and color that can appear on Earth – without clipping. To see more contrast, turn the contrast up. An image editor’s “auto contrast”, “auto levels”, or “normalize” tool should work; a “curves” tool is also a good choice.
+Your first impression of the image will likely be that it’s low-contrast. This is intended behavior. Low contrast makes it easy to represent extremes – the huge range of brightness and color that can appear on Earth – without clipping. To see more contrast, turn the contrast up:
+
+```console
+potato quick-contrast 104001008E063C00-ps.tiff 104001008E063C00-contrast.tiff
+```
+
+An image editor’s “auto contrast”, “auto levels”, or “normalize” tool should work; a “curves” tool is also a good choice.
 
 The image is a geoTIFF, meaning it’s in a defined projection. This gives it entry to the universe of geospatial operations. It can be reprojected, for example, or matched to other geoTIFFs (such as the default pansharpening, at the same web address but ending in `-visual.tif`), and mixed with other geographical data in tools like [QGIS](https://qgis.org/):
 
@@ -108,7 +114,7 @@ _Pansharpened image translucently overlaid on [OSM](https://www.openstreetmap.or
 A cost of being a geoTIFF is that non-geospatial tools may warn about the geotags. For example, if you use [ImageMagick](https://imagemagick.org/index.php) to crop into Wakulima Market, the famous produce hub, you get warnings:
 
 ```console
-user@host:~/potato$ magick 104001008E063C00-ps.tiff -crop 768x512+12000+8000 Wakulima-market.png
+user@host:~/potato$ magick 104001008E063C00-contrast.tiff -crop 768x512+12000+8000 Wakulima-market.png
 magick: Unknown field with tag 33550 (0x830e) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/928.
 magick: Unknown field with tag 33922 (0x8482) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/928.
 magick: Unknown field with tag 34735 (0x87af) encountered. `TIFFReadDirectory' @ warning/tiff.c/TIFFWarnings/928.
@@ -118,19 +124,7 @@ magick: Unknown field with tag 42113 (0xa481) encountered. `TIFFReadDirectory' @
 
 These are safely ignored, and you get the image you should:
 
-![Wakulima market, looking under-contrasty](images/Wakulima/Wakulima-market.jpeg)
-
-<!-- Even if this were a TIFF, it would not be a geoTIFF. ImageMagick, like most tools, will correctly decline to copy tags that it doesn’t know how to carry. (If it had resized or rotated the image, for example, then the input geotags would be incorrect for the output, so always copying them would be wrong.) -->
-
-You might add some contrast with `convert`, for example with a channelwise auto-level:
-
-```bash
-magick Wakulima-market.png -channel R,G,B -normalize +channel Wakulima-market-contrast.png
-```
-
-And get a nicer image, resolving even some of the colors of the fruits and vegetables themselves:
-
-![Wakulima market, looking nicer](images/Wakulima/Wakulima-market-normed.jpeg)
+![Wakulima market, looking under-contrasty](images/Wakulima/Wakulima-market-contrast.jpeg)
 
 And that’s the pansharpening demo.
 
