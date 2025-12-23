@@ -1,6 +1,6 @@
 [project]
 name = "potato"
-version = "0"
+version = "1.0.0-beta"
 dependencies = [
 	"pyproj",
 	"torch==2.7.1",
@@ -10,14 +10,7 @@ dependencies = [
 	"aim",
 	"pytest"
 ]
-requires-python = ">3.10"
-
-[project.optional-dependencies]
-notebook = [
-    "black[jupyter]",
-    "jupyterlab",
-    "matplotlib",
-]
+requires-python = ">=3.10,<3.13"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
