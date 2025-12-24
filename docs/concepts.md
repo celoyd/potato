@@ -187,7 +187,7 @@ And this all-band image:
 
 There are several interesting differences, but most are relatively subtle, and we are here to talk about the big one: the violet/blue roof color. The three-band method shows unambiguously lilac roofs. The all-band method has them as sky blue.
 
-There are at least two testable claims here: that the three-band method is standard, and that it is less correct than the all-band method. I suggest the reader check some of the [various](https://maps.apple.com/frame?map=satellite&center=-6.843%2C107.14&span=0.006678323753437354%2C0.008749698382189308) [commercial](https://geojson.io/#map=17/-6.843/107.14) [imagery](https://www.bing.com/maps?v=2&cp=-6.843%7E107.14&style=h&lvl=17) [maps](https://www.google.com/maps/@-6.843,107.14,870m/data=!3m1!1e3) to confirm that – at least today, at the end of 2025 – they all show shades of violet roofs.
+There are at least two testable claims here: that the three-band method is standard, and that it is less correct than the all-band method. I encourage you to pause here and check [various](https://maps.apple.com/frame?map=satellite&center=-6.843%2C107.14&span=0.006678323753437354%2C0.008749698382189308) [commercial](https://geojson.io/#map=17/-6.843/107.14) [imagery](https://www.bing.com/maps?v=2&cp=-6.843%7E107.14&style=h&lvl=17) [maps](https://www.google.com/maps/@-6.843,107.14,870m/data=!3m1!1e3) to confirm that – at least today, at the end of 2025 – they all show shades of violet roofs.
 
 We can also find examples with the history tool of the desktop version of Google Earth. Stepping back in the timeline from the current image to the first appearance of the roofs in question, in 2009, and skipping those badly obscured by clouds or their shadows, I find 36 distinct images (image credits: Airbus, Maxar, and Google, as given in each screenshot frame):
 
@@ -201,13 +201,13 @@ We can summarize them by a simple average:
 
 ![](images/Cisarua/mean.jpeg)
 
-I think we can call it settled that the processing everyone’s using, across image wholesalers (Airbus, Maxar, etc.) and retailers (Apple, Mapbox, etc.) shows these roofs as somewhere in the lavender-lilac range.
+I think we can call it settled that the processing everyone’s using, across image wholesalers (Airbus, Maxar, etc.) and retailers (Apple, Mapbox, etc.) shows these roofs as somewhere in the lavender-lilac range. I can’t _prove_ this is 3-band rendering, because they don’t say how they do things, but the evidence is strong. Or to turn it around: if it’s not 3-band rendering, it’s functionally the same for our purposes here.
 
 But what is the roof’s actual color? 
 
-We can refer to [in-situ drone videos](https://www.youtube.com/watch?v=MLdckjstF3I#t=3m10s) or [Google’s own Street View product](https://maps.app.goo.gl/T9Dvrsg8HLY4YNsy9). It is indeed blue, as we would expect that type of roof to be.
+Refer to, for example, [in-situ drone videos](https://www.youtube.com/watch?v=MLdckjstF3I#t=3m10s) or [Google’s own Street View product](https://maps.app.goo.gl/T9Dvrsg8HLY4YNsy9). It is indeed blue, as we would expect that type of roof to be.
 
-I encourage skeptics to storm off and find their own examples. That’s what I’d do. Please find other lilac-in-commercial-imagery roofs in Manila, New Orleans, Colombo, Los Angeles, et alibi, and compare them to non-satellite sources. Here and there you will certainly find an actually lilac roof. I concede that there are some such roofs in the world. But I contend hat you will also find blue roofs consistently mis-rendered in satellite imagery.
+I invite skeptics to storm off and find their own examples. That’s what I’d do. Please find other lilac-in-commercial-imagery roofs in Manila, New Orleans, Colombo, and Los Angeles, and compare them to non-satellite sources. Here and there you will certainly find an actually lilac roof. I concede that there are such roofs in the world. But I contend that you will many more blue roofs mis-rendered in satellite imagery.
 
 So everyone is showing this roof as the wrong color, but we know how to do better.
 
