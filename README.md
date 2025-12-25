@@ -154,7 +154,7 @@ cd ~/Documents/potato
 python demo.py -d cuda ~/Documents/ZS-Pan/19-{pan,mul}.tiff -w sessions/cplx/248-gen.pt 19-potato.tiff
 ```
 
-Now we have an RGB TIFF from each model, but they are scaled differently; ZS-Pan’s would look virtually all black if opened in an image viewer. (Correct behavior for a radiance→radiance model, or a $\phi_s$ model in the language of the [feature documentation](docs/feasures.md), but it’s not what we want here.) We will bring it into a visible range with a channelwise `-normalize`, like an auto-leveling operation in an image editor. We will also give it some modest gamma in order to be directly comparable to Potato’s output (which we will give the same adjustment, other than the gamma). This color mix is not particularly good-looking for either image but it is at least _fair_. Edit paths again as needed.
+Now we have an RGB TIFF from each model, but they are scaled differently; ZS-Pan’s would look virtually all black if opened in an image viewer. (Correct behavior for a radiance→radiance model, or a $\phi_s$ model in the language of the [conceptual documentation](docs/concepts.md), but it’s not what we want here.) We will bring it into a visible range with a channelwise `-normalize`, like an auto-leveling operation in an image editor. We will also give it some modest gamma in order to be directly comparable to Potato’s output (which we will give the same adjustment, other than the gamma). This color mix is not particularly good-looking for either image but it is at least _fair_. Edit paths again as needed.
 
 ```sh
 magick -channel R,G,B -normalize +channel -gamma 1.25 ~/Documents/ZS-Pan/19-zs.tiff zs-demo.jpeg
