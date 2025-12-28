@@ -15,12 +15,11 @@ class ConvChunk(nn.Module):
 
         1×1 | 3×3 | fold | 1×1 | 3×3 | fold | 1×1
 
-    And a skip connection (through its own 1×1, to allow for depth changes)
-    is added at the end.
+    With a skip connection (through its own 1×1, to allow for depth changes).
 
     The 3×3 convolutional blocks are in 8 groups.
 
-    The main branch could be seen as basically 2× a sub-block like:
+    The main branch could be seen as 2× a sub-block like:
 
         1×1 | grouped 3×3 | nonlinearity
 
@@ -80,14 +79,14 @@ class Potato(nn.Module):
     - Data is always at a scale of quarter, half, or full. These names are
       relative to the output – or, equivalently, to the input pan(chromatic)
       band. Therefore the mul(tispectral) bands at half scale are of the same
-      spatial dimensions, i.e., can be concatenated with, the pan band at
-      half scale. Just keep in mind that the scale terms always mean the same
+      spatial dimensions, i.e., can be concatenated with, the pan band at half
+      scale. Just keep in mind that the scale terms always mean the same
       thing, whatever they’re attached to.
     - Running data, instead of using the x convention, is named q, h, or f
       according to its scale.
     - Where ConvChunks are paired, they’re named b(eginning) and e(nd) plus
-      the scale letter. E.g., bh is the first convchunk at half scale. Plane
-      f is the lone chunk at full scale.
+      the scale letter. E.g., bh is the first convchunk at half scale. Plain f
+      is the lone chunk at full scale.
     """
 
     def __init__(self, n=48):
@@ -153,8 +152,8 @@ class Potato(nn.Module):
         This can be thought of as intertwining learned operations with a
         standard pansharpening method. It could also be thought of as a kind
         of U-net with a non-learned front half. That is, all the downsampling
-        is by space-to-depth, and convolutions only happen in the upsampling
-        and skip paths.
+        is by space-to-depth, etc., and convolutions only happen in the
+        upsampling and skip paths.
 
         We optionally track some intermediate values to apply intermediate
         losses on.
