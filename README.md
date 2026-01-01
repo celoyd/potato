@@ -86,7 +86,7 @@ Google Earth [also uses this source image](https://earth.google.com/web/@27.6032
 
 ### Comparison with Google Earth’s pansharpening (Quito)
 
-Here is a comparison of a different image chip with a different set of visualization choices. On the left is a small part of Quito as seen on Google Earth ([link to web version](https://earth.google.com/web/search/Quito,+Ecuador/@-0.08986503,-78.44810289,2628.27205598a,346.32203057d,35y,0h,0t,0r/data=Cj4iJgokCSF-pJOHnDtAEQdki5yumDtAGRLQGY0TKlZAIXMmJJ-4KFZAKhAIARIKMjAyMi0wMS0wOBgBQgIIAUICCABKDQj___________8BEAA)) from Maxar 10300100CC8F7900, 2022-01-08; image credit as given within the screenshot. On the right is Potato’s output, resized and linearly color-adjusted to roughly match the screenshot. (Potato renders warmer hues than Google and Maxar tend to. See [the color documentation](https://github.com/celoyd/potato/blob/main/docs/features.md#all-band-color-conversion) for more detail.)
+Here is a comparison of a different image chip with a different set of visualization choices. On the left is a small part of Quito as seen on Google Earth ([link to web version](https://earth.google.com/web/search/Quito,+Ecuador/@-0.08986503,-78.44810289,2628.27205598a,346.32203057d,35y,0h,0t,0r/data=Cj4iJgokCSF-pJOHnDtAEQdki5yumDtAGRLQGY0TKlZAIXMmJJ-4KFZAKhAIARIKMjAyMi0wMS0wOBgBQgIIAUICCABKDQj___________8BEAA)) from Maxar 10300100CC8F7900, 2022-01-08; image credit as given within the screenshot. On the right is Potato’s output, resized and linearly color-adjusted to roughly match the screenshot. (Potato renders warmer hues than Google and Maxar tend to. See [the color documentation](docs/concepts.md#all-band-color-conversion) for more detail.)
 
 ![A side-by side comparison of images of a mixed neighborhood with a plaza park, a bus stop, and some large semi-industrial buildings in Quito](docs/images/Quito/both.png)
 
@@ -151,7 +151,7 @@ Now we can run Potato (remembering to adjust paths if necessary):
 ```sh
 cd ~/Documents/potato
 
-python demo.py -d cuda ~/Documents/ZS-Pan/19-{pan,mul}.tiff -w sessions/cplx/248-gen.pt 19-potato.tiff
+uv run potato fuse --device cuda ~/Documents/ZS-Pan/19-{pan,mul}.tiff -w 19-potato.tiff
 ```
 
 Now we have an RGB TIFF from each model, but they are scaled differently; ZS-Pan’s would look virtually all black if opened in an image viewer. (Correct behavior for a radiance→radiance model, or a $\phi_s$ model in the language of the [conceptual documentation](docs/concepts.md), but it’s not what we want here.) We will bring it into a visible range with a channelwise `-normalize`, like an auto-leveling operation in an image editor. We will also give it some modest gamma in order to be directly comparable to Potato’s output (which we will give the same adjustment, other than the gamma). This color mix is not particularly good-looking for either image but it is at least _fair_. Edit paths again as needed.
